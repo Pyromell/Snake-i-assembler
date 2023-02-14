@@ -10,6 +10,7 @@
  <SOURCE_FILE>X:\microdataprojekt\projekt\test\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc</FILE>
+  <FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
   <FILE>X:\microdataprojekt\projekt\test\Debug\Snake.obj</FILE>
@@ -22,24 +23,49 @@
   <FILE>Snake.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <VMEM><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>13</LINE></VMEM>
-  <P1><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>14</LINE></P1>
-  <P2><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>15</LINE></P2>
-  <HW_INIT><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>18</LINE></HW_INIT>
-  <MAIN><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>33</LINE></MAIN>
-  <FIRE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>61</LINE></FIRE>
-  <again><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>37</LINE></again>
-  <ERASE_VMEM><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>41</LINE></ERASE_VMEM>
-  <clear><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>48</LINE></clear>
-  <done><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>52</LINE></done>
-  <SPI_TX><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>107</LINE></SPI_TX>
-  <RED><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>72</LINE></RED>
-  <RDONE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>80</LINE></RDONE>
-  <RLOOP><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>76</LINE></RLOOP>
-  <ANODE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>85</LINE></ANODE>
-  <ADONE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>94</LINE></ADONE>
-  <ALOOP><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>89</LINE></ALOOP>
-  <CLOCK><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>99</LINE></CLOCK>
-  <SPI_TX_WAIT><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>113</LINE></SPI_TX_WAIT>
+  <HW_INIT><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>42</LINE></HW_INIT>
+  <INTERUPT><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>113</LINE></INTERUPT>
+  <VMEM><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>26</LINE></VMEM>
+  <P1><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>27</LINE></P1>
+  <P2><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>28</LINE></P2>
+  <MAIN><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>70</LINE></MAIN>
+  <TWI_SEND><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>1</LINE></TWI_SEND>
+  <ERASE_VMEM><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>167</LINE></ERASE_VMEM>
+  <UPDATE_VMEM><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>184</LINE></UPDATE_VMEM>
+  <again><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>110</LINE></again>
+  <FORLOOP7><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>122</LINE></FORLOOP7>
+  <SPI_TX><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>296</LINE></SPI_TX>
+  <CLOCK><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>288</LINE></CLOCK>
+  <TWI_INIT><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>23</LINE></TWI_INIT>
+  <SEND_BYTE><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>39</LINE></SEND_BYTE>
+  <STOP><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>86</LINE></STOP>
+  <START><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>61</LINE></START>
+  <SEND_LOOP><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>47</LINE></SEND_LOOP>
+  <lo><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>52</LINE></lo>
+  <hi><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>50</LINE></hi>
+  <SDH><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>68</LINE></SDH>
+  <DONE><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>53</LINE></DONE>
+  <SDL><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>77</LINE></SDL>
+  <WAIT><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>95</LINE></WAIT>
+  <WAITING><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>98</LINE></WAITING>
+  <DELAY><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>104</LINE></DELAY>
+  <DELAY1><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>109</LINE></DELAY1>
+  <DELAY2><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>111</LINE></DELAY2>
+  <DELAY3><FILE>X:\microdataprojekt\projekt\test\twisend.inc</FILE><LINE>113</LINE></DELAY3>
+  <COORD_TEST><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>161</LINE></COORD_TEST>
+  <FIRE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>250</LINE></FIRE>
+  <clear><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>174</LINE></clear>
+  <e_done><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>178</LINE></e_done>
+  <COORD2BYTE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>220</LINE></COORD2BYTE>
+  <u_done><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>213</LINE></u_done>
+  <c2b_done><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>228</LINE></c2b_done>
+  <c2b_loop><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>224</LINE></c2b_loop>
+  <RED><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>261</LINE></RED>
+  <RDONE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>269</LINE></RDONE>
+  <RLOOP><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>265</LINE></RLOOP>
+  <ANODE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>274</LINE></ANODE>
+  <ADONE><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>283</LINE></ADONE>
+  <ALOOP><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>278</LINE></ALOOP>
+  <SPI_TX_WAIT><FILE>X:\microdataprojekt\projekt\test\main.asm</FILE><LINE>302</LINE></SPI_TX_WAIT>
  </LABELS>
 </ASSEMBLER_INFO>

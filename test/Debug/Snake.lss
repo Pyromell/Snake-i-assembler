@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\test\main.asm Wed Feb 08 14:54:51 2023
+AVRASM ver. 2.2.7  X:\microdataprojekt\projekt\test\main.asm Thu Feb 09 11:14:55 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
                                  
-                                 .equ	MOSI = PB3
+                                 .equ    MOSI = PB3
                                  
                                  ;***** Created: 2011-02-09 12:03 ******* Source: ATmega328P.xml **********
                                  ;*************************************************************************
@@ -985,134 +985,123 @@ AVRASM ver. 2.2.7  X:\tsiu51\projekt\test\main.asm Wed Feb 08 14:54:51 2023
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
-                                 .equ	SCK	 = PB5
-                                 .equ	SS	 = PB2	
+                                 .equ    SCK  = PB5
+                                 .equ    SS   = PB2    
+                                 .def    ZERO = r2
+                                 
+                                 .equ	B = 0
+                                 .equ	G = 1
+                                 .equ	R = 2
+                                 .equ	A = 3
+                                 .equ    disp_size = 8
                                  
                                  .dseg
-000100                           vmem:	.byte	36
+000100                           VMEM:   .byte disp_size*4
+000120                           P1:     .byte 1
+000121                           P2:     .byte 1
                                  .cseg
-                                 	
-                                 SPI_INIT:
-                                 	; Set MOSI and SCK output, all others input
-000000 e21c                      	ldi		r17, (1<<MOSI)|(1<<SCK)|(1<<SS)
-000001 b914                      	out		DDRB,r17
-                                 	
-                                 	; Enable SPI, Master, set clock rate fck/16
-000002 e513                      	ldi		r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
-000003 bd1c                      	out		SPCR,r17
                                  
-000004 e008                      	ldi		r16,HIGH(RAMEND)
-000005 bf0e                      	out		SPH,r16
-000006 ef0f                      	ldi		r16,LOW(RAMEND)
-000007 bf0d                      	out		SPL,r16
+                                 HW_INIT:
+000000 e008                          ldi     r16,HIGH(RAMEND)
+000001 bf0e                          out     SPH,r16
+000002 ef0f                          ldi     r16,LOW(RAMEND)
+000003 bf0d                          out     SPL,r16
+000004 2422                          clr     ZERO
+                                 
+                                     ; Set MOSI and SCK output, all others input
+000005 e21c                          ldi     r17, (1<<MOSI)|(1<<SCK)|(1<<SS)
+000006 b914                          out     DDRB,r17
+                                     ; Enable SPI, Master, set clock rate fck/16
+000007 e513                          ldi     r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
+000008 bd1c                          out     SPCR,r17
                                  
                                  
                                  MAIN:
-000008 e002                      	ldi		r16,2
-000009 e015                      	ldi		r17,5
-00000a 940e 000d                 	call	FIRE
+000009 e002                          ldi     r16,2
+00000a e015                          ldi     r17,5
+00000b 940e 001b                     call    FIRE
+                                 again:
+00000d cfff                          rjmp    again
+                                 
+                                 
+                                 ERASE_VMEM:
+00000e 93ff                          push    ZH
+00000f 93ef                          push    ZL
+000010 930f                          push    r16
+000011 e0f1                          ldi     ZH,HIGH(VMEM)
+000012 e0e0                          ldi     ZL,LOW(VMEM)
+000013 e200                          ldi     r16,disp_size*4
+                                 clear:
+000014 9221                          st      Z+,ZERO
+000015 950a                          dec     r16
+000016 f7e9                          brne    clear
+                                 done:
+000017 910f                          pop     r16
+000018 91ef                          pop     ZL
+000019 91ff                          pop     ZH
+00001a 9508                          ret
                                  
                                  
                                  
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 Again:
-00000c cfff                      	rjmp	Again
                                  
                                  FIRE:
-00000d 2722                      	clr		r18
+00001b 2722                          clr     r18
                                  
-00000e 932f                      	push	r18
-00000f 940e 002f                 	call	SPI_TX
-000011 912f                      	pop		r18
+00001c 932f                          push    r18
+00001d 940e 003d                     call    SPI_TX
+00001f 912f                          pop     r18
                                  
-000012 932f                      	push	r18
-000013 940e 002f                 	call	SPI_TX
-000015 912f                      	pop		r18
+000020 932f                          push    r18
+000021 940e 003d                     call    SPI_TX
+000023 912f                          pop     r18
                                  
                                  RED:
-000016 e820                      	ldi		r18,0b1000_0000
-000017 3000                      	cpi		r16,0
-000018 f019                      	breq	DONE
-                                 FORLOOP:	
-000019 9526                      	lsr		r18
-00001a 950a                      	dec		r16	
-00001b f7e9                      	brne	FORLOOP
-                                 
-                                 DONE:
-00001c 932f                      	push	r18
-00001d 940e 002f                 	call	SPI_TX
-00001f 912f                      	pop		r18
+000024 e820                          ldi     r18,0b1000_0000
+000025 3000                          cpi     r16,0
+000026 f019                          breq    RDONE
+                                 RLOOP:    
+000027 9526                          lsr     r18
+000028 950a                          dec     r16    
+000029 f7e9                          brne    RLOOP
+                                 RDONE:
+00002a 932f                          push    r18
+00002b 940e 003d                     call    SPI_TX
+00002d 912f                          pop     r18
                                  
                                  ANODE:
-000020 e820                      	ldi		r18,0b1000_0000
-                                 	
-000021 3010                      	cpi		r17,0
-000022 f021                      	breq	DONE2
-                                 FORLOOP2:	
-000023 9526                      	lsr		r18
-000024 951a                      	dec		r17	
-000025 f7e9                      	brne	FORLOOP2
-000026 9520                      	com		r18
-                                 DONE2:
-000027 932f                      	push	r18
-000028 940e 002f                 	call	SPI_TX
-00002a 912f                      	pop		r18
+00002e e820                          ldi     r18,0b1000_0000
+00002f 3010                          cpi     r17,0
+000030 f021                          breq    ADONE
+                                 ALOOP:    
+000031 9526                          lsr     r18
+000032 951a                          dec     r17    
+000033 f7e9                          brne    ALOOP
+000034 9520                          com     r18
+                                 ADONE:
+000035 932f                          push    r18
+000036 940e 003d                     call    SPI_TX
+000038 912f                          pop     r18
                                  
-00002b 9822                      	cbi		DDRB,SS
-00002c 9a22                      	sbi		DDRB,SS
-00002d 9822                      	cbi		DDRB,SS
+                                 CLOCK:
+000039 9822                          cbi     DDRB,SS
+00003a 9a22                          sbi     DDRB,SS
+00003b 9822                          cbi     DDRB,SS
                                  
-00002e 9508                      	ret
-                                 	
-                                 
+00003c 9508                          ret
+                                     
                                  
                                  SPI_TX:
-                                 	; Start transmission of data (r16)
-00002f 930f                      	push	r16
-                                 
-000030 b7fe                      	in		ZH,SPH
-000031 b7ed                      	in		ZL,SPL
-                                 
-000032 8104                      	ldd		r16,z+4
-                                 
-000033 bd0e                      	out		SPDR,r16
+00003d 930f                          push    r16
+00003e b7fe                          in      ZH,SPH
+00003f b7ed                          in      ZL,SPL
+000040 8104                          ldd     r16,Z+4
+000041 bd0e                          out     SPDR,r16
                                  SPI_TX_WAIT:
-                                 	; Wait for transmission complete
-000034 b50d                      	in		r16,SPSR
-000035 ff07                      	sbrs	r16,SPIF
-000036 cffd                      	rjmp	SPI_TX_WAIT
-                                 
-000037 910f                      	pop		r16
-000038 9508                      	ret
-                                 
-                                 
+000042 b50d                          in	    r16,SPSR
+000043 ff07                          sbrs    r16,SPIF
+000044 cffd                          rjmp    SPI_TX_WAIT
+000045 910f                          pop     r16
+000046 9508                          ret
 
 
 RESOURCE USE INFORMATION
@@ -1130,40 +1119,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   0 z  :   2 r0 :   0 r1 :   0 r2 :   2 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  13 r17:   7 r18:  14 r19:   0 r20:   0 
+r13:   0 r14:   0 r15:   0 r16:  17 r17:   7 r18:  14 r19:   0 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
-r29:   0 r30:   1 r31:   1 
-Registers used: 6 out of 35 (17.1%)
+r29:   0 r30:   4 r31:   4 
+Registers used: 7 out of 35 (20.0%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   2 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brne  :   3 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   5 cbi   :   2 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   1 cp    :   0 cpc   :   0 
-cpi   :   2 cpse  :   0 dec   :   2 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :   2 cpse  :   0 dec   :   3 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   3 inc   :   0 jmp   :   0 
-ld    :   0 ldd   :   1 ldi   :   8 lds   :   0 lpm   :   0 lsl   :   0 
+ld    :   0 ldd   :   1 ldi   :  11 lds   :   0 lpm   :   0 lsl   :   0 
 lsr   :   2 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   5 pop   :   5 
-push  :   5 rcall :   0 ret   :   2 reti  :   0 rjmp  :   2 rol   :   0 
+neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   5 pop   :   8 
+push  :   8 rcall :   0 ret   :   3 reti  :   0 rjmp  :   2 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   0 
+sez   :   0 sleep :   0 spm   :   0 st    :   1 std   :   0 sts   :   0 
 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 19 out of 113 (16.8%)
+Instructions used: 20 out of 113 (17.7%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000072    114      0    114   32768   0.3%
-[.dseg] 0x000100 0x000124      0     36     36    2048   1.8%
+[.cseg] 0x000000 0x00008e    142      0    142   32768   0.4%
+[.dseg] 0x000100 0x000122      0     34     34    2048   1.7%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
 Assembly complete, 0 errors, 0 warnings

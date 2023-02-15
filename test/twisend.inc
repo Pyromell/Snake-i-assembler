@@ -1,7 +1,4 @@
 TWI_SEND:
-	.equ    SCL = PC5
-	.equ    SDA = PC4
-
     push    ZL
     push    ZH
     call    TWI_INIT
@@ -99,27 +96,4 @@ WAITING:
     dec     r16
     brne    WAITING
     pop     r16
-    ret
-
-DELAY:
-    push    r16
-    push    r17
-    push    r18
-    ldi     r16,$30
-DELAY1:
-    ldi     r17,$ff
-DELAY2:
-    ldi     r18,$ff
-DELAY3:
-    dec     r18
-    brne    DELAY3
-    dec     r17
-    brne    DELAY2
-    dec     r16
-    brne    DELAY1
-
-    pop     r18
-    pop     r17
-    pop     r16
-
     ret

@@ -2,6 +2,8 @@
 .equ    SCK  = PB5
 .equ    SS   = PB2    
 .def    ZERO = r2
+.equ    SCL = PC5
+.equ    SDA = PC4
 
 .equ	B = 0
 .equ	G = 1
@@ -9,11 +11,35 @@
 .equ	A = 3
 .equ    disp_size = 8
 
+.equ	xtal = $A3
+.equ	control_status_2 = $01
+.equ	timer_control = $0E
+.equ	timer_register = $0F
+
+//-----INTERUPT_TEST--------/
+/*
+.org 0x0000
+	jmp	HW_INIT
+.org 0x0002
+	jmp	INTERRUPT
+
+-------------------------*/
+
 .dseg
-VMEM:   .byte disp_size*4
+VMEM:   .byte 32
 P1:     .byte 2 ; x, y
 P2:     .byte 2
+LINE:   .byte 1
 .cseg
+
+.macro  send
+    push    @0
+    push    @1
+    call    TWI_SEND
+    pop     @1
+    pop     @0
+.endmacro
+
 
 HW_INIT:
     ldi     r16,HIGH(RAMEND)
@@ -28,15 +54,129 @@ HW_INIT:
     ; Enable SPI, Master, set clock rate fck/16
     ldi     r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
     out     SPCR,r17
+/*
+INT_INIT:
+	ldi		r16,(1<<INT0)
+	out		EIMSK,r16
+	ldi		r16,(1<<ISC01) | (1<<ISC00)
+	sts		EICRA,r16
+    sei
 
+RTC_INIT:
+    ldi		r17,xtal
+
+	; enables timer, 4 kHz
+	ldi		r18,timer_control
+	send	r17,r18
+	ldi		r18,0b1000_0011 
+	send	r17,r18
+
+	; enables int, timer flag, timer int
+	ldi		r18,control_status_2
+	send	r17,r18
+	ldi		r18,0b00010101
+	send	r17,r18
+
+	; loads timer
+	ldi		r18,timer_register
+	send	r17,r18
+	ldi		r18,$ff
+	send	r17,r18
+    */
+
+DATA_INIT:
+    ldi		ZL,LOW(P1)
+	ldi		ZH,HIGH(P1)
+    st      Z+,ZERO
+    st      Z,ZERO
+    sts     LINE,ZERO
+    
 
 MAIN:
+	push	ZL
+	push	ZH
+
+	ldi		ZL,LOW(P1)
+	ldi		ZH,HIGH(P1)
+
+	ldi		r16,2
+	st		Z,r16		
+	ldi		r17,0
+	std		Z+1,r17
+
+	call	ERASE_VMEM
+	call	UPDATE_VMEM
+
+
+    ldi     r16,8
+lp:  
+    call    INTERRUPT
+    dec     r16
+    brne    lp
+
+	pop		ZH
+	pop		ZL
+
+again:
+    rjmp    again
+    .include "twisend.inc"
+
+
+
+
+//-----------------------//
+INTERRUPT:
+	push	r16
+	push	r17
+
+	ldi		ZL,LOW(VMEM)
+	ldi		ZH,HIGH(VMEM)
+	
+    lds     r16,LINE
+    mov     r17,r16 ; spara line till r17
+    inc     r16
+    sts     LINE,r16 ; öka line
+    dec     r16
+
+    lsl     r17 ; line * 4
+    lsl     r17
+    add     ZL,r17 ; titta på line
+    adc     ZH,ZERO
+    
+    call    COORD2BYTE ; line i r16 som arg, ut i r17
+FORLOOP7:
+	ldd		r16,z+G
+    push	r16
+	call	SPI_TX
+	pop		r16
+    
+	ldd		r16,z+B
+    push	r16
+	call	SPI_TX
+	pop		r16
+
+	ldd		r16,z+R
+	push	r16
+	call	SPI_TX
+	pop		r16
+
+    com     r17
+	push	r17
+	call	SPI_TX
+	pop		r17
+    com     r17
+
+    call	CLOCK
+
+	pop		r17
+	pop		r16
+	ret
+
+COORD_TEST:
     ldi     r16,2
     ldi     r17,5
     call    FIRE
-again:
-    rjmp    again
-
+	ret
 
 ERASE_VMEM:
     push    ZH
@@ -44,7 +184,7 @@ ERASE_VMEM:
     push    r16
     ldi     ZH,HIGH(VMEM)
     ldi     ZL,LOW(VMEM)
-    ldi     r16,disp_size*4
+    ldi     r16,32
 clear:
     st      Z+,ZERO
     dec     r16
@@ -61,10 +201,12 @@ UPDATE_VMEM:
     push    r16
 
 ; player 1
-    clr     ZH
+    ldi		ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
+
     ld      r16,Z+ ; x
     ld      r17,Z+ ; y
+   
 
     push    ZH
     push    ZL
@@ -74,8 +216,9 @@ UPDATE_VMEM:
     lsl     r17 ; * 2
     lsl     r17 ; * 2
     add     ZL,r17
-    adc     ZH,ZERO
-    call    COORD2BYTE
+    adc     ZH,ZERO ; klar med r17
+    call    COORD2BYTE  ; omvandla r16
+ 
     ldd     r16,Z+R
     or      r17,r16
     std     Z+R,r17
@@ -162,19 +305,24 @@ CLOCK:
     cbi     DDRB,SS
     sbi     DDRB,SS
     cbi     DDRB,SS
-
     ret
     
 
 SPI_TX:
+    push    ZH
+    push    ZL
     push    r16
+
     in      ZH,SPH
     in      ZL,SPL
-    ldd     r16,Z+4
+    ldd     r16,Z+6
     out     SPDR,r16
 SPI_TX_WAIT:
     in	    r16,SPSR
     sbrs    r16,SPIF
     rjmp    SPI_TX_WAIT
+
     pop     r16
+    pop     ZL
+    pop     ZH
     ret

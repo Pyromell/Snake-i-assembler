@@ -4,4 +4,6 @@ Dagbok för gruppen. Markdown, *md*, beskrivs kort [här](https://liuonline.shar
 
 Datum        | Ansvarig   | Aktivitetsbeskrivning                                      
 -------------|------------|------------------------------------------------------
-2023-01-01   |mj          | Nytt år, nya möjligheter. 
+2023-01-01   | mj         | Nytt år, nya möjligheter. 
+2023-02-09   | ker        | Kan tända röd lampa på koordinat i register.
+2023-02-14   | ker        | 

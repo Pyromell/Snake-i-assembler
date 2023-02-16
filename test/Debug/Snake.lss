@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\test\main.asm Wed Feb 15 16:54:05 2023
+AVRASM ver. 2.2.7  X:\projekt\test\main.asm Thu Feb 16 11:56:10 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-X:\tsiu51\projekt\test\main.asm(122): Including file 'X:\tsiu51\projekt\test\twisend.inc'
+X:\projekt\test\main.asm(123): Including file 'X:\projekt\test\twisend.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-X:\tsiu51\projekt\test\main.asm(122): Including file 'X:\tsiu51\projekt\test\twisend.inc'
+X:\projekt\test\main.asm(123): Including file 'X:\projekt\test\twisend.inc'
                                  
                                  .equ    MOSI = PB3
                                  
@@ -1087,176 +1087,180 @@ X:\tsiu51\projekt\test\main.asm(122): Including file 'X:\tsiu51\projekt\test\twi
 000011 e2e0                      	ldi		ZL,LOW(P1)
 000012 e0f1                      	ldi		ZH,HIGH(P1)
                                  
-000013 e002                      	ldi		r16,2
+000013 e003                      	ldi		r16,3    // X
 000014 8300                      	st		Z,r16		
-000015 e010                      	ldi		r17,0
+000015 e011                      	ldi		r17,1    // Y
 000016 8311                      	std		Z+1,r17
                                  
 000017 940e 00ae                 	call	ERASE_VMEM
 000019 940e 00bb                 	call	UPDATE_VMEM
                                  
+00001b e008                      	ldi		r16,8
+00001c 930f                      	push	r16
+                                 TEST_LOOP:
+00001d 940e 0080                     call    INTERRUPT
+00001f 910f                      	pop		r16
+000020 950a                      	dec		r16
+000021 f7d9                      	brne	TEST_LOOP
                                  
-00001b e008                          ldi     r16,8
-                                 lp:  
-00001c 940e 007e                     call    INTERRUPT
-00001e 950a                          dec     r16
-00001f f7e1                          brne    lp
-                                 
-000020 91ff                      	pop		ZH
-000021 91ef                      	pop		ZL
+000022 91ff                      	pop		ZH
+000023 91ef                      	pop		ZL
                                  
                                  again:
-000022 cfff                          rjmp    again
+000024 cfff                          rjmp    again
                                      .include "twisend.inc"
                                  
-000023 93ef                          push    ZL
-000024 93ff                          push    ZH
-000025 940e 0033                     call    TWI_INIT
+000025 93ef                          push    ZL
+000026 93ff                          push    ZH
+000027 940e 0035                     call    TWI_INIT
                                      
-000027 b7fe                          in      ZH,SPH
-000028 b7ed                          in      ZL,SPL
+000029 b7fe                          in      ZH,SPH
+00002a b7ed                          in      ZL,SPL
                                  
-000029 8125                          ldd     r18,z+5 ; data
+00002b 8125                          ldd     r18,z+5 ; data
                                  
-00002a 932f                          push    r18
-00002b 940e 003f                     call    SEND_BYTE ; data
-00002d 912f                          pop     r18
-00002e 940e 006e                     call    STOP
+00002c 932f                          push    r18
+00002d 940e 0041                     call    SEND_BYTE ; data
+00002f 912f                          pop     r18
+000030 940e 0070                     call    STOP
                                  
-000030 91ff                          pop     ZH
-000031 91ef                          pop     ZL
-000032 9508                          ret
+000032 91ff                          pop     ZH
+000033 91ef                          pop     ZL
+000034 9508                          ret
                                  
                                  TWI_INIT:
-000033 b7fe                          in      ZH,SPH
-000034 b7ed                          in      ZL,SPL
-000035 931f                          push    r17
+000035 b7fe                          in      ZH,SPH
+000036 b7ed                          in      ZL,SPL
+000037 931f                          push    r17
                                  
-000036 8510                          ldd     r17,z+8 ; adress
+000038 8510                          ldd     r17,z+8 ; adress
                                  
-000037 940e 0053                     call    START
+000039 940e 0055                     call    START
                                  
-000039 931f                          push    r17
-00003a 940e 003f                     call    SEND_BYTE ; adress
-00003c 911f                          pop     r17
-00003d 911f                          pop     r17
+00003b 931f                          push    r17
+00003c 940e 0041                     call    SEND_BYTE ; adress
+00003e 911f                          pop     r17
+00003f 911f                          pop     r17
                                  
-00003e 9508                          ret
+000040 9508                          ret
                                  
                                  SEND_BYTE:
-00003f b7fe                          in      ZH,SPH
-000040 b7ed                          in      ZL,SPL
-000041 931f                      	push    r17
-000042 932f                          push    r18
+000041 b7fe                          in      ZH,SPH
+000042 b7ed                          in      ZL,SPL
+000043 931f                      	push    r17
+000044 932f                          push    r18
                                  
-000043 8113                          ldd     r17,z+3
-000044 e028                          ldi     r18,8
+000045 8113                          ldd     r17,z+3
+000046 e028                          ldi     r18,8
                                  SEND_LOOP:
-000045 0f11                          lsl     r17
-000046 f418                          brcc    lo
-000047 940e 005a                 hi: call    SDH
-000049 c002                      	rjmp	DONE
-00004a 940e 0064                 lo: call    SDL
+000047 0f11                          lsl     r17
+000048 f418                          brcc    lo
+000049 940e 005c                 hi: call    SDH
+00004b c002                      	rjmp	DONE
+00004c 940e 0066                 lo: call    SDL
                                  DONE:
-00004c 952a                          dec     r18
-00004d f7b9                          brne    SEND_LOOP
-00004e 940e 005a                     call    SDH     ; ack
-000050 912f                          pop     r18
-000051 911f                          pop     r17
-000052 9508                          ret
+00004e 952a                          dec     r18
+00004f f7b9                          brne    SEND_LOOP
+000050 940e 005c                     call    SDH     ; ack
+000052 912f                          pop     r18
+000053 911f                          pop     r17
+000054 9508                          ret
                                  
                                  START:
-000053 9a3c                          sbi     DDRC,SDA
-000054 940e 0078                     call    WAIT
-000056 9a3d                          sbi     DDRC,SCL
-000057 940e 0078                     call    WAIT
-000059 9508                          ret
+000055 9a3c                          sbi     DDRC,SDA
+000056 940e 007a                     call    WAIT
+000058 9a3d                          sbi     DDRC,SCL
+000059 940e 007a                     call    WAIT
+00005b 9508                          ret
                                  
                                  SDH:
-00005a 983c                          cbi     DDRC,SDA
-00005b 940e 0078                     call    WAIT
-00005d 983d                          cbi     DDRC,SCL
-00005e 940e 0078                     call    WAIT
-000060 9a3d                          sbi     DDRC,SCL
-000061 940e 0078                     call    WAIT
-000063 9508                          ret
+00005c 983c                          cbi     DDRC,SDA
+00005d 940e 007a                     call    WAIT
+00005f 983d                          cbi     DDRC,SCL
+000060 940e 007a                     call    WAIT
+000062 9a3d                          sbi     DDRC,SCL
+000063 940e 007a                     call    WAIT
+000065 9508                          ret
                                  
                                  SDL:
-000064 9a3c                          sbi     DDRC,SDA
-000065 940e 0078                     call    WAIT
-000067 983d                          cbi     DDRC,SCL
-000068 940e 0078                     call    WAIT
-00006a 9a3d                          sbi     DDRC,SCL
-00006b 940e 0078                     call    WAIT
-00006d 9508                          ret
+000066 9a3c                          sbi     DDRC,SDA
+000067 940e 007a                     call    WAIT
+000069 983d                          cbi     DDRC,SCL
+00006a 940e 007a                     call    WAIT
+00006c 9a3d                          sbi     DDRC,SCL
+00006d 940e 007a                     call    WAIT
+00006f 9508                          ret
                                  
                                  STOP:
-00006e 9a3c                          sbi     DDRC,SDA
-00006f 940e 0078                     call    WAIT
-000071 983d                          cbi     DDRC,SCL
-000072 940e 0078                     call    WAIT
-000074 983c                          cbi     DDRC,SDA
-000075 940e 0078                     call    WAIT
-000077 9508                          ret
+000070 9a3c                          sbi     DDRC,SDA
+000071 940e 007a                     call    WAIT
+000073 983d                          cbi     DDRC,SCL
+000074 940e 007a                     call    WAIT
+000076 983c                          cbi     DDRC,SDA
+000077 940e 007a                     call    WAIT
+000079 9508                          ret
                                  
                                  WAIT:
-000078 930f                          push    r16
-000079 ea00                          ldi     r16,160
+00007a 930f                          push    r16
+00007b ea00                          ldi     r16,160
                                  WAITING:
-00007a 950a                          dec     r16
-00007b f7f1                          brne    WAITING
-00007c 910f                          pop     r16
-00007d 9508                      
+00007c 950a                          dec     r16
+00007d f7f1                          brne    WAITING
+00007e 910f                          pop     r16
+00007f 9508                      
                                  
                                  
                                  
                                  //-----------------------//
                                  INTERRUPT:
-00007e 930f                      	push	r16
-00007f 931f                      	push	r17
+000080 93ff                      	push	ZH
+000081 93ef                      	push	ZL
+000082 930f                      	push	r16
+000083 931f                      	push	r17
                                  
-000080 e0e0                      	ldi		ZL,LOW(VMEM)
-000081 e0f1                      	ldi		ZH,HIGH(VMEM)
+000084 e0e0                      	ldi		ZL,LOW(VMEM)
+000085 e0f1                      	ldi		ZH,HIGH(VMEM)
                                  	
-000082 9100 0124                     lds     r16,LINE
-000084 2f10                          mov     r17,r16 ; spara line till r17
-000085 9503                          inc     r16
-000086 9300 0124                     sts     LINE,r16 ; öka line
-000088 950a                          dec     r16
                                  
-000089 0f11                          lsl     r17 ; line * 4
-00008a 0f11                          lsl     r17
-00008b 0fe1                          add     ZL,r17 ; titta på line
-00008c 1df2                          adc     ZH,ZERO
+                                 	// av någon efterbliven andledning så ville inte skit adressen LINE funka för att lagra vilken line vi e på
+                                 	// så denna kollar rad 1 och den funkar och kan ändra på 1:an till 0-7 för att få correct data på den linjen
+                                 	// ps LINE SUGER BALLE
+000086 e001                      	ldi		r16,1
+000087 e011                      	ldi		r17,1
+                                 
+000088 0f11                          lsl     r17 ; line * 4
+000089 0f11                          lsl     r17
+00008a 0fe1                          add     ZL,r17 ; titta på line
+00008b 1df2                          adc     ZH,ZERO
                                      
-00008d 940e 00d5                     call    COORD2BYTE ; line i r16 som arg, ut i r17
+00008c 940e 00d5                     call    COORD2BYTE ; line i r16 som arg, ut i r17
                                  FORLOOP7:
-                                 
-00008f 8101                      	ldd		r16,z+G
-000090 930f                          push	r16
-000091 940e 00fe                 	call	SPI_TX
-000093 910f                      	pop		r16
+00008e 8101                      	ldd		r16,Z+G
+00008f 930f                          push	r16
+000090 940e 00fe                 	call	SPI_TX
+000092 910f                      	pop		r16
                                      
-000094 8100                      	ldd		r16,z+B
-000095 930f                          push	r16
-000096 940e 00fe                 	call	SPI_TX
-000098 910f                      	pop		r16
+000093 8100                      	ldd		r16,Z+B
+000094 930f                          push	r16
+000095 940e 00fe                 	call	SPI_TX
+000097 910f                      	pop		r16
                                  
-000099 8102                      	ldd		r16,z+R
-00009a 930f                      	push	r16
-00009b 940e 00fe                 	call	SPI_TX
-00009d 910f                      	pop		r16
+000098 8102                      	ldd		r16,Z+R
+000099 930f                      	push	r16
+00009a 940e 00fe                 	call	SPI_TX
+00009c 910f                      	pop		r16
                                  
-00009e 9510                          com     r17
-00009f 931f                      	push	r17
-0000a0 940e 00fe                 	call	SPI_TX
-0000a2 911f                      	pop		r17
-0000a3 9510                          com     r17
+00009d 9510                          com     r17
+00009e 931f                      	push	r17
+00009f 940e 00fe                 	call	SPI_TX
+0000a1 911f                      	pop		r17
                                  
-0000a4 940e 00fa                     call	CLOCK
+0000a2 940e 00fa                     call	CLOCK
                                  
-0000a6 911f                      	pop		r17
-0000a7 910f                      	pop		r16
+0000a4 911f                      	pop		r17
+0000a5 910f                      	pop		r16
+0000a6 91ef                      	pop		ZL
+0000a7 91ff                      	pop		ZH
 0000a8 9508                      	ret
                                  
                                  COORD_TEST:
@@ -1432,9 +1436,9 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :  16 r0 :   0 r1 :   0 r2 :   7 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  48 r17:  36 r18:  21 r19:   0 r20:   0 
+r13:   0 r14:   0 r15:   0 r16:  46 r17:  35 r18:  21 r19:   0 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
-r29:   0 r30:  24 r31:  24 
+r29:   0 r30:  26 r31:  26 
 Registers used: 7 out of 35 (20.0%)
 
 "ATmega328P" instruction use summary:
@@ -1445,19 +1449,19 @@ brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0
 brne  :   7 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :  34 cbi   :   7 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   3 cp    :   0 cpc   :   0 
-cpi   :   3 cpse  :   0 dec   :   8 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   9 inc   :   1 jmp   :   0 
-ld    :   2 ldd   :   8 ldi   :  27 lds   :   1 lpm   :   0 lsl   :   5 
-lsr   :   3 mov   :   1 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   1 ori   :   0 out   :   5 pop   :  31 
-push  :  31 rcall :   0 ret   :  15 reti  :   0 rjmp  :   3 rol   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   0 cpc   :   0 
+cpi   :   3 cpse  :   0 dec   :   7 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   9 inc   :   0 jmp   :   0 
+ld    :   2 ldd   :   8 ldi   :  29 lds   :   0 lpm   :   0 lsl   :   5 
+lsr   :   3 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+neg   :   0 nop   :   0 or    :   1 ori   :   0 out   :   5 pop   :  34 
+push  :  34 rcall :   0 ret   :  15 reti  :   0 rjmp  :   3 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   7 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   0 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   4 std   :   2 sts   :   2 
+sez   :   0 sleep :   0 spm   :   0 st    :   4 std   :   2 sts   :   1 
 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 31 out of 113 (27.4%)
+Instructions used: 28 out of 113 (24.8%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%

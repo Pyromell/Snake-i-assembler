@@ -99,20 +99,21 @@ MAIN:
 	ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
 
-	ldi		r16,2
+	ldi		r16,3    // X
 	st		Z,r16		
-	ldi		r17,0
+	ldi		r17,1    // Y
 	std		Z+1,r17
 
 	call	ERASE_VMEM
 	call	UPDATE_VMEM
 
-
-    ldi     r16,8
-lp:  
+	ldi		r16,8
+	push	r16
+TEST_LOOP:
     call    INTERRUPT
-    dec     r16
-    brne    lp
+	pop		r16
+	dec		r16
+	brne	TEST_LOOP
 
 	pop		ZH
 	pop		ZL
@@ -126,17 +127,20 @@ again:
 
 //-----------------------//
 INTERRUPT:
+	push	ZH
+	push	ZL
 	push	r16
 	push	r17
 
 	ldi		ZL,LOW(VMEM)
 	ldi		ZH,HIGH(VMEM)
 	
-    lds     r16,LINE
-    mov     r17,r16 ; spara line till r17
-    inc     r16
-    sts     LINE,r16 ; öka line
-    dec     r16
+
+	// av någon efterbliven andledning så ville inte skit adressen LINE funka för att lagra vilken line vi e på
+	// så denna kollar rad 1 och den funkar och kan ändra på 1:an till 0-7 för att få correct data på den linjen
+	// ps LINE SUGER BALLE
+	ldi		r16,1
+	ldi		r17,1
 
     lsl     r17 ; line * 4
     lsl     r17
@@ -145,17 +149,17 @@ INTERRUPT:
     
     call    COORD2BYTE ; line i r16 som arg, ut i r17
 FORLOOP7:
-	ldd		r16,z+G
+	ldd		r16,Z+G
     push	r16
 	call	SPI_TX
 	pop		r16
     
-	ldd		r16,z+B
+	ldd		r16,Z+B
     push	r16
 	call	SPI_TX
 	pop		r16
 
-	ldd		r16,z+R
+	ldd		r16,Z+R
 	push	r16
 	call	SPI_TX
 	pop		r16
@@ -164,12 +168,13 @@ FORLOOP7:
 	push	r17
 	call	SPI_TX
 	pop		r17
-    com     r17
 
     call	CLOCK
 
 	pop		r17
 	pop		r16
+	pop		ZL
+	pop		ZH
 	ret
 
 COORD_TEST:

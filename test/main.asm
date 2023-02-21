@@ -16,14 +16,13 @@
 .equ	timer_control = $0E
 .equ	timer_register = $0F
 
-//-----INTERUPT_TEST--------/
-/*
+//-----INTERUPT--------/
+
 .org 0x0000
 	jmp	HW_INIT
 .org 0x0002
 	jmp	INTERRUPT
 
--------------------------*/
 
 .dseg
 VMEM:   .byte 32
@@ -54,13 +53,13 @@ HW_INIT:
     ; Enable SPI, Master, set clock rate fck/16
     ldi     r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
     out     SPCR,r17
-/*
+
 INT_INIT:
 	ldi		r16,(1<<INT0)
 	out		EIMSK,r16
 	ldi		r16,(1<<ISC01) | (1<<ISC00)
 	sts		EICRA,r16
-    sei
+    
 
 RTC_INIT:
     ldi		r17,xtal
@@ -82,13 +81,19 @@ RTC_INIT:
 	send	r17,r18
 	ldi		r18,$ff
 	send	r17,r18
-    */
+    
 
 DATA_INIT:
     ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
     st      Z+,ZERO
     st      Z,ZERO
+
+	ldi		ZL,LOW(P2)
+	ldi		ZH,HIGH(P2)
+    st      Z+,ZERO
+    st      Z,ZERO
+
     sts     LINE,ZERO
     
 
@@ -101,22 +106,30 @@ MAIN:
 
 	ldi		r16,3    // X
 	st		Z,r16		
-	ldi		r17,1    // Y
+	ldi		r17,5  // Y
+	std		Z+1,r17
+
+	ldi		ZL,LOW(P2)
+	ldi		ZH,HIGH(P2)
+
+	ldi		r16,1    // X
+	st		Z,r16		
+	ldi		r17,7   // Y
 	std		Z+1,r17
 
 	call	ERASE_VMEM
 	call	UPDATE_VMEM
 
-	ldi		r16,8
-	push	r16
-TEST_LOOP:
-    call    INTERRUPT
-	pop		r16
-	dec		r16
-	brne	TEST_LOOP
+
+	//INTERUPT_ENABLE//
+	sei
+
+
 
 	pop		ZH
 	pop		ZL
+
+
 
 again:
     rjmp    again
@@ -135,12 +148,15 @@ INTERRUPT:
 	ldi		ZL,LOW(VMEM)
 	ldi		ZH,HIGH(VMEM)
 	
+	lds		r16,LINE
+	lds		r17,LINE
 
-	// av någon efterbliven andledning så ville inte skit adressen LINE funka för att lagra vilken line vi e på
-	// så denna kollar rad 1 och den funkar och kan ändra på 1:an till 0-7 för att få correct data på den linjen
-	// ps LINE SUGER BALLE
-	ldi		r16,1
-	ldi		r17,1
+	cpi		r16,8
+	brne	NO_CLR
+	clr		r16
+	clr		r17
+NO_CLR:
+
 
     lsl     r17 ; line * 4
     lsl     r17
@@ -148,7 +164,9 @@ INTERRUPT:
     adc     ZH,ZERO
     
     call    COORD2BYTE ; line i r16 som arg, ut i r17
-FORLOOP7:
+
+	cbi     PORTB,SS
+
 	ldd		r16,Z+G
     push	r16
 	call	SPI_TX
@@ -169,20 +187,42 @@ FORLOOP7:
 	call	SPI_TX
 	pop		r17
 
-    call	CLOCK
+    sbi     PORTB,SS
+	
+	lds		r16,LINE
+	inc		r16
+	sts		LINE,r16
 
 	pop		r17
 	pop		r16
 	pop		ZL
 	pop		ZH
-	ret
 
-COORD_TEST:
-    ldi     r16,2
-    ldi     r17,5
-    call    FIRE
-	ret
+	reti
 
+DELAY:
+	push	r16
+	push	r17
+	push	r18
+
+	ldi		r16,5
+DELAY1:
+	ldi		r17,5
+DELAY2:
+	ldi		r18,5
+DELAY3:
+	dec		r18
+	brne	DELAY3
+	dec		r17
+	brne	DELAY2
+	dec		r16
+	brne	DELAY1
+
+	pop		r18
+	pop		r17
+	pop		r16
+
+	ret
 ERASE_VMEM:
     push    ZH
     push    ZL
@@ -205,7 +245,7 @@ UPDATE_VMEM:
     push    ZL
     push    r16
 
-; player 1
+UPDATE_P1:
     ldi		ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
 
@@ -231,6 +271,32 @@ UPDATE_VMEM:
     pop     ZL
     pop     ZH
 
+UPDATE_P2:
+    ldi		ZH,HIGH(P2)
+    ldi     ZL,LOW(P2)
+
+    ld      r16,Z+ ; x
+    ld      r17,Z+ ; y
+   
+
+    push    ZH
+    push    ZL
+    ldi     ZH,HIGH(VMEM)
+    ldi     ZL,LOW(VMEM)
+
+    lsl     r17 ; * 2
+    lsl     r17 ; * 2
+    add     ZL,r17
+    adc     ZH,ZERO ; klar med r17
+    call    COORD2BYTE  ; omvandla r16
+ 
+    ldd     r16,Z+G
+    or      r17,r16
+    std     Z+G,r17
+
+    pop     ZL
+    pop     ZH
+	
 u_done:
     pop     r16
     pop     ZL
@@ -250,69 +316,6 @@ c2b_done:
     ret
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-FIRE:
-    clr     r18
-
-    push    r18
-    call    SPI_TX
-    pop     r18
-
-    push    r18
-    call    SPI_TX
-    pop     r18
-
-RED:
-    ldi     r18,0b1000_0000
-    cpi     r16,0
-    breq    RDONE
-RLOOP:    
-    lsr     r18
-    dec     r16    
-    brne    RLOOP
-RDONE:
-    push    r18
-    call    SPI_TX
-    pop     r18
-
-ANODE:
-    ldi     r18,0b1000_0000
-    cpi     r17,0
-    breq    ADONE
-ALOOP:    
-    lsr     r18
-    dec     r17    
-    brne    ALOOP
-    com     r18
-ADONE:
-    push    r18
-    call    SPI_TX
-    pop     r18
-
-CLOCK:
-    cbi     DDRB,SS
-    sbi     DDRB,SS
-    cbi     DDRB,SS
-    ret
-    
-
 SPI_TX:
     push    ZH
     push    ZL
@@ -322,11 +325,12 @@ SPI_TX:
     in      ZL,SPL
     ldd     r16,Z+6
     out     SPDR,r16
+	
 SPI_TX_WAIT:
     in	    r16,SPSR
     sbrs    r16,SPIF
     rjmp    SPI_TX_WAIT
-
+	
     pop     r16
     pop     ZL
     pop     ZH

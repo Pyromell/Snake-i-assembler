@@ -9,7 +9,6 @@
 .equ	G = 1
 .equ	R = 2
 .equ	A = 3
-.equ    disp_size = 8
 
 .equ	xtal = $A3
 .equ	control_status_2 = $01
@@ -25,7 +24,7 @@
 
 
 .dseg
-VMEM:   .byte 32
+VMEM:   .byte 128
 P1:     .byte 2 ; x, y
 P2:     .byte 2
 LINE:   .byte 1
@@ -97,18 +96,18 @@ DATA_INIT:
     sts     LINE,ZERO
     
 
-MAIN:
+START:
 	push	ZL
 	push	ZH
 
 	ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
 
-	ldi		r16,4    // X
+	ldi		r16,8   // X
 	st		Z,r16		
-	ldi		r17,5    // Y
+	ldi		r17,8    // Y
 	std		Z+1,r17
-
+	/*
 	ldi		ZL,LOW(P2)
 	ldi		ZH,HIGH(P2)
 
@@ -116,29 +115,23 @@ MAIN:
 	st		Z,r16		
 	ldi		r17,7   // Y
 	std		Z+1,r17
-
+	*/
 	call	ERASE_VMEM
 	call	UPDATE_VMEM
-
-
-	//INTERUPT_ENABLE//
-	;sei
-
-	
 
 	pop		ZH
 	pop		ZL
 
+	//INTERUPT_ENABLE//
+	;sei
 
+	call	INTERRUPT
 
+MAIN:
+	;call	INTERRUPT
 
 again:
-	ldi		r19,32
-	LOL:
-	call	INTERRUPT
-	dec		r19
-	brne	LOL
-
+	
     rjmp    again
     .include "twisend.inc"
 
@@ -151,12 +144,21 @@ INTERRUPT:
 	push	ZL
 	push	r16
 	push	r17
+	push	r18
+	push	r19
 
 	ldi		ZL,LOW(VMEM)
 	ldi		ZH,HIGH(VMEM)
+	ldi		r17,96
+
+	add		ZL,r17
+	adc		ZH,ZERO
 	
 	lds		r16,LINE
 	lds		r17,LINE
+
+	ldi		r16,0
+	ldi		r17,0
 
 	cpi		r16,8
 	brne	NO_CLR
@@ -164,21 +166,24 @@ INTERRUPT:
 	clr		r17
 NO_CLR:
 
-
-    lsl     r17 ; line * 4
+	lsl     r17 ; line * 4
     lsl     r17
     add     ZL,r17 ; titta på line
     adc     ZH,ZERO
     
     call    COORD2BYTE ; line i r16 som arg, ut i r17
+	
+	cbi     PORTB,SS   // LATCH
 
-	cbi     PORTB,SS
+	ldi		r18,4
+DISPLOOP:
+	
 
 	ldd		r16,Z+G
     push	r16
 	call	SPI_TX
 	pop		r16
-    
+
 	ldd		r16,Z+B
     push	r16
 	call	SPI_TX
@@ -193,18 +198,30 @@ NO_CLR:
 	push	r17
 	call	SPI_TX
 	pop		r17
+	com		r17
 
-    sbi     PORTB,SS
+
+	ldi		r19,32			// Titta på disp innan
+	sub		ZL,r19
+	sbc		ZH,ZERO
 	
+	dec		r18
+	brne	DISPLOOP
+
+	sbi     PORTB,SS
+
 	lds		r16,LINE
 	inc		r16
 	sts		LINE,r16
 
+	pop		r19
+	pop		r18
 	pop		r17
 	pop		r16
 	pop		ZL
 	pop		ZH
 
+	call	DELAY
 	ret
 
 DELAY:
@@ -236,7 +253,7 @@ ERASE_VMEM:
     push    r16
     ldi     ZH,HIGH(VMEM)
     ldi     ZL,LOW(VMEM)
-    ldi     r16,32
+    ldi     r16,128
 clear:
     st      Z+,ZERO
     dec     r16
@@ -251,13 +268,15 @@ UPDATE_VMEM:
     push    ZH
     push    ZL
     push    r16
+	push	r17
+	push	r18
 
 UPDATE_P1:
     ldi		ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
 
     ld      r16,Z+ ; x
-    ld      r17,Z+ ; y
+    ld      r17,Z ; y
    
 
     push    ZH
@@ -265,19 +284,37 @@ UPDATE_P1:
     ldi     ZH,HIGH(VMEM)
     ldi     ZL,LOW(VMEM)
 
+	; determine y display
+	cpi		r17,8     
+	brlo	P1Y_CHOSEN
+	; move to upper display
+	subi	r17,8
+	ldi		r18,64
+	add		ZL,r18
+	adc		ZH,ZERO			
+P1Y_CHOSEN:
     lsl     r17 ; * 2
     lsl     r17 ; * 2
     add     ZL,r17
     adc     ZH,ZERO ; klar med r17
-    call    COORD2BYTE  ; omvandla r16
- 
+    
+	
+	; determine x display
+	cpi		r16,8
+	brlo	P1X_CHOSEN
+	subi	r16,8
+	ldi		r18,32
+	add		ZL,r18
+	adc		ZH,ZERO
+P1X_CHOSEN:
+	call    COORD2BYTE  ; IN r16, OUT r17
     ldd     r16,Z+R
     or      r17,r16
     std     Z+R,r17
 
     pop     ZL
     pop     ZH
-
+	/*
 UPDATE_P2:
     ldi		ZH,HIGH(P2)
     ldi     ZL,LOW(P2)
@@ -303,8 +340,10 @@ UPDATE_P2:
 
     pop     ZL
     pop     ZH
-	
+	*/
 u_done:
+	pop		r18
+	pop		r17
     pop     r16
     pop     ZL
     pop     ZH
@@ -332,12 +371,12 @@ SPI_TX:
     in      ZL,SPL
     ldd     r16,Z+6
     out     SPDR,r16
-	
+	/*
 SPI_TX_WAIT:
     in	    r16,SPSR
     sbrs    r16,SPIF
     rjmp    SPI_TX_WAIT
-	
+	*/
     pop     r16
     pop     ZL
     pop     ZH

@@ -24,7 +24,7 @@ TWI_INIT:
 
     ldd     r17,z+8 ; adress
 
-    call    START
+    call    TWI_START
 
     push    r17
     call    SEND_BYTE ; adress
@@ -45,9 +45,9 @@ SEND_LOOP:
     lsl     r17
     brcc    lo
 hi: call    SDH
-	rjmp	DONE
+	rjmp	SEND_DONE
 lo: call    SDL
-DONE:
+SEND_DONE:
     dec     r18
     brne    SEND_LOOP
     call    SDH     ; ack
@@ -55,7 +55,7 @@ DONE:
     pop     r17
     ret
 
-START:
+TWI_START:
     sbi     DDRC,SDA
     call    WAIT
     sbi     DDRC,SCL

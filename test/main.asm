@@ -104,9 +104,9 @@ MAIN:
 	ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
 
-	ldi		r16,3    // X
+	ldi		r16,4    // X
 	st		Z,r16		
-	ldi		r17,5  // Y
+	ldi		r17,5    // Y
 	std		Z+1,r17
 
 	ldi		ZL,LOW(P2)
@@ -122,16 +122,23 @@ MAIN:
 
 
 	//INTERUPT_ENABLE//
-	sei
+	;sei
 
-
+	
 
 	pop		ZH
 	pop		ZL
 
 
 
+
 again:
+	ldi		r19,32
+	LOL:
+	call	INTERRUPT
+	dec		r19
+	brne	LOL
+
     rjmp    again
     .include "twisend.inc"
 
@@ -198,18 +205,18 @@ NO_CLR:
 	pop		ZL
 	pop		ZH
 
-	reti
+	ret
 
 DELAY:
 	push	r16
 	push	r17
 	push	r18
 
-	ldi		r16,5
+	ldi		r16,150
 DELAY1:
-	ldi		r17,5
+	ldi		r17,150
 DELAY2:
-	ldi		r18,5
+	ldi		r18,150
 DELAY3:
 	dec		r18
 	brne	DELAY3

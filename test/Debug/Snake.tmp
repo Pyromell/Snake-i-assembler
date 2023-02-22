@@ -24,7 +24,7 @@
  </OUTPUT_FILES>
  <LABELS>
   <HW_INIT><FILE>X:\projekt\test\main.asm</FILE><LINE>43</LINE></HW_INIT>
-  <INTERRUPT><FILE>X:\projekt\test\main.asm</FILE><LINE>139</LINE></INTERRUPT>
+  <INTERRUPT><FILE>X:\projekt\test\main.asm</FILE><LINE>149</LINE></INTERRUPT>
   <VMEM><FILE>X:\projekt\test\main.asm</FILE><LINE>28</LINE></VMEM>
   <P1><FILE>X:\projekt\test\main.asm</FILE><LINE>29</LINE></P1>
   <P2><FILE>X:\projekt\test\main.asm</FILE><LINE>30</LINE></P2>
@@ -34,9 +34,10 @@
   <TWI_SEND><FILE>X:\projekt\test\twisend.inc</FILE><LINE>1</LINE></TWI_SEND>
   <DATA_INIT><FILE>X:\projekt\test\main.asm</FILE><LINE>86</LINE></DATA_INIT>
   <MAIN><FILE>X:\projekt\test\main.asm</FILE><LINE>100</LINE></MAIN>
-  <ERASE_VMEM><FILE>X:\projekt\test\main.asm</FILE><LINE>223</LINE></ERASE_VMEM>
-  <UPDATE_VMEM><FILE>X:\projekt\test\main.asm</FILE><LINE>240</LINE></UPDATE_VMEM>
-  <again><FILE>X:\projekt\test\main.asm</FILE><LINE>131</LINE></again>
+  <ERASE_VMEM><FILE>X:\projekt\test\main.asm</FILE><LINE>233</LINE></ERASE_VMEM>
+  <UPDATE_VMEM><FILE>X:\projekt\test\main.asm</FILE><LINE>250</LINE></UPDATE_VMEM>
+  <again><FILE>X:\projekt\test\main.asm</FILE><LINE>135</LINE></again>
+  <LOL><FILE>X:\projekt\test\main.asm</FILE><LINE>137</LINE></LOL>
   <TWI_INIT><FILE>X:\projekt\test\twisend.inc</FILE><LINE>20</LINE></TWI_INIT>
   <SEND_BYTE><FILE>X:\projekt\test\twisend.inc</FILE><LINE>36</LINE></SEND_BYTE>
   <STOP><FILE>X:\projekt\test\twisend.inc</FILE><LINE>83</LINE></STOP>
@@ -49,20 +50,20 @@
   <SDL><FILE>X:\projekt\test\twisend.inc</FILE><LINE>74</LINE></SDL>
   <WAIT><FILE>X:\projekt\test\twisend.inc</FILE><LINE>92</LINE></WAIT>
   <WAITING><FILE>X:\projekt\test\twisend.inc</FILE><LINE>95</LINE></WAITING>
-  <NO_CLR><FILE>X:\projekt\test\main.asm</FILE><LINE>155</LINE></NO_CLR>
-  <COORD2BYTE><FILE>X:\projekt\test\main.asm</FILE><LINE>304</LINE></COORD2BYTE>
-  <SPI_TX><FILE>X:\projekt\test\main.asm</FILE><LINE>316</LINE></SPI_TX>
-  <DELAY><FILE>X:\projekt\test\main.asm</FILE><LINE>200</LINE></DELAY>
-  <DELAY1><FILE>X:\projekt\test\main.asm</FILE><LINE>206</LINE></DELAY1>
-  <DELAY2><FILE>X:\projekt\test\main.asm</FILE><LINE>208</LINE></DELAY2>
-  <DELAY3><FILE>X:\projekt\test\main.asm</FILE><LINE>210</LINE></DELAY3>
-  <clear><FILE>X:\projekt\test\main.asm</FILE><LINE>230</LINE></clear>
-  <e_done><FILE>X:\projekt\test\main.asm</FILE><LINE>234</LINE></e_done>
-  <UPDATE_P1><FILE>X:\projekt\test\main.asm</FILE><LINE>245</LINE></UPDATE_P1>
-  <UPDATE_P2><FILE>X:\projekt\test\main.asm</FILE><LINE>271</LINE></UPDATE_P2>
-  <u_done><FILE>X:\projekt\test\main.asm</FILE><LINE>297</LINE></u_done>
-  <c2b_done><FILE>X:\projekt\test\main.asm</FILE><LINE>312</LINE></c2b_done>
-  <c2b_loop><FILE>X:\projekt\test\main.asm</FILE><LINE>308</LINE></c2b_loop>
-  <SPI_TX_WAIT><FILE>X:\projekt\test\main.asm</FILE><LINE>326</LINE></SPI_TX_WAIT>
+  <NO_CLR><FILE>X:\projekt\test\main.asm</FILE><LINE>165</LINE></NO_CLR>
+  <COORD2BYTE><FILE>X:\projekt\test\main.asm</FILE><LINE>314</LINE></COORD2BYTE>
+  <SPI_TX><FILE>X:\projekt\test\main.asm</FILE><LINE>326</LINE></SPI_TX>
+  <DELAY><FILE>X:\projekt\test\main.asm</FILE><LINE>210</LINE></DELAY>
+  <DELAY1><FILE>X:\projekt\test\main.asm</FILE><LINE>216</LINE></DELAY1>
+  <DELAY2><FILE>X:\projekt\test\main.asm</FILE><LINE>218</LINE></DELAY2>
+  <DELAY3><FILE>X:\projekt\test\main.asm</FILE><LINE>220</LINE></DELAY3>
+  <clear><FILE>X:\projekt\test\main.asm</FILE><LINE>240</LINE></clear>
+  <e_done><FILE>X:\projekt\test\main.asm</FILE><LINE>244</LINE></e_done>
+  <UPDATE_P1><FILE>X:\projekt\test\main.asm</FILE><LINE>255</LINE></UPDATE_P1>
+  <UPDATE_P2><FILE>X:\projekt\test\main.asm</FILE><LINE>281</LINE></UPDATE_P2>
+  <u_done><FILE>X:\projekt\test\main.asm</FILE><LINE>307</LINE></u_done>
+  <c2b_done><FILE>X:\projekt\test\main.asm</FILE><LINE>322</LINE></c2b_done>
+  <c2b_loop><FILE>X:\projekt\test\main.asm</FILE><LINE>318</LINE></c2b_loop>
+  <SPI_TX_WAIT><FILE>X:\projekt\test\main.asm</FILE><LINE>336</LINE></SPI_TX_WAIT>
  </LABELS>
 </ASSEMBLER_INFO>

@@ -8,3 +8,6 @@ Datum        | Ansvarig   | Aktivitetsbeskrivning
 2023-02-09   | ker,chr,joh| Kan tända röd lampa på koordinat i register.
 2023-02-15   | chr,ker    | Bråkat med att fixa interrupts, löst de någorlunda. fixat skal till rapporten
 2023-02-16   | chr,joh    | Felsökt och hittat felet varför fler rader inte kan skrivas ut. fått tips om inbyggt TWI
+2023-02-21   | Alla       | Skrevs på rapport, Blev färdiga med videominne för en skärm, 2 prickar
+2023-02-22   | Ker,joh    | Arbetade med videominne för 4 skärmar
+2023-02-23   | joh, chr   | Blev färdiga med Vmem för 4 skärm. arbetar med att göra om avbrottet

@@ -19,7 +19,7 @@
 
 .org 0x0000
 	jmp	HW_INIT
-.org 0x0002
+.org 0x0010
 	jmp	INTERRUPT
 
 
@@ -52,21 +52,38 @@ HW_INIT:
     ; Enable SPI, Master, set clock rate fck/16
     ldi     r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
     out     SPCR,r17
-
+	
 INT_INIT:
+
+	ldi		r16,(1<<WGM01)|(1<<WGM00)
+	out		TCCR0A,r16
+	ldi		r16,(0<<WGM02)
+	out		TCCR0B,r16
+
+	ldi		r16,(1<<COM0B1)|(0<<COM0B0)
+	out		TCCR0B,r16	
+
+	ldi		r16,(0<<CS02)|(1<<CS01)|(1<<CS00)
+
+	;ldi		r16,100     // Räknar upp/ner till 100
+	;out		OCR0A,r16
+
+	ldi		r16,(1<<OCIE0A)|(1<<TOIE0)
+	sts		TIMSK0,r16
+/*
 	ldi		r16,(1<<INT0)
 	out		EIMSK,r16
 	ldi		r16,(1<<ISC01) | (1<<ISC00)
 	sts		EICRA,r16
-    
-
+ 
+	
 RTC_INIT:
     ldi		r17,xtal
 
 	; enables timer, 4 kHz
 	ldi		r18,timer_control
 	send	r17,r18
-	ldi		r18,0b1000_0011 
+	ldi		r18,0b0000_0011
 	send	r17,r18
 
 	; enables int, timer flag, timer int
@@ -80,7 +97,7 @@ RTC_INIT:
 	send	r17,r18
 	ldi		r18,$ff
 	send	r17,r18
-    
+    */
 
 DATA_INIT:
     ldi		ZL,LOW(P1)
@@ -103,19 +120,19 @@ START:
 	ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
 
-	ldi		r16,8   // X
+	ldi		r16,4  // X
 	st		Z,r16		
-	ldi		r17,8    // Y
+	ldi		r17,15    // Y
 	std		Z+1,r17
-	/*
+	
 	ldi		ZL,LOW(P2)
 	ldi		ZH,HIGH(P2)
 
-	ldi		r16,1    // X
+	ldi		r16,15    // X
 	st		Z,r16		
-	ldi		r17,7   // Y
+	ldi		r17,0   // Y
 	std		Z+1,r17
-	*/
+	
 	call	ERASE_VMEM
 	call	UPDATE_VMEM
 
@@ -123,15 +140,14 @@ START:
 	pop		ZL
 
 	//INTERUPT_ENABLE//
-	;sei
+	sei
+	
 
-	call	INTERRUPT
 
 MAIN:
-	;call	INTERRUPT
+	
 
 again:
-	
     rjmp    again
     .include "twisend.inc"
 
@@ -157,9 +173,6 @@ INTERRUPT:
 	lds		r16,LINE
 	lds		r17,LINE
 
-	ldi		r16,0
-	ldi		r17,0
-
 	cpi		r16,8
 	brne	NO_CLR
 	clr		r16
@@ -173,18 +186,17 @@ NO_CLR:
     
     call    COORD2BYTE ; line i r16 som arg, ut i r17
 	
-	cbi     PORTB,SS   // LATCH
+	cbi     PORTB,SS   // denna gör att alla cordinater fungerar
 
 	ldi		r18,4
 DISPLOOP:
 	
-
-	ldd		r16,Z+G
+	ldd		r16,Z+B
     push	r16
 	call	SPI_TX
 	pop		r16
 
-	ldd		r16,Z+B
+	ldd		r16,Z+G
     push	r16
 	call	SPI_TX
 	pop		r16
@@ -205,10 +217,10 @@ DISPLOOP:
 	sub		ZL,r19
 	sbc		ZH,ZERO
 	
-	dec		r18
+	dec		r18				// Loop för en rad för vaje skärm
 	brne	DISPLOOP
 
-	sbi     PORTB,SS
+	sbi     PORTB,SS		// LATCH
 
 	lds		r16,LINE
 	inc		r16
@@ -221,8 +233,7 @@ DISPLOOP:
 	pop		ZL
 	pop		ZH
 
-	call	DELAY
-	ret
+	reti
 
 DELAY:
 	push	r16
@@ -278,10 +289,40 @@ UPDATE_P1:
     ld      r16,Z+ ; x
     ld      r17,Z ; y
    
-
     push    ZH
     push    ZL
-    ldi     ZH,HIGH(VMEM)
+	call	ADD_TO_VMEM
+    ldd     r16,Z+R
+    or      r17,r16
+    std     Z+R,r17
+	pop     ZL
+    pop     ZH
+
+	UPDATE_P2:
+    ldi		ZH,HIGH(P2)
+    ldi     ZL,LOW(P2)
+
+    ld      r16,Z+ ; x
+    ld      r17,Z ; y
+   
+    push    ZH
+    push    ZL
+	call	ADD_TO_VMEM
+    ldd     r16,Z+B
+    or      r17,r16
+    std     Z+B,r17
+	pop     ZL
+    pop     ZH
+u_done:
+	pop		r18
+	pop		r17
+    pop     r16
+    pop     ZL
+    pop     ZH
+    ret
+
+ADD_TO_VMEM:
+	ldi     ZH,HIGH(VMEM)
     ldi     ZL,LOW(VMEM)
 
 	; determine y display
@@ -307,48 +348,10 @@ P1Y_CHOSEN:
 	add		ZL,r18
 	adc		ZH,ZERO
 P1X_CHOSEN:
+
 	call    COORD2BYTE  ; IN r16, OUT r17
-    ldd     r16,Z+R
-    or      r17,r16
-    std     Z+R,r17
 
-    pop     ZL
-    pop     ZH
-	/*
-UPDATE_P2:
-    ldi		ZH,HIGH(P2)
-    ldi     ZL,LOW(P2)
-
-    ld      r16,Z+ ; x
-    ld      r17,Z+ ; y
-   
-
-    push    ZH
-    push    ZL
-    ldi     ZH,HIGH(VMEM)
-    ldi     ZL,LOW(VMEM)
-
-    lsl     r17 ; * 2
-    lsl     r17 ; * 2
-    add     ZL,r17
-    adc     ZH,ZERO ; klar med r17
-    call    COORD2BYTE  ; omvandla r16
- 
-    ldd     r16,Z+G
-    or      r17,r16
-    std     Z+G,r17
-
-    pop     ZL
-    pop     ZH
-	*/
-u_done:
-	pop		r18
-	pop		r17
-    pop     r16
-    pop     ZL
-    pop     ZH
-    ret
-
+	ret
 
 COORD2BYTE: ; uses r16 and r17
     ldi     r17,0b1000_0000
@@ -371,12 +374,12 @@ SPI_TX:
     in      ZL,SPL
     ldd     r16,Z+6
     out     SPDR,r16
-	/*
+	
 SPI_TX_WAIT:
     in	    r16,SPSR
     sbrs    r16,SPIF
     rjmp    SPI_TX_WAIT
-	*/
+	
     pop     r16
     pop     ZL
     pop     ZH

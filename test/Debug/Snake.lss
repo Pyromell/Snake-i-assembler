@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.7  X:\projekt\test\main.asm Thu Feb 23 10:14:03 2023
+AVRASM ver. 2.2.7  X:\projekt\test\main.asm Tue Feb 28 14:54:47 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-X:\projekt\test\main.asm(152): Including file 'X:\projekt\test\twisend.inc'
+X:\projekt\test\main.asm(149): Including file 'X:\projekt\test\twisend.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-X:\projekt\test\main.asm(152): Including file 'X:\projekt\test\twisend.inc'
+X:\projekt\test\main.asm(149): Including file 'X:\projekt\test\twisend.inc'
                                  
                                  .equ    MOSI = PB3
                                  
@@ -1006,9 +1006,9 @@ X:\projekt\test\main.asm(152): Including file 'X:\projekt\test\twisend.inc'
                                  //-----INTERUPT--------/
                                  
                                  .org 0x0000
-000000 940c 0012                 	jmp	HW_INIT
-                                 .org 0x0010
-000010 940c 00a0                 	jmp	INTERRUPT
+000000 940c 0022                 	jmp	HW_INIT
+                                 .org OVF0ADDR
+000020 940c 00ad                 	jmp	INTERRUPT
                                  
                                  
                                  .dseg
@@ -1028,36 +1028,33 @@ X:\projekt\test\main.asm(152): Including file 'X:\projekt\test\twisend.inc'
                                  
                                  
                                  HW_INIT:
-000012 e008                          ldi     r16,HIGH(RAMEND)
-000013 bf0e                          out     SPH,r16
-000014 ef0f                          ldi     r16,LOW(RAMEND)
-000015 bf0d                          out     SPL,r16
-000016 2422                          clr     ZERO
+000022 e008                          ldi     r16,HIGH(RAMEND)
+000023 bf0e                          out     SPH,r16
+000024 ef0f                          ldi     r16,LOW(RAMEND)
+000025 bf0d                          out     SPL,r16
+000026 2422                          clr     ZERO
                                  
                                      ; Set MOSI and SCK output, all others input
-000017 e21c                          ldi     r17, (1<<MOSI)|(1<<SCK)|(1<<SS)
-000018 b914                          out     DDRB,r17
+000027 e21c                          ldi     r17, (1<<MOSI)|(1<<SCK)|(1<<SS)
+000028 b914                          out     DDRB,r17
                                      ; Enable SPI, Master, set clock rate fck/16
-000019 e513                          ldi     r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
-00001a bd1c                          out     SPCR,r17
+000029 e513                          ldi     r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
+00002a bd1c                          out     SPCR,r17
                                  	
                                  INT_INIT:
+                                 	
+                                 	
+00002b e000                      	ldi		r16,(0<<COM0A1)|(0<<COM0A0)|(0<<WGM01)|(0<<WGM00)
+00002c bd04                      	out		TCCR0A,r16
                                  
-00001b e003                      	ldi		r16,(1<<WGM01)|(1<<WGM00)
-00001c bd04                      	out		TCCR0A,r16
-00001d e000                      	ldi		r16,(0<<WGM02)
-00001e bd05                      	out		TCCR0B,r16
+00002d e005                      	ldi		r16,(0<<WGM02)|(1<<CS02)|(0<<CS01)|(1<<CS00)
+00002e bd05                      	out		TCCR0B,r16
+                                 	
+                                 	
+                                 	
+00002f e001                      	ldi		r16,(1<<TOIE0)
+000030 9300 006e                 	sts		TIMSK0,r16
                                  
-00001f e200                      	ldi		r16,(1<<COM0B1)|(0<<COM0B0)
-000020 bd05                      	out		TCCR0B,r16	
-                                 
-000021 e003                      	ldi		r16,(0<<CS02)|(1<<CS01)|(1<<CS00)
-                                 
-                                 	;ldi		r16,100     // Räknar upp/ner till 100
-                                 	;out		OCR0A,r16
-                                 
-000022 e003                      	ldi		r16,(1<<OCIE0A)|(1<<TOIE0)
-000023 9300 006e                 	sts		TIMSK0,r16
                                  /*
                                  	ldi		r16,(1<<INT0)
                                  	out		EIMSK,r16
@@ -1088,47 +1085,47 @@ X:\projekt\test\main.asm(152): Including file 'X:\projekt\test\twisend.inc'
                                      */
                                  
                                  DATA_INIT:
-000025 e8e0                          ldi		ZL,LOW(P1)
-000026 e0f1                      	ldi		ZH,HIGH(P1)
-000027 9221                          st      Z+,ZERO
-000028 8220                          st      Z,ZERO
+000032 e8e0                          ldi		ZL,LOW(P1)
+000033 e0f1                      	ldi		ZH,HIGH(P1)
+000034 9221                          st      Z+,ZERO
+000035 8220                          st      Z,ZERO
                                  
-000029 e8e2                      	ldi		ZL,LOW(P2)
-00002a e0f1                      	ldi		ZH,HIGH(P2)
-00002b 9221                          st      Z+,ZERO
-00002c 8220                          st      Z,ZERO
+000036 e8e2                      	ldi		ZL,LOW(P2)
+000037 e0f1                      	ldi		ZH,HIGH(P2)
+000038 9221                          st      Z+,ZERO
+000039 8220                          st      Z,ZERO
                                  
-00002d 9220 0184                     sts     LINE,ZERO
+00003a 9220 0184                     sts     LINE,ZERO
                                      
                                  
                                  START:
-00002f 93ef                      	push	ZL
-000030 93ff                      	push	ZH
+00003c 93ef                      	push	ZL
+00003d 93ff                      	push	ZH
                                  
-000031 e8e0                      	ldi		ZL,LOW(P1)
-000032 e0f1                      	ldi		ZH,HIGH(P1)
+00003e e8e0                      	ldi		ZL,LOW(P1)
+00003f e0f1                      	ldi		ZH,HIGH(P1)
                                  
-000033 e004                      	ldi		r16,4  // X
-000034 8300                      	st		Z,r16		
-000035 e01f                      	ldi		r17,15    // Y
-000036 8311                      	std		Z+1,r17
+000040 e004                      	ldi		r16,4  // X
+000041 8300                      	st		Z,r16		
+000042 e01f                      	ldi		r17,15    // Y
+000043 8311                      	std		Z+1,r17
                                  	
-000037 e8e2                      	ldi		ZL,LOW(P2)
-000038 e0f1                      	ldi		ZH,HIGH(P2)
+000044 e8e2                      	ldi		ZL,LOW(P2)
+000045 e0f1                      	ldi		ZH,HIGH(P2)
                                  
-000039 e00f                      	ldi		r16,15    // X
-00003a 8300                      	st		Z,r16		
-00003b e010                      	ldi		r17,0   // Y
-00003c 8311                      	std		Z+1,r17
+000046 e00f                      	ldi		r16,15    // X
+000047 8300                      	st		Z,r16		
+000048 e010                      	ldi		r17,0   // Y
+000049 8311                      	std		Z+1,r17
                                  	
-00003d 940e 00f2                 	call	ERASE_VMEM
-00003f 940e 00ff                 	call	UPDATE_VMEM
+00004a 940e 0103                 	call	ERASE_VMEM
+00004c 940e 0110                 	call	UPDATE_VMEM
                                  
-000041 91ff                      	pop		ZH
-000042 91ef                      	pop		ZL
+00004e 91ff                      	pop		ZH
+00004f 91ef                      	pop		ZL
                                  
                                  	//INTERUPT_ENABLE//
-000043 9478                      	sei
+000050 9478                      	sei
                                  	
                                  
                                  
@@ -1136,340 +1133,346 @@ X:\projekt\test\main.asm(152): Including file 'X:\projekt\test\twisend.inc'
                                  	
                                  
                                  again:
-000044 cfff                          rjmp    again
+000051 cfff                          rjmp    again
                                      .include "twisend.inc"
                                  
-000045 93ef                          push    ZL
-000046 93ff                          push    ZH
-000047 940e 0055                     call    TWI_INIT
+000052 93ef                          push    ZL
+000053 93ff                          push    ZH
+000054 940e 0062                     call    TWI_INIT
                                      
-000049 b7fe                          in      ZH,SPH
-00004a b7ed                          in      ZL,SPL
+000056 b7fe                          in      ZH,SPH
+000057 b7ed                          in      ZL,SPL
                                  
-00004b 8125                          ldd     r18,z+5 ; data
+000058 8125                          ldd     r18,z+5 ; data
                                  
-00004c 932f                          push    r18
-00004d 940e 0061                     call    SEND_BYTE ; data
-00004f 912f                          pop     r18
-000050 940e 0090                     call    STOP
+000059 932f                          push    r18
+00005a 940e 006e                     call    SEND_BYTE ; data
+00005c 912f                          pop     r18
+00005d 940e 009d                     call    STOP
                                  
-000052 91ff                          pop     ZH
-000053 91ef                          pop     ZL
-000054 9508                          ret
+00005f 91ff                          pop     ZH
+000060 91ef                          pop     ZL
+000061 9508                          ret
                                  
                                  TWI_INIT:
-000055 b7fe                          in      ZH,SPH
-000056 b7ed                          in      ZL,SPL
-000057 931f                          push    r17
+000062 b7fe                          in      ZH,SPH
+000063 b7ed                          in      ZL,SPL
+000064 931f                          push    r17
                                  
-000058 8510                          ldd     r17,z+8 ; adress
+000065 8510                          ldd     r17,z+8 ; adress
                                  
-000059 940e 0075                     call    TWI_START
+000066 940e 0082                     call    TWI_START
                                  
-00005b 931f                          push    r17
-00005c 940e 0061                     call    SEND_BYTE ; adress
-00005e 911f                          pop     r17
-00005f 911f                          pop     r17
+000068 931f                          push    r17
+000069 940e 006e                     call    SEND_BYTE ; adress
+00006b 911f                          pop     r17
+00006c 911f                          pop     r17
                                  
-000060 9508                          ret
+00006d 9508                          ret
                                  
                                  SEND_BYTE:
-000061 b7fe                          in      ZH,SPH
-000062 b7ed                          in      ZL,SPL
-000063 931f                      	push    r17
-000064 932f                          push    r18
+00006e b7fe                          in      ZH,SPH
+00006f b7ed                          in      ZL,SPL
+000070 931f                      	push    r17
+000071 932f                          push    r18
                                  
-000065 8113                          ldd     r17,z+3
-000066 e028                          ldi     r18,8
+000072 8113                          ldd     r17,z+3
+000073 e028                          ldi     r18,8
                                  SEND_LOOP:
-000067 0f11                          lsl     r17
-000068 f418                          brcc    lo
-000069 940e 007c                 hi: call    SDH
-00006b c002                      	rjmp	SEND_DONE
-00006c 940e 0086                 lo: call    SDL
+000074 0f11                          lsl     r17
+000075 f418                          brcc    lo
+000076 940e 0089                 hi: call    SDH
+000078 c002                      	rjmp	SEND_DONE
+000079 940e 0093                 lo: call    SDL
                                  SEND_DONE:
-00006e 952a                          dec     r18
-00006f f7b9                          brne    SEND_LOOP
-000070 940e 007c                     call    SDH     ; ack
-000072 912f                          pop     r18
-000073 911f                          pop     r17
-000074 9508                          ret
+00007b 952a                          dec     r18
+00007c f7b9                          brne    SEND_LOOP
+00007d 940e 0089                     call    SDH     ; ack
+00007f 912f                          pop     r18
+000080 911f                          pop     r17
+000081 9508                          ret
                                  
                                  TWI_START:
-000075 9a3c                          sbi     DDRC,SDA
-000076 940e 009a                     call    WAIT
-000078 9a3d                          sbi     DDRC,SCL
-000079 940e 009a                     call    WAIT
-00007b 9508                          ret
+000082 9a3c                          sbi     DDRC,SDA
+000083 940e 00a7                     call    WAIT
+000085 9a3d                          sbi     DDRC,SCL
+000086 940e 00a7                     call    WAIT
+000088 9508                          ret
                                  
                                  SDH:
-00007c 983c                          cbi     DDRC,SDA
-00007d 940e 009a                     call    WAIT
-00007f 983d                          cbi     DDRC,SCL
-000080 940e 009a                     call    WAIT
-000082 9a3d                          sbi     DDRC,SCL
-000083 940e 009a                     call    WAIT
-000085 9508                          ret
+000089 983c                          cbi     DDRC,SDA
+00008a 940e 00a7                     call    WAIT
+00008c 983d                          cbi     DDRC,SCL
+00008d 940e 00a7                     call    WAIT
+00008f 9a3d                          sbi     DDRC,SCL
+000090 940e 00a7                     call    WAIT
+000092 9508                          ret
                                  
                                  SDL:
-000086 9a3c                          sbi     DDRC,SDA
-000087 940e 009a                     call    WAIT
-000089 983d                          cbi     DDRC,SCL
-00008a 940e 009a                     call    WAIT
-00008c 9a3d                          sbi     DDRC,SCL
-00008d 940e 009a                     call    WAIT
-00008f 9508                          ret
+000093 9a3c                          sbi     DDRC,SDA
+000094 940e 00a7                     call    WAIT
+000096 983d                          cbi     DDRC,SCL
+000097 940e 00a7                     call    WAIT
+000099 9a3d                          sbi     DDRC,SCL
+00009a 940e 00a7                     call    WAIT
+00009c 9508                          ret
                                  
                                  STOP:
-000090 9a3c                          sbi     DDRC,SDA
-000091 940e 009a                     call    WAIT
-000093 983d                          cbi     DDRC,SCL
-000094 940e 009a                     call    WAIT
-000096 983c                          cbi     DDRC,SDA
-000097 940e 009a                     call    WAIT
-000099 9508                          ret
+00009d 9a3c                          sbi     DDRC,SDA
+00009e 940e 00a7                     call    WAIT
+0000a0 983d                          cbi     DDRC,SCL
+0000a1 940e 00a7                     call    WAIT
+0000a3 983c                          cbi     DDRC,SDA
+0000a4 940e 00a7                     call    WAIT
+0000a6 9508                          ret
                                  
                                  WAIT:
-00009a 930f                          push    r16
-00009b ea00                          ldi     r16,160
+0000a7 930f                          push    r16
+0000a8 ea00                          ldi     r16,160
                                  WAITING:
-00009c 950a                          dec     r16
-00009d f7f1                          brne    WAITING
-00009e 910f                          pop     r16
-00009f 9508                      
+0000a9 950a                          dec     r16
+0000aa f7f1                          brne    WAITING
+0000ab 910f                          pop     r16
+0000ac 9508                      
                                  
                                  
                                  
                                  //-----------------------//
                                  INTERRUPT:
-0000a0 93ff                      	push	ZH
-0000a1 93ef                      	push	ZL
-0000a2 930f                      	push	r16
-0000a3 931f                      	push	r17
-0000a4 932f                      	push	r18
-0000a5 933f                      	push	r19
+0000ad 930f                      	push	r16
+0000ae b70f                      	in		r16,SREG
+0000af 930f                      	push	r16
                                  
-0000a6 e0e0                      	ldi		ZL,LOW(VMEM)
-0000a7 e0f1                      	ldi		ZH,HIGH(VMEM)
-0000a8 e610                      	ldi		r17,96
+0000b0 93ff                      	push	ZH
+0000b1 93ef                      	push	ZL
+0000b2 931f                      	push	r17
+0000b3 932f                      	push	r18
+0000b4 933f                      	push	r19
                                  
-0000a9 0fe1                      	add		ZL,r17
-0000aa 1df2                      	adc		ZH,ZERO
+0000b5 e0e0                      	ldi		ZL,LOW(VMEM)
+0000b6 e0f1                      	ldi		ZH,HIGH(VMEM)
+0000b7 e610                      	ldi		r17,96
+                                 
+0000b8 0fe1                      	add		ZL,r17
+0000b9 1df2                      	adc		ZH,ZERO
                                  	
-0000ab 9100 0184                 	lds		r16,LINE
-0000ad 9110 0184                 	lds		r17,LINE
+0000ba 9100 0184                 	lds		r16,LINE
+0000bc 9110 0184                 	lds		r17,LINE
                                  
-0000af 3008                      	cpi		r16,8
-0000b0 f411                      	brne	NO_CLR
-0000b1 2700                      	clr		r16
-0000b2 2711                      	clr		r17
+0000be 3008                      	cpi		r16,8
+0000bf f411                      	brne	NO_CLR
+0000c0 2700                      	clr		r16
+0000c1 2711                      	clr		r17
                                  NO_CLR:
                                  
-0000b3 0f11                      	lsl     r17 ; line * 4
-0000b4 0f11                          lsl     r17
-0000b5 0fe1                          add     ZL,r17 ; titta på line
-0000b6 1df2                          adc     ZH,ZERO
+0000c2 0f11                      	lsl     r17 ; line * 4
+0000c3 0f11                          lsl     r17
+0000c4 0fe1                          add     ZL,r17 ; titta på line
+0000c5 1df2                          adc     ZH,ZERO
                                      
-0000b7 940e 0139                     call    COORD2BYTE ; line i r16 som arg, ut i r17
+0000c6 940e 014a                     call    COORD2BYTE ; line i r16 som arg, ut i r17
                                  	
-0000b9 982a                      	cbi     PORTB,SS   // denna gör att alla cordinater fungerar
+0000c8 982a                      	cbi     PORTB,SS   // denna gör att alla cordinater fungerar
                                  
-0000ba e024                      	ldi		r18,4
+0000c9 e024                      	ldi		r18,4
                                  DISPLOOP:
                                  	
-0000bb 8100                      	ldd		r16,Z+B
-0000bc 930f                          push	r16
-0000bd 940e 0140                 	call	SPI_TX
-0000bf 910f                      	pop		r16
+0000ca 8100                      	ldd		r16,Z+B
+0000cb 930f                          push	r16
+0000cc 940e 0151                 	call	SPI_TX
+0000ce 910f                      	pop		r16
                                  
-0000c0 8101                      	ldd		r16,Z+G
-0000c1 930f                          push	r16
-0000c2 940e 0140                 	call	SPI_TX
-0000c4 910f                      	pop		r16
+0000cf 8101                      	ldd		r16,Z+G
+0000d0 930f                          push	r16
+0000d1 940e 0151                 	call	SPI_TX
+0000d3 910f                      	pop		r16
                                  
-0000c5 8102                      	ldd		r16,Z+R
-0000c6 930f                      	push	r16
-0000c7 940e 0140                 	call	SPI_TX
-0000c9 910f                      	pop		r16
+0000d4 8102                      	ldd		r16,Z+R
+0000d5 930f                      	push	r16
+0000d6 940e 0151                 	call	SPI_TX
+0000d8 910f                      	pop		r16
                                  
-0000ca 9510                          com     r17
-0000cb 931f                      	push	r17
-0000cc 940e 0140                 	call	SPI_TX
-0000ce 911f                      	pop		r17
-0000cf 9510                      	com		r17
-                                 
-                                 
-0000d0 e230                      	ldi		r19,32			// Titta på disp innan
-0000d1 1be3                      	sub		ZL,r19
-0000d2 09f2                      	sbc		ZH,ZERO
-                                 	
-0000d3 952a                      	dec		r18				// Loop för en rad för vaje skärm
-0000d4 f731                      	brne	DISPLOOP
-                                 
-0000d5 9a2a                      	sbi     PORTB,SS		// LATCH
-                                 
-0000d6 9100 0184                 	lds		r16,LINE
-0000d8 9503                      	inc		r16
-0000d9 9300 0184                 	sts		LINE,r16
-                                 
-0000db 913f                      	pop		r19
-0000dc 912f                      	pop		r18
+0000d9 9510                          com     r17
+0000da 931f                      	push	r17
+0000db 940e 0151                 	call	SPI_TX
 0000dd 911f                      	pop		r17
-0000de 910f                      	pop		r16
-0000df 91ef                      	pop		ZL
-0000e0 91ff                      	pop		ZH
+0000de 9510                      	com		r17
                                  
-0000e1 9518                      	reti
+                                 
+0000df e230                      	ldi		r19,32			// Titta på disp innan
+0000e0 1be3                      	sub		ZL,r19
+0000e1 09f2                      	sbc		ZH,ZERO
+                                 	
+0000e2 952a                      	dec		r18				// Loop för en rad för vaje skärm
+0000e3 f731                      	brne	DISPLOOP
+                                 
+0000e4 9a2a                      	sbi     PORTB,SS		// LATCH
+                                 
+0000e5 9100 0184                 	lds		r16,LINE
+0000e7 9503                      	inc		r16
+0000e8 9300 0184                 	sts		LINE,r16
+                                 
+0000ea 913f                      	pop		r19
+0000eb 912f                      	pop		r18
+0000ec 911f                      	pop		r17
+0000ed 91ef                      	pop		ZL
+0000ee 91ff                      	pop		ZH
+                                 
+0000ef 910f                      	pop		r16
+0000f0 bf0f                      	out		SREG,r16
+0000f1 910f                      	pop		r16
+                                 
+0000f2 9518                      	reti
                                  
                                  DELAY:
-0000e2 930f                      	push	r16
-0000e3 931f                      	push	r17
-0000e4 932f                      	push	r18
+0000f3 930f                      	push	r16
+0000f4 931f                      	push	r17
+0000f5 932f                      	push	r18
                                  
-0000e5 e906                      	ldi		r16,150
+0000f6 e906                      	ldi		r16,150
                                  DELAY1:
-0000e6 e916                      	ldi		r17,150
+0000f7 e916                      	ldi		r17,150
                                  DELAY2:
-0000e7 e926                      	ldi		r18,150
+0000f8 e926                      	ldi		r18,150
                                  DELAY3:
-0000e8 952a                      	dec		r18
-0000e9 f7f1                      	brne	DELAY3
-0000ea 951a                      	dec		r17
-0000eb f7d9                      	brne	DELAY2
-0000ec 950a                      	dec		r16
-0000ed f7c1                      	brne	DELAY1
+0000f9 952a                      	dec		r18
+0000fa f7f1                      	brne	DELAY3
+0000fb 951a                      	dec		r17
+0000fc f7d9                      	brne	DELAY2
+0000fd 950a                      	dec		r16
+0000fe f7c1                      	brne	DELAY1
                                  
-0000ee 912f                      	pop		r18
-0000ef 911f                      	pop		r17
-0000f0 910f                      	pop		r16
+0000ff 912f                      	pop		r18
+000100 911f                      	pop		r17
+000101 910f                      	pop		r16
                                  
-0000f1 9508                      	ret
+000102 9508                      	ret
                                  ERASE_VMEM:
-0000f2 93ff                          push    ZH
-0000f3 93ef                          push    ZL
-0000f4 930f                          push    r16
-0000f5 e0f1                          ldi     ZH,HIGH(VMEM)
-0000f6 e0e0                          ldi     ZL,LOW(VMEM)
-0000f7 e800                          ldi     r16,128
+000103 93ff                          push    ZH
+000104 93ef                          push    ZL
+000105 930f                          push    r16
+000106 e0f1                          ldi     ZH,HIGH(VMEM)
+000107 e0e0                          ldi     ZL,LOW(VMEM)
+000108 e800                          ldi     r16,128
                                  clear:
-0000f8 9221                          st      Z+,ZERO
-0000f9 950a                          dec     r16
-0000fa f7e9                          brne    clear
+000109 9221                          st      Z+,ZERO
+00010a 950a                          dec     r16
+00010b f7e9                          brne    clear
                                  e_done:
-0000fb 910f                          pop     r16
-0000fc 91ef                          pop     ZL
-0000fd 91ff                          pop     ZH
-0000fe 9508                          ret
+00010c 910f                          pop     r16
+00010d 91ef                          pop     ZL
+00010e 91ff                          pop     ZH
+00010f 9508                          ret
                                  
                                  UPDATE_VMEM:
-0000ff 93ff                          push    ZH
-000100 93ef                          push    ZL
-000101 930f                          push    r16
-000102 931f                      	push	r17
-000103 932f                      	push	r18
+000110 93ff                          push    ZH
+000111 93ef                          push    ZL
+000112 930f                          push    r16
+000113 931f                      	push	r17
+000114 932f                      	push	r18
                                  
                                  UPDATE_P1:
-000104 e0f1                          ldi		ZH,HIGH(P1)
-000105 e8e0                          ldi     ZL,LOW(P1)
+000115 e0f1                          ldi		ZH,HIGH(P1)
+000116 e8e0                          ldi     ZL,LOW(P1)
                                  
-000106 9101                          ld      r16,Z+ ; x
-000107 8110                          ld      r17,Z ; y
+000117 9101                          ld      r16,Z+ ; x
+000118 8110                          ld      r17,Z ; y
                                     
-000108 93ff                          push    ZH
-000109 93ef                          push    ZL
-00010a 940e 0124                 	call	ADD_TO_VMEM
-00010c 8102                          ldd     r16,Z+R
-00010d 2b10                          or      r17,r16
-00010e 8312                          std     Z+R,r17
-00010f 91ef                      	pop     ZL
-000110 91ff                          pop     ZH
+000119 93ff                          push    ZH
+00011a 93ef                          push    ZL
+00011b 940e 0135                 	call	ADD_TO_VMEM
+00011d 8102                          ldd     r16,Z+R
+00011e 2b10                          or      r17,r16
+00011f 8312                          std     Z+R,r17
+000120 91ef                      	pop     ZL
+000121 91ff                          pop     ZH
                                  
                                  	UPDATE_P2:
-000111 e0f1                          ldi		ZH,HIGH(P2)
-000112 e8e2                          ldi     ZL,LOW(P2)
+000122 e0f1                          ldi		ZH,HIGH(P2)
+000123 e8e2                          ldi     ZL,LOW(P2)
                                  
-000113 9101                          ld      r16,Z+ ; x
-000114 8110                          ld      r17,Z ; y
+000124 9101                          ld      r16,Z+ ; x
+000125 8110                          ld      r17,Z ; y
                                     
-000115 93ff                          push    ZH
-000116 93ef                          push    ZL
-000117 940e 0124                 	call	ADD_TO_VMEM
-000119 8100                          ldd     r16,Z+B
-00011a 2b10                          or      r17,r16
-00011b 8310                          std     Z+B,r17
-00011c 91ef                      	pop     ZL
-00011d 91ff                          pop     ZH
+000126 93ff                          push    ZH
+000127 93ef                          push    ZL
+000128 940e 0135                 	call	ADD_TO_VMEM
+00012a 8100                          ldd     r16,Z+B
+00012b 2b10                          or      r17,r16
+00012c 8310                          std     Z+B,r17
+00012d 91ef                      	pop     ZL
+00012e 91ff                          pop     ZH
                                  u_done:
-00011e 912f                      	pop		r18
-00011f 911f                      	pop		r17
-000120 910f                          pop     r16
-000121 91ef                          pop     ZL
-000122 91ff                          pop     ZH
-000123 9508                          ret
+00012f 912f                      	pop		r18
+000130 911f                      	pop		r17
+000131 910f                          pop     r16
+000132 91ef                          pop     ZL
+000133 91ff                          pop     ZH
+000134 9508                          ret
                                  
                                  ADD_TO_VMEM:
-000124 e0f1                      	ldi     ZH,HIGH(VMEM)
-000125 e0e0                          ldi     ZL,LOW(VMEM)
+000135 e0f1                      	ldi     ZH,HIGH(VMEM)
+000136 e0e0                          ldi     ZL,LOW(VMEM)
                                  
                                  	; determine y display
-000126 3018                      	cpi		r17,8     
-000127 f020                      	brlo	P1Y_CHOSEN
+000137 3018                      	cpi		r17,8     
+000138 f020                      	brlo	P1Y_CHOSEN
                                  	; move to upper display
-000128 5018                      	subi	r17,8
-000129 e420                      	ldi		r18,64
-00012a 0fe2                      	add		ZL,r18
-00012b 1df2                      	adc		ZH,ZERO			
+000139 5018                      	subi	r17,8
+00013a e420                      	ldi		r18,64
+00013b 0fe2                      	add		ZL,r18
+00013c 1df2                      	adc		ZH,ZERO			
                                  P1Y_CHOSEN:
-00012c 0f11                          lsl     r17 ; * 2
-00012d 0f11                          lsl     r17 ; * 2
-00012e 0fe1                          add     ZL,r17
-00012f 1df2                          adc     ZH,ZERO ; klar med r17
+00013d 0f11                          lsl     r17 ; * 2
+00013e 0f11                          lsl     r17 ; * 2
+00013f 0fe1                          add     ZL,r17
+000140 1df2                          adc     ZH,ZERO ; klar med r17
                                      
                                  	
                                  	; determine x display
-000130 3008                      	cpi		r16,8
-000131 f020                      	brlo	P1X_CHOSEN
-000132 5008                      	subi	r16,8
-000133 e220                      	ldi		r18,32
-000134 0fe2                      	add		ZL,r18
-000135 1df2                      	adc		ZH,ZERO
+000141 3008                      	cpi		r16,8
+000142 f020                      	brlo	P1X_CHOSEN
+000143 5008                      	subi	r16,8
+000144 e220                      	ldi		r18,32
+000145 0fe2                      	add		ZL,r18
+000146 1df2                      	adc		ZH,ZERO
                                  P1X_CHOSEN:
                                  
-000136 940e 0139                 	call    COORD2BYTE  ; IN r16, OUT r17
+000147 940e 014a                 	call    COORD2BYTE  ; IN r16, OUT r17
                                  
-000138 9508                      	ret
+000149 9508                      	ret
                                  
                                  COORD2BYTE: ; uses r16 and r17
-000139 e810                          ldi     r17,0b1000_0000
-00013a 3000                          cpi     r16,0
-00013b f019                          breq    c2b_done
+00014a e810                          ldi     r17,0b1000_0000
+00014b 3000                          cpi     r16,0
+00014c f019                          breq    c2b_done
                                  c2b_loop:    
-00013c 9516                          lsr     r17
-00013d 950a                          dec     r16    
-00013e f7e9                          brne    c2b_loop
+00014d 9516                          lsr     r17
+00014e 950a                          dec     r16    
+00014f f7e9                          brne    c2b_loop
                                  c2b_done:
-00013f 9508                          ret
+000150 9508                          ret
                                  
                                  
                                  SPI_TX:
-000140 93ff                          push    ZH
-000141 93ef                          push    ZL
-000142 930f                          push    r16
+000151 93ff                          push    ZH
+000152 93ef                          push    ZL
+000153 930f                          push    r16
                                  
-000143 b7fe                          in      ZH,SPH
-000144 b7ed                          in      ZL,SPL
-000145 8106                          ldd     r16,Z+6
-000146 bd0e                          out     SPDR,r16
+000154 b7fe                          in      ZH,SPH
+000155 b7ed                          in      ZL,SPL
+000156 8106                          ldd     r16,Z+6
+000157 bd0e                          out     SPDR,r16
                                  	
                                  SPI_TX_WAIT:
-000147 b50d                          in	    r16,SPSR
-000148 ff07                          sbrs    r16,SPIF
-000149 cffd                          rjmp    SPI_TX_WAIT
+000158 b50d                          in	    r16,SPSR
+000159 ff07                          sbrs    r16,SPIF
+00015a cffd                          rjmp    SPI_TX_WAIT
                                  	
-00014a 910f                          pop     r16
-00014b 91ef                          pop     ZL
-00014c 91ff                          pop     ZH
-00014d 9508                          ret
+00015b 910f                          pop     r16
+00015c 91ef                          pop     ZL
+00015d 91ff                          pop     ZH
+00015e 9508                          ret
 
 
 RESOURCE USE INFORMATION
@@ -1489,7 +1492,7 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :  24 r0 :   0 r1 :   0 r2 :  13 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  64 r17:  49 r18:  21 r19:   4 r20:   0 
+r13:   0 r14:   0 r15:   0 r16:  65 r17:  49 r18:  21 r19:   4 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:  35 r31:  35 
 Registers used: 8 out of 35 (22.9%)
@@ -1504,11 +1507,11 @@ brvs  :   0 bset  :   0 bst   :   0 call  :  29 cbi   :   6 cbr   :   0
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   3 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   0 cpc   :   0 
 cpi   :   4 cpse  :   0 dec   :   8 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   9 inc   :   1 jmp   :   2 
-ld    :   4 ldd   :   9 ldi   :  43 lds   :   3 lpm   :   0 lsl   :   5 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :  10 inc   :   1 jmp   :   2 
+ld    :   4 ldd   :   9 ldi   :  41 lds   :   3 lpm   :   0 lsl   :   5 
 lsr   :   1 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   2 ori   :   0 out   :   8 pop   :  38 
-push  :  38 rcall :   0 ret   :  14 reti  :   1 rjmp  :   3 rol   :   0 
+neg   :   0 nop   :   0 or    :   2 ori   :   0 out   :   8 pop   :  39 
+push  :  39 rcall :   0 ret   :  14 reti  :   1 rjmp  :   3 rol   :   0 
 ror   :   0 sbc   :   1 sbci  :   0 sbi   :   7 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
@@ -1519,7 +1522,7 @@ Instructions used: 37 out of 113 (32.7%)
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00029c    640      0    640   32768   2.0%
+[.cseg] 0x000000 0x0002be    642      0    642   32768   2.0%
 [.dseg] 0x000100 0x000185      0    133    133    2048   6.5%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

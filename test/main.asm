@@ -19,7 +19,7 @@
 
 .org 0x0000
 	jmp	HW_INIT
-.org 0x0010
+.org OVF0ADDR
 	jmp	INTERRUPT
 
 
@@ -54,22 +54,19 @@ HW_INIT:
     out     SPCR,r17
 	
 INT_INIT:
-
-	ldi		r16,(1<<WGM01)|(1<<WGM00)
+	
+	
+	ldi		r16,(0<<COM0A1)|(0<<COM0A0)|(0<<WGM01)|(0<<WGM00)
 	out		TCCR0A,r16
-	ldi		r16,(0<<WGM02)
+
+	ldi		r16,(0<<WGM02)|(1<<CS02)|(0<<CS01)|(1<<CS00)
 	out		TCCR0B,r16
-
-	ldi		r16,(1<<COM0B1)|(0<<COM0B0)
-	out		TCCR0B,r16	
-
-	ldi		r16,(0<<CS02)|(1<<CS01)|(1<<CS00)
-
-	;ldi		r16,100     // Räknar upp/ner till 100
-	;out		OCR0A,r16
-
-	ldi		r16,(1<<OCIE0A)|(1<<TOIE0)
+	
+	
+	
+	ldi		r16,(1<<TOIE0)
 	sts		TIMSK0,r16
+
 /*
 	ldi		r16,(1<<INT0)
 	out		EIMSK,r16
@@ -156,9 +153,12 @@ again:
 
 //-----------------------//
 INTERRUPT:
+	push	r16
+	in		r16,SREG
+	push	r16
+
 	push	ZH
 	push	ZL
-	push	r16
 	push	r17
 	push	r18
 	push	r19
@@ -229,9 +229,12 @@ DISPLOOP:
 	pop		r19
 	pop		r18
 	pop		r17
-	pop		r16
 	pop		ZL
 	pop		ZH
+
+	pop		r16
+	out		SREG,r16
+	pop		r16
 
 	reti
 

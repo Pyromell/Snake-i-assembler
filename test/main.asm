@@ -50,8 +50,15 @@ HW_INIT:
     ldi     r17, (1<<MOSI)|(1<<SCK)|(1<<SS)
     out     DDRB,r17
     ; Enable SPI, Master, set clock rate fck/16
-    ldi     r17,(1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)
+    ldi     r17,(1<<SPE)|(1<<MSTR)|(0<<SPR0)|(0<<SPR1)
     out     SPCR,r17
+
+	ldi		r17,(0<<SPI2X)
+	out		SPSR,r17
+
+
+
+	
 	
 INT_INIT:
 	
@@ -59,42 +66,11 @@ INT_INIT:
 	ldi		r16,(0<<COM0A1)|(0<<COM0A0)|(0<<WGM01)|(0<<WGM00)
 	out		TCCR0A,r16
 
-	ldi		r16,(0<<WGM02)|(1<<CS02)|(0<<CS01)|(1<<CS00)
+	ldi		r16,(0<<WGM02)|(0<<CS02)|(1<<CS01)|(1<<CS00)
 	out		TCCR0B,r16
-	
-	
 	
 	ldi		r16,(1<<TOIE0)
 	sts		TIMSK0,r16
-
-/*
-	ldi		r16,(1<<INT0)
-	out		EIMSK,r16
-	ldi		r16,(1<<ISC01) | (1<<ISC00)
-	sts		EICRA,r16
- 
-	
-RTC_INIT:
-    ldi		r17,xtal
-
-	; enables timer, 4 kHz
-	ldi		r18,timer_control
-	send	r17,r18
-	ldi		r18,0b0000_0011
-	send	r17,r18
-
-	; enables int, timer flag, timer int
-	ldi		r18,control_status_2
-	send	r17,r18
-	ldi		r18,0b00010101
-	send	r17,r18
-
-	; loads timer
-	ldi		r18,timer_register
-	send	r17,r18
-	ldi		r18,$ff
-	send	r17,r18
-    */
 
 DATA_INIT:
     ldi		ZL,LOW(P1)
@@ -171,47 +147,44 @@ INTERRUPT:
 	adc		ZH,ZERO
 	
 	lds		r16,LINE
-	lds		r17,LINE
-
-	cpi		r16,8
-	brne	NO_CLR
-	clr		r16
-	clr		r17
-NO_CLR:
+	
+	andi	r16,7
+	mov		r17,r16
 
 	lsl     r17 ; line * 4
     lsl     r17
     add     ZL,r17 ; titta på line
     adc     ZH,ZERO
     
-    call    COORD2BYTE ; line i r16 som arg, ut i r17
+	call    COORD2BYTE ; line i r16 som arg, ut i r17
 	
 	cbi     PORTB,SS   // denna gör att alla cordinater fungerar
 
 	ldi		r18,4
 DISPLOOP:
 	
-	ldd		r16,Z+B
+	ldd		r16,Z+B	
     push	r16
 	call	SPI_TX
 	pop		r16
-
+	
 	ldd		r16,Z+G
+
+
     push	r16
 	call	SPI_TX
 	pop		r16
-
+	
 	ldd		r16,Z+R
 	push	r16
 	call	SPI_TX
 	pop		r16
-
+	
     com     r17
 	push	r17
 	call	SPI_TX
 	pop		r17
 	com		r17
-
 
 	ldi		r19,32			// Titta på disp innan
 	sub		ZL,r19
@@ -219,7 +192,7 @@ DISPLOOP:
 	
 	dec		r18				// Loop för en rad för vaje skärm
 	brne	DISPLOOP
-
+	
 	sbi     PORTB,SS		// LATCH
 
 	lds		r16,LINE

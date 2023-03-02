@@ -11,3 +11,6 @@ Datum        | Ansvarig   | Aktivitetsbeskrivning
 2023-02-21   | Alla       | Skrevs på rapport, Blev färdiga med videominne för en skärm, 2 prickar
 2023-02-22   | Ker,joh    | Arbetade med videominne för 4 skärmar
 2023-02-23   | joh, chr   | Blev färdiga med Vmem för 4 skärm. arbetar med att göra om avbrottet
+2023-02-27   | joh, ker   | Bytte avbrott men avbrottsfunktionen agerade inte korrect
+2023-02-28   | joh, chr   | Bytte avbrott igen för felsökning men kom fram till att det var något kodmässigt fel med funktionen
+2023-02-28   | joh, chr   | Fixade multiplexen så den fungerar för all våra test samt infört en trevligt ljusstyrka

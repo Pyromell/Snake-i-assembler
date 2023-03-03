@@ -14,3 +14,4 @@ Datum        | Ansvarig   | Aktivitetsbeskrivning
 2023-02-27   | joh, ker   | Bytte avbrott men avbrottsfunktionen agerade inte korrect
 2023-02-28   | joh, chr   | Bytte avbrott igen för felsökning men kom fram till att det var något kodmässigt fel med funktionen
 2023-02-28   | joh, chr   | Fixade multiplexen så den fungerar för all våra test samt infört en trevligt ljusstyrka
+2023-03-03   | ker, chr   | Skrivit kod för AD omvanldingen samt jobbat på rapporten. Inledning nästan klart

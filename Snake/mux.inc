@@ -1,7 +1,7 @@
 MULTIPLEX:
 ; Multiplexes DAMatrix.
 ; Draws LINE on each display 3..0.
-
+    push    r16 ; why?
     in      r16,SREG
     push    r16 
     push    ZH
@@ -28,7 +28,7 @@ MULTIPLEX:
     adc     ZH,ZERO
 
     call    COORD2BYTE ; in r16, out r17
-    com     r17 ; invert bytes for DAMatrix
+
     cbi     PORTB,SS ; pulls latch
 
     ; loops through displays
@@ -53,9 +53,11 @@ disp_loop:
     pop     r16
     
     ; transmits anode
+    com     r17 ; invert bytes for DAMatrix
     push    r17
     call    SPI_TX
     pop     r17
+    com     r17
 
     ; moves Z to next display
     ldi     r19,32
@@ -76,4 +78,5 @@ disp_loop:
     pop     ZH
     pop     r16
     out     SREG,r16
+    pop     r16 ; why?
     reti

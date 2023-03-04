@@ -59,5 +59,13 @@
   <FRUIT><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>26</LINE></FRUIT>
   <SETUP><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>38</LINE></SETUP>
   <PLAY><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>60</LINE></PLAY>
+  <JOYSTICK><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>68</LINE></JOYSTICK>
+  <READ_JOY><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>124</LINE></READ_JOY>
+  <not_right><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>92</LINE></not_right>
+  <horizontal_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>99</LINE></horizontal_done>
+  <not_up><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>113</LINE></not_up>
+  <vertical_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>120</LINE></vertical_done>
+  <adc_not_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>133</LINE></adc_not_done>
+  <adc_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>137</LINE></adc_done>
  </LABELS>
 </ASSEMBLER_INFO>

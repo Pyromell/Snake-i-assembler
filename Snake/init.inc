@@ -20,14 +20,14 @@ ADC_INIT:
     ; ADC Control and Status Register A:
     ; ADEN, ADSC, ADATE, ADIF, ADIE, ADPS2..0
     ; Prescaler 2..0: Set to 1/128 => 125 kHz
-    ldi     r16,0b11000111
+    ldi     r16,0b1000_0111
     sts     ADCSRA,r16
 
     ; ADC Multiplexer Selection Register:
     ; REFS1..0, ADLAR, --, MUX3..0
-    ; Ref set to internal 1.1 V
+    ; Ref set to AVCC (01)
     ; Channel Selection 3..0: 0000 = ADC0
-    ldi     r16,0b11000000
+    ldi     r16,0b0110_0000
     sts     ADMUX,r16
 
 

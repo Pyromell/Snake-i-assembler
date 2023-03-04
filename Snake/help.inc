@@ -31,7 +31,7 @@ spi_tx_wait:
     in      r16,SPSR
     sbrs    r16,SPIF
     rjmp    spi_tx_wait
-    
+
     pop     r16
     pop     ZL
     pop     ZH
@@ -39,11 +39,11 @@ spi_tx_wait:
 
 
 DELAY:
-    ldi     r16,150
+    ldi     r16,64
 delay0:
-    ldi     r17,150
+    ldi     r17,$ff
 delay1:
-    ldi     r18,150
+    ldi     r18,$ff
 delay2:
     dec     r18
     brne    delay2

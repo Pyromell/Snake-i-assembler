@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Sat Mar 04 15:55:07 2023
+AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Sat Mar 04 16:53:13 2023
 
 
 EQU  SIGNATURE_000 0000001e
@@ -703,7 +703,7 @@ EQU  G            00000001
 EQU  R            00000002
 EQU  A            00000003
 DEF  ZERO         r2
-CSEG PROG_START   000000d2
+CSEG PROG_START   00000107
 CSEG MULTIPLEX    00000077
 CSEG INIT         00000022
 CSEG SPI_INIT     00000022
@@ -733,14 +733,15 @@ CSEG DELAY        000000c8
 CSEG delay0       000000c9
 CSEG delay1       000000ca
 CSEG delay2       000000cb
+CSEG READ_JOY     000000d2
+CSEG adc_not_done 000000dc
+CSEG adc_done     000000e0
+CSEG JOYSTICK_X   000000e3
+CSEG not_right    000000ef
+CSEG not_left     000000f4
+CSEG JOYSTICK_Y   000000f5
+CSEG not_up       00000101
+CSEG not_down     00000106
 DSEG FRUIT        00000184
-CSEG SETUP        000000d8
-CSEG PLAY         000000e9
-CSEG JOYSTICK     000000f2
-CSEG READ_JOY     00000113
-CSEG not_right    000000fd
-CSEG horizontal_done 00000102
-CSEG not_up       0000010d
-CSEG vertical_done 00000112
-CSEG adc_not_done 0000011d
-CSEG adc_done     00000121
+CSEG SETUP        0000010d
+CSEG PLAY         0000011e

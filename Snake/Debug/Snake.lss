@@ -1,16 +1,18 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Sat Mar 04 15:55:07 2023
+AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Sat Mar 04 16:53:13 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
 X:\tsiu51\projekt\Snake\main.asm(17): Including file 'X:\tsiu51\projekt\Snake\init.inc'
 X:\tsiu51\projekt\Snake\main.asm(18): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
 X:\tsiu51\projekt\Snake\main.asm(19): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
 X:\tsiu51\projekt\Snake\main.asm(20): Including file 'X:\tsiu51\projekt\Snake\help.inc'
+X:\tsiu51\projekt\Snake\main.asm(21): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
 X:\tsiu51\projekt\Snake\main.asm(17): Including file 'X:\tsiu51\projekt\Snake\init.inc'
 X:\tsiu51\projekt\Snake\main.asm(18): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
 X:\tsiu51\projekt\Snake\main.asm(19): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
 X:\tsiu51\projekt\Snake\main.asm(20): Including file 'X:\tsiu51\projekt\Snake\help.inc'
+X:\tsiu51\projekt\Snake\main.asm(21): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
                                  
                                  .equ    MOSI = PB3
                                  
@@ -1003,7 +1005,7 @@ X:\tsiu51\projekt\Snake\main.asm(20): Including file 'X:\tsiu51\projekt\Snake\he
 000000 2422                       clr    ZERO
                                  
                                  .org 0x0000
-000000 940c 00d2                     jmp     PROG_START
+000000 940c 0107                     jmp     PROG_START
                                  
                                  .org OVF0ADDR
 000020 940c 0077                     jmp     MULTIPLEX
@@ -1292,7 +1294,78 @@ X:\tsiu51\projekt\Snake\main.asm(20): Including file 'X:\tsiu51\projekt\Snake\he
 0000ce f7d9                          brne    delay1
 0000cf 950a                          dec     r16
 0000d0 f7c1                          brne    delay0
+                                 .include "joystick.inc"
 0000d1 9508                      
+                                 ; MUX3..0 binary value determines PC0..PC5 = A0..A5
+                                 ; Reads from pin specified in by MUX3..0 in r17
+                                 ; JOY_RH = PC0 = MUX[0000]
+                                 ; JOY_RV = PC1 = MUX[0001]
+                                 ; JOY_LH = PC2 = MUX[0010]
+                                 ; JOY_LV = PC3 = MUX[0100]
+                                 ; Returns ADCH in r16
+0000d2 9100 007a                     lds     r16,ADCSRA
+0000d4 6400                          ori     r16,0b0100_0000 ; set ADSC
+0000d5 9300 007a                     sts     ADCSRA,r16
+0000d7 9100 007c                     lds     r16,ADMUX
+0000d9 2b01                          or      r16,r17 ; set MUX3..0 from r17
+0000da 9300 007c                     sts     ADMUX,r16
+                                 adc_not_done: ; wait till conversion done
+0000dc 9100 007a                     lds     r16,ADCSRA
+0000de fd06                          sbrc    r16,ADSC
+0000df cffc                          rjmp    adc_not_done
+                                 adc_done:
+0000e0 9100 0079                     lds     r16,ADCH ; read 8 MSB
+0000e2 9508                          ret
+                                 
+                                 
+                                 JOYSTICK_X:
+0000e3 e0f1                          ldi     ZH,HIGH(P1)
+0000e4 e8e0                          ldi     ZL,LOW(P1)
+                                 
+0000e5 e010                          ldi     r17,0 ; reads from PC0
+0000e6 940e 00d2                     call    READ_JOY ; returns ADCH in r16
+                                     ; checks right
+0000e8 3c00                          cpi     r16,0b1100_0000
+0000e9 f028                          brlo    not_right
+                                     ; moves right
+0000ea 8100                          ld      r16,Z
+0000eb 9503                          inc     r16
+0000ec 8300                          st      Z,r16
+0000ed 940c 00f4                     jmp     not_left
+                                 not_right:
+0000ef 3400                          cpi     r16,0b0100_0000
+0000f0 f418                          brsh    not_left
+                                     ; moves left
+0000f1 8100                          ld      r16,Z
+0000f2 950a                          dec     r16
+0000f3 8300                          st      Z,r16
+                                 not_left:
+0000f4 9508                          ret
+                                 
+                                 
+                                 JOYSTICK_Y:
+0000f5 e0f1                          ldi     ZH,HIGH(P1)
+0000f6 e8e0                          ldi     ZL,LOW(P1)
+                                 
+0000f7 e013                          ldi     r17,3 ; reads from PC1
+0000f8 940e 00d2                     call    READ_JOY  ; returns ADCH in r16
+                                     ; checks up
+0000fa 3c00                          cpi     r16,0b1100_0000
+0000fb f028                          brlo    not_up
+                                     ; moves up
+0000fc 8101                          ldd      r16,Z+1
+0000fd 9503                          inc      r16
+0000fe 8301                          std      Z+1,r16
+0000ff 940c 0106                     jmp      not_down
+                                 not_up:
+000101 3400                          cpi     r16,0b0100_0000
+000102 f418                          brsh    not_down
+                                     ; moves down
+000103 8101                          ldd     r16,Z+1
+000104 950a                          dec     r16
+000105 8301                          std     Z+1,r16
+                                 not_down:
+000106 9508                      
                                  .dseg
 000100                               VMEM:   .byte 128
 000180                               P1:     .byte 2 ; x, y
@@ -1303,114 +1376,40 @@ X:\tsiu51\projekt\Snake\main.asm(20): Including file 'X:\tsiu51\projekt\Snake\he
                                  
                                  
                                  PROG_START:
-0000d2 e008                          ldi     r16,HIGH(RAMEND)
-0000d3 bf0e                          out     SPH,r16
-0000d4 ef0f                          ldi     r16,LOW(RAMEND)
-0000d5 bf0d                          out     SPL,r16
-0000d6 940e 0022                     call    INIT
+000107 e008                          ldi     r16,HIGH(RAMEND)
+000108 bf0e                          out     SPH,r16
+000109 ef0f                          ldi     r16,LOW(RAMEND)
+00010a bf0d                          out     SPL,r16
+00010b 940e 0022                     call    INIT
                                  
                                  SETUP:
                                  ; Initiates player positions
-0000d8 e8e0                          ldi     ZL,LOW(P1)
-0000d9 e0f1                          ldi     ZH,HIGH(P1)
-0000da e000                          ldi     r16,0
-0000db 8300                          st      Z,r16
-0000dc e010                          ldi     r17,0
-0000dd 8311                          std     Z+1,r17
+00010d e8e0                          ldi     ZL,LOW(P1)
+00010e e0f1                          ldi     ZH,HIGH(P1)
+00010f e000                          ldi     r16,0
+000110 8300                          st      Z,r16
+000111 e010                          ldi     r17,0
+000112 8311                          std     Z+1,r17
                                  
-0000de e8e2                          ldi     ZL,LOW(P2)
-0000df e0f1                          ldi     ZH,HIGH(P2)
-0000e0 e00f                          ldi     r16,15
-0000e1 8300                          st      Z,r16
-0000e2 e01f                          ldi     r17,15
-0000e3 8311                          std     Z+1,r17
+000113 e8e2                          ldi     ZL,LOW(P2)
+000114 e0f1                          ldi     ZH,HIGH(P2)
+000115 e00f                          ldi     r16,15
+000116 8300                          st      Z,r16
+000117 e01f                          ldi     r17,15
+000118 8311                          std     Z+1,r17
                                  
-0000e4 940e 0040                     call    ERASE_VMEM
-0000e6 940e 004b                     call    UPDATE_VMEM
+000119 940e 0040                     call    ERASE_VMEM
+00011b 940e 004b                     call    UPDATE_VMEM
                                  
-0000e8 9478                          sei ; interrupt enabled
+00011d 9478                          sei ; interrupt enabled
                                  
                                  
                                  PLAY:
-0000e9 940e 00f2                     call    JOYSTICK
-0000eb 940e 0040                     call    ERASE_VMEM
-0000ed 940e 004b                     call    UPDATE_VMEM
-0000ef 940e 00c8                     call    DELAY
-0000f1 cff7                          rjmp    PLAY
-                                 
-                                 
-                                 JOYSTICK:
-                                 ; MUX3..0 binary value determines PC0..PC5 = A0..A5
-                                 ; JOY_RH = PC0 = MUX[0000]
-                                 ; JOY_RV = PC1 = MUX[0001]
-                                 ; JOY_LH = PC2 = MUX[0010]
-                                 ; JOY_LV = PC3 = MUX[0100]
-                                 ; 1. Set ADSC
-                                 ; 2. Wait till ADSC cleared
-                                 ; 3. Read from ADCH, 8 MSB
-                                     
-                                     ; horizontal
-0000f2 e010                          ldi     r17,0b000 ; set MUX3..0
-0000f3 940e 0113                     call    READ_JOY ; returns ADCH in r16
-0000f5 e0f1                          ldi     ZH,HIGH(P1)
-0000f6 e8e0                          ldi     ZL,LOW(P1)
-                                 
-                                     ; check right
-0000f7 3c00                          cpi     r16,0b1100_0000
-0000f8 f020                          brlo    not_right
-                                     ; move right
-0000f9 8100                          ld      r16,Z
-0000fa 9503                          inc     r16
-0000fb 8300                          st      Z,r16
-0000fc c005                          rjmp    horizontal_done
-                                 not_right:
-0000fd 3400                          cpi     r16,0b0100_0000
-0000fe f418                          brsh    horizontal_done
-                                     ; move left
-0000ff 8100                          ld      r16,Z
-000100 950a                          dec     r16
-000101 8300                          st      Z,r16
-                                 horizontal_done:
-                                     ; vertical
-000102 e011                          ldi     r17,0b001 ; set MUX3..0
-000103 940e 0113                     call    READ_JOY ; returns ADCH in r16
-000105 e0f1                          ldi     ZH,HIGH(P1)
-000106 e8e0                          ldi     ZL,LOW(P1)
-                                     ; check up
-000107 3c00                          cpi     r16,0b1100_0000
-000108 f020                          brlo    not_up
-                                     ; move up
-000109 8101                          ldd     r16,Z+1
-00010a 9503                          inc     r16
-00010b 8301                          std     Z+1,r16
-00010c c005                          rjmp    vertical_done
-                                 not_up:
-00010d 3400                          cpi     r16,0b0100_0000
-00010e f418                          brsh    vertical_done
-                                     ; move left
-00010f 8101                          ldd     r16,Z+1
-000110 950a                          dec     r16
-000111 8301                          std     Z+1,r16
-                                 vertical_done:
-000112 9508                          ret
-                                 
-                                 
-                                 READ_JOY:
-                                 ; Reads from pin specified in by MUX3..0 in r17,
-                                 ; Returns ADCH in r16
-000113 9100 007a                     lds     r16,ADCSRA
-000115 6400                          ori     r16,0b0100_0000 ; set ADSC
-000116 9300 007a                     sts     ADCSRA,r16
-000118 9100 007c                     lds     r16,ADMUX
-00011a 2b01                          or      r16,r17 ; set MUX3..0 from r17
-00011b 9300 007c                     sts     ADMUX,r16
-                                 adc_not_done: ; wait till conversion done
-00011d 9100 007a                     lds     r16,ADCSRA
-00011f fd06                          sbrc    r16,ADSC
-000120 cffc                          rjmp    adc_not_done
-                                 adc_done:
-000121 2700                          clr     r16
-000122 9100 0079                     lds     r16,ADCH ; read 8 MSB
+00011e 940e 00e3                     call    JOYSTICK_X
+000120 940e 00f5                     call    JOYSTICK_Y
+000122 940e 0040                     call    ERASE_VMEM
+000124 940e 004b                     call    UPDATE_VMEM
+000126 940e 00c8                     call    DELAY
 
 
 RESOURCE USE INFORMATION
@@ -1430,7 +1429,7 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   4 z  :  25 r0 :   0 r1 :   0 r2 :  13 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  89 r17:  34 r18:   8 r19:   2 r20:   0 
+r13:   0 r14:   0 r15:   0 r16:  88 r17:  34 r18:   8 r19:   2 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   4 
 r29:   4 r30:  22 r31:  22 
 Registers used: 11 out of 35 (31.4%)
@@ -1441,15 +1440,15 @@ andi  :   1 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0
 brcc  :   0 brcs  :   0 break :   0 breq  :   1 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
 brne  :   6 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  17 cbi   :   1 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  18 cbi   :   1 cbr   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   0 cpc   :   0 
 cpi   :   7 cpse  :   0 dec   :   8 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   3 jmp   :   2 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   3 jmp   :   4 
 ld    :   6 ldd   :   8 ldi   :  48 lds   :   6 lpm   :   0 lsl   :   4 
 lsr   :   1 mov   :   1 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   3 ori   :   1 out   :   9 pop   :  15 
-push  :  15 rcall :   0 ret   :   9 reti  :   1 rjmp  :   5 rol   :   0 
+push  :  15 rcall :   0 ret   :  10 reti  :   1 rjmp  :   3 rol   :   0 
 ror   :   0 sbc   :   1 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   1 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
@@ -1460,7 +1459,7 @@ Instructions used: 41 out of 113 (36.3%)
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00024a    528      0    528   32768   1.6%
+[.cseg] 0x000000 0x000252    536      0    536   32768   1.6%
 [.dseg] 0x000100 0x000187      0    135    135    2048   6.6%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

@@ -14,6 +14,7 @@
   <FILE>X:\tsiu51\projekt\Snake\vmem.inc</FILE>
   <FILE>X:\tsiu51\projekt\Snake\mux.inc</FILE>
   <FILE>X:\tsiu51\projekt\Snake\help.inc</FILE>
+  <FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
   <FILE>X:\tsiu51\projekt\Snake\Debug\Snake.obj</FILE>
@@ -26,18 +27,18 @@
   <FILE>Snake.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <PROG_START><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>31</LINE></PROG_START>
+  <PROG_START><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>32</LINE></PROG_START>
   <MULTIPLEX><FILE>X:\tsiu51\projekt\Snake\mux.inc</FILE><LINE>1</LINE></MULTIPLEX>
   <INIT><FILE>X:\tsiu51\projekt\Snake\init.inc</FILE><LINE>1</LINE></INIT>
   <SPI_INIT><FILE>X:\tsiu51\projekt\Snake\init.inc</FILE><LINE>5</LINE></SPI_INIT>
   <ADC_INIT><FILE>X:\tsiu51\projekt\Snake\init.inc</FILE><LINE>19</LINE></ADC_INIT>
   <INTERRUPT_INIT><FILE>X:\tsiu51\projekt\Snake\init.inc</FILE><LINE>34</LINE></INTERRUPT_INIT>
   <DATA_INIT><FILE>X:\tsiu51\projekt\Snake\init.inc</FILE><LINE>47</LINE></DATA_INIT>
-  <P1><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>24</LINE></P1>
-  <P2><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>25</LINE></P2>
-  <LINE><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>27</LINE></LINE>
+  <P1><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>25</LINE></P1>
+  <P2><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>26</LINE></P2>
+  <LINE><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>28</LINE></LINE>
   <ERASE_VMEM><FILE>X:\tsiu51\projekt\Snake\vmem.inc</FILE><LINE>1</LINE></ERASE_VMEM>
-  <VMEM><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>23</LINE></VMEM>
+  <VMEM><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>24</LINE></VMEM>
   <clear_byte><FILE>X:\tsiu51\projekt\Snake\vmem.inc</FILE><LINE>7</LINE></clear_byte>
   <UPDATE_VMEM><FILE>X:\tsiu51\projekt\Snake\vmem.inc</FILE><LINE>16</LINE></UPDATE_VMEM>
   <update_p1><FILE>X:\tsiu51\projekt\Snake\vmem.inc</FILE><LINE>20</LINE></update_p1>
@@ -56,16 +57,17 @@
   <delay0><FILE>X:\tsiu51\projekt\Snake\help.inc</FILE><LINE>43</LINE></delay0>
   <delay1><FILE>X:\tsiu51\projekt\Snake\help.inc</FILE><LINE>45</LINE></delay1>
   <delay2><FILE>X:\tsiu51\projekt\Snake\help.inc</FILE><LINE>47</LINE></delay2>
-  <FRUIT><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>26</LINE></FRUIT>
-  <SETUP><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>38</LINE></SETUP>
-  <PLAY><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>60</LINE></PLAY>
-  <JOYSTICK><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>68</LINE></JOYSTICK>
-  <READ_JOY><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>124</LINE></READ_JOY>
-  <not_right><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>92</LINE></not_right>
-  <horizontal_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>99</LINE></horizontal_done>
-  <not_up><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>113</LINE></not_up>
-  <vertical_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>120</LINE></vertical_done>
-  <adc_not_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>133</LINE></adc_not_done>
-  <adc_done><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>137</LINE></adc_done>
+  <READ_JOY><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>1</LINE></READ_JOY>
+  <adc_not_done><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>15</LINE></adc_not_done>
+  <adc_done><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>19</LINE></adc_done>
+  <JOYSTICK_X><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>24</LINE></JOYSTICK_X>
+  <not_right><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>38</LINE></not_right>
+  <not_left><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>45</LINE></not_left>
+  <JOYSTICK_Y><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>49</LINE></JOYSTICK_Y>
+  <not_up><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>63</LINE></not_up>
+  <not_down><FILE>X:\tsiu51\projekt\Snake\joystick.inc</FILE><LINE>70</LINE></not_down>
+  <FRUIT><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>27</LINE></FRUIT>
+  <SETUP><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>39</LINE></SETUP>
+  <PLAY><FILE>X:\tsiu51\projekt\Snake\main.asm</FILE><LINE>61</LINE></PLAY>
  </LABELS>
 </ASSEMBLER_INFO>

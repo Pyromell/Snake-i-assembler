@@ -1,16 +1,5 @@
 INIT:
-.equ    MOSI = PB3
-.equ    SCK  = PB5
-.equ    SS   = PB2
-.def    ZERO = r2
- clr    ZERO
-
-
-STACK_INIT:
-    ldi     r16,HIGH(RAMEND)
-    out     SPH,r16
-    ldi     r16,LOW(RAMEND)
-    out     SPL,r16
+; Entry point for call from main
 
 
 SPI_INIT:
@@ -28,25 +17,17 @@ SPI_INIT:
 
 
 ADC_INIT:
-    ; ADC Control and Status Register A
-    ldi     r16,( 1 << ADEN  |\ ; Enable
-                  1 << ADSC  |\ ; Start Conversion
-                  0 << ADATE |\ ; Auto Trigger Enable
-                  0 << ADIF  |\ ; Interrupt Flag
-                  0 << ADIE  |\ ; Interrupt Enable
-                  1 << ADPS2 |\ ; Prescaler 2..0
-                  1 << ADPS1 |\ ; Set to 1/128 => 125 kHz
-                  1 << ADPS0 )
+    ; ADC Control and Status Register A:
+    ; ADEN, ADSC, ADATE, ADIF, ADIE, ADPS2..0
+    ; Prescaler 2..0: Set to 1/128 => 125 kHz
+    ldi     r16,0b11000111
     sts     ADCSRA,r16
 
-    ; ADC Multiplexer Selection Register
-    ldi     r16,( 1 << REFS1 |\ ; Reference Selection 1..0
-                  1 << REFS0 |\ ; Set to Int. 1.1 V ref
-                  0 << ADLAR |\ ; Left Adjust Result
-                  0 << MUX3  |\ ; Channel Selection 3..0
-                  0 << MUX2  |\ ; 0000 = ADC0
-                  0 << MUX1  |\ ;
-                  0 << MUX0  )
+    ; ADC Multiplexer Selection Register:
+    ; REFS1..0, ADLAR, --, MUX3..0
+    ; Ref set to internal 1.1 V
+    ; Channel Selection 3..0: 0000 = ADC0
+    ldi     r16,0b11000000
     sts     ADMUX,r16
 
 

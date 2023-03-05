@@ -62,14 +62,14 @@ LIMITS:
 ; Takes x,y = r16,r17 and
 ; moves them to other side of
 ; screen if outside.
-    sbrc    r16,3 ; x != 8
+    sbrc    r16,4 ; x != 16
     ldi     r16,0
-    sbrc    r16,4 ; x != 255
-    ldi     r16,7
-    sbrc    r17,3 ; y != 8
+    sbrc    r16,7 ; x != 255
+    ldi     r16,15
+    sbrc    r17,3 ; y != 16
     ldi     r17,0
-    sbrc    r17,4 ; y != 255
-    ldi     r17,7
+    sbrc    r17,7 ; y != 255
+    ldi     r17,15
 
 
 MOVE_P1_BODY:

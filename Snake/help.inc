@@ -1,12 +1,12 @@
 COORD2BYTE:
 ; Converts coordinate in r16
-; to byte for DAMatrix in r17
+; to byte for DAMatrix in r19
 
-    ldi     r17,0b1000_0000
+    ldi     r19,0b1000_0000
     cpi     r16,0
     breq    c2b_done
 c2b_loop:    
-    lsr     r17
+    lsr     r19
     dec     r16    
     brne    c2b_loop
 c2b_done:
@@ -51,4 +51,15 @@ delay2:
     brne    delay1
     dec     r16
     brne    delay0
+    ret
+
+
+SEPARATE_XY:
+; In:  r16 = 0bxxxx_yyyy.
+; Out: r16 = 0b0000_xxxx,
+;      r17 = 0b0000_yyyy.
+    mov     r17,r16
+    swap    r16
+    andi    r16,0b0000_1111 ; x
+    andi    r17,0b0000_1111 ; y
     ret

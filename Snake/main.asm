@@ -1,12 +1,19 @@
+; SPI pins
 .equ    MOSI = PB3
 .equ    SCK  = PB5
 .equ    SS   = PB2
-.equ    B    = 0
-.equ    G    = 1
-.equ    R    = 2
-.equ	A    = 3
+; LED colors
+.equ    B = 0
+.equ    G = 1
+.equ    R = 2
+.equ	A = 3
+; Game constants
+.equ	P1_COLOR = R
+.equ	P2_COLOR = B
+.equ	FRUIT_COLOR = G
+.equ	MAX_LEN  = 64
+; Registers
 .def    ZERO = r2
- clr    ZERO
 
 .org 0x0000
     jmp     PROG_START
@@ -14,43 +21,46 @@
 .org OVF0ADDR
     jmp     MULTIPLEX
 
+.include "help.inc"
 .include "init.inc"
 .include "vmem.inc"
 .include "mux.inc"
-.include "help.inc"
 .include "joystick.inc"
 
 .dseg
     VMEM:   .byte 128
-    P1:     .byte 2 ; x, y
-    P2:     .byte 2 ; x, y
-    FRUIT:  .byte 2 ; x, y
     LINE:   .byte 1
+    P1:     .byte MAX_LEN ; 0bxxxx_yyyy
+    P1_LEN: .byte 1
+    P2:     .byte MAX_LEN ; 0bxxxx_yyyy
+    P2_LEN: .byte 1
+    FRUIT:  .byte 1	  ; 0bxxxx_yyyy
 .cseg
 
 
 PROG_START:
-    ldi     r16,HIGH(RAMEND)´1§
+    ldi     r16,HIGH(RAMEND)
     out     SPH,r16
     ldi     r16,LOW(RAMEND)
     out     SPL,r16
+    clr     ZERO
     call    INIT
 
 SETUP:
 ; Initiates player positions
     ldi     ZL,LOW(P1)
     ldi     ZH,HIGH(P1)
-    ldi     r16,0
+    ldi     r16,0b0000_0000
     st      Z,r16
-    ldi     r17,0
-    std     Z+1,r17
+    ldi	    r16,1
+    sts	    P1_LEN,r16
 
     ldi     ZL,LOW(P2)
     ldi     ZH,HIGH(P2)
-    ldi     r16,15
+    ldi     r16,0b1111_1111
     st      Z,r16
-    ldi     r17,15
-    std     Z+1,r17
+    ldi	    r16,1
+    sts	    P2_LEN,r16
 
     call    ERASE_VMEM
     call    UPDATE_VMEM
@@ -59,8 +69,7 @@ SETUP:
 
 
 PLAY:
-    call    JOYSTICK_X
-    call    JOYSTICK_Y
+    call    JOYSTICK_1
     call    ERASE_VMEM
     call    UPDATE_VMEM
     call    DELAY

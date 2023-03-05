@@ -1,8 +1,6 @@
 INIT:
 ; Entry point for call from main
-
-
-SPI_INIT:
+spi_init:
     ; Set MOSI and SCK output, all others input
     ldi     r16,( 1 << MOSI | 1 << SCK | 1 << SS )
     out     DDRB,r16
@@ -16,7 +14,7 @@ SPI_INIT:
     out     SPSR,r17
 
 
-ADC_INIT:
+adc_init:
     ; ADC Control and Status Register A:
     ; ADEN, ADSC, ADATE, ADIF, ADIE, ADPS2..0
     ; Prescaler 2..0: Set to 1/128 => 125 kHz
@@ -31,7 +29,7 @@ ADC_INIT:
     sts     ADMUX,r16
 
 
-INTERRUPT_INIT:
+interrupt_init:
     ldi     r16,( 0 << COM0A1 | 0 << COM0A0 |\
                   0 << WGM01  | 0 << WGM00  )
     out     TCCR0A,r16
@@ -44,15 +42,17 @@ INTERRUPT_INIT:
     sts     TIMSK0,r16
 
 
-DATA_INIT:
+data_init:
     ldi     ZL,LOW(P1)
     ldi     ZH,HIGH(P1)
-    st      Z+,ZERO
     st      Z,ZERO
 
     ldi     ZL,LOW(P2)
     ldi     ZH,HIGH(P2)
-    st      Z+,ZERO
+    st      Z,ZERO
+
+    ldi     ZL,LOW(FRUIT)
+    ldi     ZH,HIGH(FRUIT)
     st      Z,ZERO
 
     sts     LINE,ZERO

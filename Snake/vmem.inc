@@ -20,7 +20,7 @@ UPDATE_VMEM:
 update_p1:
     ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
-    ldi     r20,P1_LEN
+;   lds     r20,P1_LEN
 update_p1_loop:
     ld      r16,Z+
     ; sets Y to correct line in VMEM
@@ -28,24 +28,26 @@ update_p1_loop:
     call    POINT_AT_LINE
     ; adds player color at coord to that byte
     ldd     r16,Y+P1_COLOR
-    or      r16,r19
-    std     Y+P1_COLOR,r16
-    dec     r20
-    brne    update_p1_loop
+    or      r19,r16
+    std     Y+P1_COLOR,r19
+ ;   dec     r20
+ ;   brne    update_p1_loop
 
+ /*
 update_p2:  ; same as p1
     ldi     ZH,HIGH(P2)
     ldi     ZL,LOW(P2)
-    ldi     r20,P2_LEN
+;   lds     r20,P2_LEN
 update_p2_loop:
     ld      r16,Z+
     call    POINT_AT_LINE
     ldd     r16,Y+P2_COLOR
-    or      r16,r19
-    std     Y+P2_COLOR,r16
-    dec     r20
-    brne    update_p2_loop
-
+    or      r19,r16
+    std     Y+P2_COLOR,r19
+ ;  dec     r20
+;   brne    update_p2_loop
+*/
+/*
 update_fruit:
     ldi     ZH,HIGH(FRUIT)
     ldi     ZL,LOW(FRUIT)
@@ -53,7 +55,7 @@ update_fruit:
     ldd     r16,Y+FRUIT_COLOR
     or      r16,r19
     std     Y+FRUIT_COLOR,r19
-
+*/
     pop     ZL
     pop     ZH
     ret

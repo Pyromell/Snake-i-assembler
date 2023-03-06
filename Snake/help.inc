@@ -63,3 +63,11 @@ SEPARATE_XY:
     andi    r16,0b0000_1111 ; x
     andi    r17,0b0000_1111 ; y
     ret
+
+JOIN_XY:
+; In:  r16 = 0b0000_xxxx.
+;      r17 = 0b0000_yyyy,
+; Out: r16 = 0bxxxx_yyyy.
+    swap    r16
+    or      r16,r17
+    ret

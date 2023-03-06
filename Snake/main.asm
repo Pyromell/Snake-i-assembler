@@ -29,12 +29,12 @@
 
 .dseg
     VMEM:   .byte 128
-    LINE:   .byte 1
     P1:     .byte MAX_LEN ; 0bxxxx_yyyy
     P1_LEN: .byte 1
     P2:     .byte MAX_LEN ; 0bxxxx_yyyy
     P2_LEN: .byte 1
-    FRUIT:  .byte 1	  ; 0bxxxx_yyyy
+    FRUIT:  .byte 1	; 0bxxxx_yyyy
+    LINE:   .byte 1
 .cseg
 
 
@@ -48,19 +48,13 @@ PROG_START:
 
 SETUP:
 ; Initiates player positions
-    ldi     ZL,LOW(P1)
-    ldi     ZH,HIGH(P1)
-    ldi     r16,0b0000_0000
-    st      Z,r16
-    ldi	    r16,1
-    sts	    P1_LEN,r16
+    ldi     r16,0b1111_1111
+    sts     P1,r16
 
     ldi     ZL,LOW(P2)
     ldi     ZH,HIGH(P2)
     ldi     r16,0b1111_1111
     st      Z,r16
-    ldi	    r16,1
-    sts	    P2_LEN,r16
 
     call    ERASE_VMEM
     call    UPDATE_VMEM

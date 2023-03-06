@@ -2,6 +2,9 @@ MULTIPLEX:
 ; Multiplexes DAMatrix.
 ; Draws LINE on each display 3..0.
     push    r16 ; why?
+    push    r17
+    push    r18
+    push    r19
     in      r16,SREG
     push    r16 
     push    ZH
@@ -78,5 +81,8 @@ disp_loop:
     pop     ZH
     pop     r16
     out     SREG,r16
+    pop     r19
+    pop     r18
+    pop     r17
     pop     r16 ; why?
     reti

@@ -1,18 +1,18 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Mon Mar 06 15:12:03 2023
+AVRASM ver. 2.2.8  C:\Users\46704\projekt\Snake\main.asm Mon Mar 06 18:13:31 2023
 
-[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(24): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(25): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(26): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(27): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(28): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
-[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(24): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(25): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(26): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(27): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(28): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
+[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
+C:\Users\46704\projekt\Snake\main.asm(24): Including file 'C:\Users\46704\projekt\Snake\help.inc'
+C:\Users\46704\projekt\Snake\main.asm(25): Including file 'C:\Users\46704\projekt\Snake\init.inc'
+C:\Users\46704\projekt\Snake\main.asm(26): Including file 'C:\Users\46704\projekt\Snake\vmem.inc'
+C:\Users\46704\projekt\Snake\main.asm(27): Including file 'C:\Users\46704\projekt\Snake\mux.inc'
+C:\Users\46704\projekt\Snake\main.asm(28): Including file 'C:\Users\46704\projekt\Snake\joystick.inc'
+[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
+C:\Users\46704\projekt\Snake\main.asm(24): Including file 'C:\Users\46704\projekt\Snake\help.inc'
+C:\Users\46704\projekt\Snake\main.asm(25): Including file 'C:\Users\46704\projekt\Snake\init.inc'
+C:\Users\46704\projekt\Snake\main.asm(26): Including file 'C:\Users\46704\projekt\Snake\vmem.inc'
+C:\Users\46704\projekt\Snake\main.asm(27): Including file 'C:\Users\46704\projekt\Snake\mux.inc'
+C:\Users\46704\projekt\Snake\main.asm(28): Including file 'C:\Users\46704\projekt\Snake\joystick.inc'
                                  
                                  ; SPI pins
                                  
@@ -1012,7 +1012,7 @@ X:\tsiu51\projekt\Snake\main.asm(28): Including file 'X:\tsiu51\projekt\Snake\jo
                                  .def    ZERO = r2
                                  
                                  .org 0x0000
-000000 940c 0117                     jmp     PROG_START
+000000 940c 0127                     jmp     PROG_START
                                  
                                  .org OVF0ADDR
 000020 940c 0097                     jmp     MULTIPLEX
@@ -1254,7 +1254,7 @@ X:\tsiu51\projekt\Snake\main.asm(28): Including file 'X:\tsiu51\projekt\Snake\jo
                                  
                                  ; Multiplexes DAMatrix.
                                  ; Draws LINE on each display 3..0.
-000097 930f                          push    r16 ; why?
+000097 930f                          push    r16 ; why? // we need to push sreg to make the interrupt work and we dont wanna destroy r16 to push sreg
 000098 931f                          push    r17
 000099 932f                          push    r18
 00009a 933f                          push    r19
@@ -1413,18 +1413,28 @@ X:\tsiu51\projekt\Snake\main.asm(28): Including file 'X:\tsiu51\projekt\Snake\jo
 000115 e01f                          ldi     r17,15
 000116 9508                          ret
                                  
-                                 /*
+                                 	
                                  MOVE_P1_BODY:
-                                     ldi     ZH,HIGH(P1)
-                                     ldi     ZL,LOW(P1)
-                                     ld      r16,Z+ ; get past head
-                                     lds     r20,P1_LEN
+000117 930f                      	push	r16
+000118 931f                      	push	r17
+                                 
+000119 e0f1                          ldi     ZH,HIGH(P1)
+00011a e8e0                          ldi     ZL,LOW(P1)
+00011b 9100 01c0                 	lds		r16,P1_LEN
+00011d 950a                      	dec		r16				// Head location starts at 0 instead of 1
+                                 
+00011e 0fe0                          add		ZL,r16			// Start looking at the back of the snake 
+00011f 1df2                      	adc		ZH,ZERO
                                  move_p1_loop:
-                                     ld      r16,Z
-                                     st      Z+,r16
-                                     dec     r20
-                                     brne    move_p1_loop
-                                     ret
+000120 9112                      	ld      r17,-Z			// Example: if size = 3 then takes from 2nd and put into 3rd
+000121 8311                      	std		Z+1,r17			// And Z- preps for next loop
+000122 950a                      	dec		r16
+000123 f7e1                          brne    move_p1_loop
+                                 							// Now Head is the same value as first part of tail
+                                 							// After this call we want to update head with new cord from Joystick
+000124 911f                      	pop		r17
+000125 910f                      	pop		r16
+000126 9508                          ret
                                  
                                  .dseg
 000100                               VMEM:   .byte 128
@@ -1438,35 +1448,63 @@ X:\tsiu51\projekt\Snake\main.asm(28): Including file 'X:\tsiu51\projekt\Snake\jo
                                  
                                  
                                  PROG_START:
-000117 e008                          ldi     r16,HIGH(RAMEND)
-000118 bf0e                          out     SPH,r16
-000119 ef0f                          ldi     r16,LOW(RAMEND)
-00011a bf0d                          out     SPL,r16
-00011b 2422                          clr     ZERO
-00011c 940e 0049                     call    INIT
+000127 e008                          ldi     r16,HIGH(RAMEND)
+000128 bf0e                          out     SPH,r16
+000129 ef0f                          ldi     r16,LOW(RAMEND)
+00012a bf0d                          out     SPL,r16
+00012b 2422                          clr     ZERO
+00012c 940e 0049                     call    INIT
                                  
                                  SETUP:
                                  ; Initiates player positions
-00011e ef0f                          ldi     r16,0b1111_1111
-00011f 9300 0180                     sts     P1,r16
+00012e ef0f                          ldi     r16,0b1111_1111
+00012f 9300 0180                     sts     P1,r16
                                  
-000121 ece1                          ldi     ZL,LOW(P2)
-000122 e0f1                          ldi     ZH,HIGH(P2)
-000123 ef0f                          ldi     r16,0b1111_1111
-000124 8300                          st      Z,r16
+000131 ece1                          ldi     ZL,LOW(P2)
+000132 e0f1                          ldi     ZH,HIGH(P2)
+000133 ef0f                          ldi     r16,0b1111_1111
+000134 8300                          st      Z,r16
                                  
-000125 940e 0068                     call    ERASE_VMEM
-000127 940e 0073                     call    UPDATE_VMEM
+                                 	/*-----Option for start positions
                                  
-000129 9478                          sei ; interrupt enabled
+                                 	ldi		ZL,LOW(P1)
+                                 	ldi		ZH,HIGH(P1)
+                                 
+                                 	ldi		r16,0b1101_0111  // head with x = 13, y = 7
+                                 	st		Z,r16		
+                                 	ldi		r16,0b1110_0111  // tail with x = 14, y = 7
+                                 	std		Z+1,r16
+                                 	ldi		r16,0b1111_0111  // tail with x = 15, y = 7
+                                 	std		Z+2,r16
+                                 	ldi		r16,3
+                                 	sts		P1_LEN,r16		 // store lenght of the snake
+                                 
+                                 	ldi		ZL,LOW(P2)
+                                 	ldi		ZH,HIGH(P2)
+                                 
+                                 	ldi		r16,0b0010_1000  // head with x = 2, y = 8
+                                 	st		Z,r16		
+                                 	ldi		r16,0b0001_1000  // tail with x = 1, y = 8
+                                 	std		Z+1,r16
+                                 	ldi		r16,0b0000_1000  // tail with x = 0, y = 8
+                                 	std		Z+2,r16
+                                 	ldi		r16,3
+                                 	sts		P2_LEN,r16		 // store lenght of the snake
+                                 
+                                 	*/
+                                 
+000135 940e 0068                     call    ERASE_VMEM
+000137 940e 0073                     call    UPDATE_VMEM
+                                 
+000139 9478                          sei ; interrupt enabled
                                  
                                  
                                  PLAY:
-00012a 940e 00e9                     call    JOYSTICK_1
-00012c 940e 0068                     call    ERASE_VMEM
-00012e 940e 0073                     call    UPDATE_VMEM
-000130 940e 0037                     call    DELAY
-000132 cff7                          rjmp    PLAY
+00013a 940e 00e9                     call    JOYSTICK_1
+00013c 940e 0068                     call    ERASE_VMEM
+00013e 940e 0073                     call    UPDATE_VMEM
+000140 940e 0037                     call    DELAY
+000142 cff7                          rjmp    PLAY
 
 
 RESOURCE USE INFORMATION
@@ -1484,39 +1522,39 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   2 z  :  11 r0 :   0 r1 :   0 r2 :  12 r3 :   0 r4 :   0 
+x  :   0 y  :   2 z  :  13 r0 :   0 r1 :   0 r2 :  13 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  82 r17:  30 r18:  13 r19:  13 r20:   0 
+r13:   0 r14:   0 r15:   0 r16:  88 r17:  34 r18:  13 r19:  13 r20:   0 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   4 
-r29:   4 r30:  19 r31:  19 
+r29:   4 r30:  21 r31:  21 
 Registers used: 11 out of 35 (31.4%)
 
 "ATmega328P" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   5 add   :   5 adiw  :   0 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   6 add   :   6 adiw  :   0 and   :   0 
 andi  :   3 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   1 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
-brne  :   6 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
+brne  :   7 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :  21 cbi   :   1 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   0 cpc   :   0 
-cpi   :   7 cpse  :   0 dec   :   8 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :   7 cpse  :   0 dec   :  10 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   3 jmp   :   4 
-ld    :   1 ldd   :   5 ldi   :  45 lds   :   7 lpm   :   0 lsl   :   4 
+ld    :   2 ldd   :   5 ldi   :  47 lds   :   8 lpm   :   0 lsl   :   4 
 lsr   :   1 mov   :   2 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   3 ori   :   1 out   :   9 pop   :  18 
-push  :  18 rcall :   0 ret   :  12 reti  :   1 rjmp  :   4 rol   :   0 
+neg   :   0 nop   :   0 or    :   3 ori   :   1 out   :   9 pop   :  20 
+push  :  20 rcall :   0 ret   :  13 reti  :   1 rjmp  :   4 rol   :   0 
 ror   :   0 sbc   :   1 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   5 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   1 sts   :   8 
+sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   2 sts   :   8 
 sub   :   1 subi  :   2 swap  :   2 tst   :   0 wdr   :   0 
 Instructions used: 42 out of 113 (37.2%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000266    554      0    554   32768   1.7%
+[.cseg] 0x000000 0x000286    586      0    586   32768   1.8%
 [.dseg] 0x000100 0x000204      0    260    260    2048  12.7%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

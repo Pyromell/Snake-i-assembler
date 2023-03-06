@@ -1,7 +1,7 @@
 MULTIPLEX:
 ; Multiplexes DAMatrix.
 ; Draws LINE on each display 3..0.
-    push    r16 ; why?
+    push    r16 ; why? // we need to push sreg to make the interrupt work and we dont wanna destroy r16 to push sreg
     push    r17
     push    r18
     push    r19

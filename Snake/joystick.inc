@@ -72,16 +72,25 @@ LIMITS:
     ldi     r17,15
     ret
 
-/*
+	
 MOVE_P1_BODY:
+	push	r16
+	push	r17
+
     ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
-    ld      r16,Z+ ; get past head
-    lds     r20,P1_LEN
+	lds		r16,P1_LEN
+	dec		r16				// Head location starts at 0 instead of 1
+
+    add		ZL,r16			// Start looking at the back of the snake 
+	adc		ZH,ZERO
 move_p1_loop:
-    ld      r16,Z
-    st      Z+,r16
-    dec     r20
+	ld      r17,-Z			// Example: if size = 3 then takes from 2nd and put into 3rd
+	std		Z+1,r17			
+	dec		r16
     brne    move_p1_loop
+							// Now Head is the same value as first part of tail
+							// After this call we want to update head with new cord from Joystick
+	pop		r17
+	pop		r16
     ret
-*/

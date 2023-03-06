@@ -1,36 +1,35 @@
 READ_JOY:
-; Reads from pin specified by MUX3..0 in r18
-; JOY_RH = PC0, JOY_RV = PC1,
-; JOY_LH = PC2, JOY_LV = PC3
-; Returns ADCH in r19
+; Reads from pin specified by MUX3..0 in r18.
+; Returns ADCH in r19.
     lds     r16,ADCSRA
     ori     r16,0b0100_0000 ; set ADSC
     sts     ADCSRA,r16
-    ldi     r16,0b0110_0000
-    or      r16,r18 ; set MUXn = PCn from r18 = n
-    sts     ADMUX,r16
+    lds     r17,ADMUX
+    add     r17,r18 ; set MUX3..0 = r18
+    sts     ADMUX,r17
 adc_not_done: ; wait till conversion done
     lds     r16,ADCSRA
     sbrc    r16,ADSC
     rjmp    adc_not_done
 adc_done:
     lds     r19,ADCH ; read 8 MSB
+    sub     r17,r18 ; clear MUX3..0
+    sts     ADMUX,r17 ; restore ADMUX
     ret
 
 
 JOYSTICK_1:
-; TODO: Try replacing Z pointer
-;       usage with lds and sts.
-    
+; Performs ADC conversion and
+; updates head coords in SRAM
     ; x-direction
     ldi     r18,2 ; reads from PC2
     call    READ_JOY ; returns ADCH in r19
     lds     r16,P1
-    call    SEPARATE_XY
+    call    SEP_XY
     cpi     r19,0b1100_0000 ; checks right
     brlo    not_right
     inc     r16
-    jmp     all_done
+    rjmp    all_done
 not_right:
     cpi     r19,0b0100_0000 ; checks left
     brsh    not_left
@@ -41,11 +40,11 @@ not_left:
     ldi     r18,3 ; reads from PC3
     call    READ_JOY  ; returns ADCH in r19
     lds     r16,P1
-    call    SEPARATE_XY
+    call    SEP_XY
     cpi     r19,0b1100_0000 ; checks up
     brlo    not_up
     inc     r17
-    jmp     all_done
+    rjmp    all_done
 not_up:
     cpi     r19,0b0100_0000 ; checks down
     brsh    all_done
@@ -72,25 +71,46 @@ LIMITS:
     ldi     r17,15
     ret
 
-	
+ 
 MOVE_P1_BODY:
-	push	r16
-	push	r17
+    push    r16
+    push    r17
 
     ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
-	lds		r16,P1_LEN
-	dec		r16				// Head location starts at 0 instead of 1
-
-    add		ZL,r16			// Start looking at the back of the snake 
-	adc		ZH,ZERO
+    lds     r16,P1_LEN
+    // Head location starts at 0 instead of 1
+    dec     r16 
+    // Start looking at the back of the snake 
+    add     ZL,r16
+    adc     ZH,ZERO
 move_p1_loop:
-	ld      r17,-Z			// Example: if size = 3 then takes from 2nd and put into 3rd
-	std		Z+1,r17			
-	dec		r16
+    // Example: if size = 3 then takes
+    // from 2nd and put into 3rd
+    ld      r17,-Z
+    std     Z+1,r17
+    dec     r16
     brne    move_p1_loop
-							// Now Head is the same value as first part of tail
-							// After this call we want to update head with new cord from Joystick
-	pop		r17
-	pop		r16
+    // Now Head is the same value as
+    // first part of tail
+    // After this call we want to update
+    // head with new cord from Joystick
+    pop        r17
+    pop        r16
     ret
+
+
+/*
+MOVE_P1_BODY:
+    ldi     ZH,HIGH(P1)
+    ldi     ZL,LOW(P1)
+    ld      r16,Z+ ; stores head
+    lds     r20,P1_LEN
+move_p1_loop:
+    ld      r17,Z ; store curr to tmp
+    st      Z+,r16 ; write prev to curr
+    mov     r16,r17 ; store tmp as new prev
+    dec     r20
+    brne    move_p1_loop
+    ret
+*/

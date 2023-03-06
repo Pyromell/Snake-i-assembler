@@ -29,11 +29,11 @@
 
 .dseg
     VMEM:   .byte 128
-    P1:     .byte MAX_LEN ; 0bxxxx_yyyy
+    P1:     .byte MAX_LEN ; $xy
     P1_LEN: .byte 1
-    P2:     .byte MAX_LEN ; 0bxxxx_yyyy
+    P2:     .byte MAX_LEN ; $xy
     P2_LEN: .byte 1
-    FRUIT:  .byte 1	; 0bxxxx_yyyy
+    FRUIT:  .byte 1	  ; $xy
     LINE:   .byte 1
 .cseg
 
@@ -48,13 +48,11 @@ PROG_START:
 
 SETUP:
 ; Initiates player positions
-    ldi     r16,0b1111_1111
+    ldi     r16,$00
     sts     P1,r16
 
-    ldi     ZL,LOW(P2)
-    ldi     ZH,HIGH(P2)
-    ldi     r16,0b1111_1111
-    st      Z,r16
+    ldi     r16,$ff
+    sts     P1,r16
 
 	/*-----Option for start positions
 

@@ -13,7 +13,6 @@ spi_init:
     ldi     r17,( 0 << SPI2X )
     out     SPSR,r17
 
-
 adc_init:
     ; ADC Control and Status Register A:
     ; ADEN, ADSC, ADATE, ADIF, ADIE, ADPS2..0
@@ -28,7 +27,6 @@ adc_init:
     ldi     r16,0b0110_0000
     sts     ADMUX,r16
 
-
 interrupt_init:
     ldi     r16,( 0 << COM0A1 | 0 << COM0A0 |\
                   0 << WGM01  | 0 << WGM00  )
@@ -40,7 +38,6 @@ interrupt_init:
     
     ldi     r16,( 1 << TOIE0 )
     sts     TIMSK0,r16
-
 
 data_init:
     ldi     ZL,LOW(P1)
@@ -56,6 +53,5 @@ data_init:
     st      Z,ZERO
 
     sts     LINE,ZERO
-
 
 ret ; from INIT

@@ -54,7 +54,7 @@ delay2:
     ret
 
 
-SEPARATE_XY:
+SEP_XY:
 ; In:  r16 = 0bxxxx_yyyy.
 ; Out: r16 = 0b0000_xxxx,
 ;      r17 = 0b0000_yyyy.
@@ -63,6 +63,7 @@ SEPARATE_XY:
     andi    r16,0b0000_1111 ; x
     andi    r17,0b0000_1111 ; y
     ret
+
 
 JOIN_XY:
 ; In:  r16 = 0b0000_xxxx.

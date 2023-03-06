@@ -1,14 +1,15 @@
 MULTIPLEX:
 ; Multiplexes DAMatrix.
 ; Draws LINE on each display 3..0.
-    push    r16 ; why? // we need to push sreg to make the interrupt work and we dont wanna destroy r16 to push sreg
+    push    ZH
+    push    ZL
+    push    r16
     push    r17
     push    r18
     push    r19
+
     in      r16,SREG
     push    r16 
-    push    ZH
-    push    ZL
 
     ldi     ZL,LOW(VMEM)
     ldi     ZH,HIGH(VMEM)
@@ -23,8 +24,8 @@ MULTIPLEX:
     andi    r16,7
     mov     r17,r16
 
-    ; multiplies LINE by four to get row
-    ; in VMEM, sets Z to that row
+    ; LINE * 4 to get row in VMEM,
+    ; sets Z to that row
     lsl     r17
     lsl     r17
     add     ZL,r17
@@ -72,17 +73,18 @@ disp_loop:
 
     sbi     PORTB,SS ; pulls latch
 
-    ; increments LINE before next INT
+    ; incs LINE before next INT
     lds     r16,LINE
     inc     r16
     sts     LINE,r16
 
-    pop     ZL
-    pop     ZH
     pop     r16
     out     SREG,r16
+
     pop     r19
     pop     r18
     pop     r17
-    pop     r16 ; why?
+    pop     r16
+    pop     ZL
+    pop     ZH
     reti

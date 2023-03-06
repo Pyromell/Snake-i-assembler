@@ -30,10 +30,9 @@ update_p1_loop:
     ldd     r16,Y+P1_COLOR
     or      r19,r16
     std     Y+P1_COLOR,r19
- ;   dec     r20
- ;   brne    update_p1_loop
+;   dec     r20
+;   brne    update_p1_loop
 
- /*
 update_p2:  ; same as p1
     ldi     ZH,HIGH(P2)
     ldi     ZL,LOW(P2)
@@ -44,10 +43,9 @@ update_p2_loop:
     ldd     r16,Y+P2_COLOR
     or      r19,r16
     std     Y+P2_COLOR,r19
- ;  dec     r20
+;   dec     r20
 ;   brne    update_p2_loop
-*/
-/*
+
 update_fruit:
     ldi     ZH,HIGH(FRUIT)
     ldi     ZL,LOW(FRUIT)
@@ -55,7 +53,8 @@ update_fruit:
     ldd     r16,Y+FRUIT_COLOR
     or      r16,r19
     std     Y+FRUIT_COLOR,r19
-*/
+
+update_done:
     pop     ZL
     pop     ZH
     ret
@@ -66,7 +65,7 @@ POINT_AT_LINE:
 ; Returns byte to write in r19
     ldi     YH,HIGH(VMEM)
     ldi     YL,LOW(VMEM)
-    call    SEPARATE_XY ; x,y = r16,r17
+    call    SEP_XY ; x,y = r16,r17
     ; determine if upper display
     cpi     r17,8
     brlo    upper_lower_chosen
@@ -75,7 +74,6 @@ POINT_AT_LINE:
     ldi     r18,64
     add     YL,r18
     adc     YH,ZERO
-
 upper_lower_chosen:
     ; Y += y * 4 to point at line
     lsl     r17
@@ -90,7 +88,6 @@ upper_lower_chosen:
     ldi     r18,32
     add     YL,r18
     adc     YH,ZERO
-
 left_right_chosen:
     ; convert x to byte for DAMatrix
     call    COORD2BYTE ; in r16, out r19

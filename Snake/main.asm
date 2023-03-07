@@ -12,6 +12,11 @@
 .equ	P2_COLOR = B
 .equ	FRUIT_COLOR = G
 .equ	MAX_LEN  = 64
+; Controls
+.equ    J1X = 3
+.equ    J1Y = 0
+.equ    J2X = 1
+.equ    J2Y = 2
 ; Registers
 .def    ZERO = r2
 
@@ -29,12 +34,16 @@
 
 .dseg
     VMEM:   .byte 128
+    LINE:   .byte 1
+
     P1:     .byte MAX_LEN ; $xy
     P1_LEN: .byte 1
+
     P2:     .byte MAX_LEN ; $xy
     P2_LEN: .byte 1
+
     FRUIT:  .byte 1	  ; $xy
-    LINE:   .byte 1
+
 .cseg
 
 
@@ -46,15 +55,37 @@ PROG_START:
     clr     ZERO
     call    INIT
 
+
 SETUP:
 ; Initiates player positions
-    ldi     r16,$00
+
+    ldi     r16,$07
     sts     P1,r16
 
-    ldi     r16,$ff
-    sts     P1,r16
+    ldi     r16,$f7
+    sts     P2,r16
 
-	/*-----Option for start positions
+    ldi     r16,$77
+    sts     FRUIT,r16
+   
+    call    ERASE_VMEM
+    call    UPDATE_VMEM
+
+    sei ; interrupt enabled
+
+
+PLAY:
+    call    JOYSTICK_1
+    call    JOYSTICK_2
+    call    ERASE_VMEM
+    call    UPDATE_VMEM
+    call    DELAY
+    rjmp    PLAY
+
+
+
+
+    /*-----Option for start positions
 
 	ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
@@ -81,16 +112,3 @@ SETUP:
 	sts		P2_LEN,r16		 // store lenght of the snake
 
 	*/
-
-    call    ERASE_VMEM
-    call    UPDATE_VMEM
-
-    sei ; interrupt enabled
-
-
-PLAY:
-    call    JOYSTICK_1
-    call    ERASE_VMEM
-    call    UPDATE_VMEM
-    call    DELAY
-    rjmp    PLAY

@@ -39,7 +39,7 @@ spi_tx_wait:
 
 
 DELAY:
-    ldi     r16,64
+    ldi     r16,8
 delay0:
     ldi     r17,$ff
 delay1:
@@ -72,3 +72,66 @@ JOIN_XY:
     swap    r16
     or      r16,r17
     ret
+
+/*
+JOYSTICK:
+    lds     r16,P1
+    call    JOY_X
+    sts     P1,r16
+
+    lds     r16,P1
+    call    JOY_Y
+    sts     P1,r16
+
+    lds     r16,P2
+    call    JOY_X
+    sts     P2,r16
+
+    lds     r16,P2
+    call    JOY_Y
+    sts     P2,r16
+    ret
+
+
+JOY_X:
+; Performs ADC conversion and
+; updates head coords in SRAM
+    ldi     r18,3 ; reads from PC3
+    push    r16
+    call    READ_JOY ; returns ADCH in r19
+    pop     r16
+    call    SEP_XY
+check_right:
+    cpi     r19,0b1100_0000 ; checks right
+    brlo    check_left
+    inc     r16
+    rjmp    x_done
+check_left:
+    cpi     r19,0b0100_0000 ; checks left
+    brsh    x_done
+    dec     r16
+x_done:
+    call    JOIN_XY
+    ret
+
+JOY_Y:
+; Performs ADC conversion and
+; updates head coords in SRAM
+    ldi     r18,2 ; reads from PC2
+    push    r16
+    call    READ_JOY ; returns ADCH in r19
+    pop     r16
+    call    SEP_XY
+check_up:
+    cpi     r19,0b1100_0000 ; checks right
+    brlo    check_down
+    inc     r17
+    rjmp    y_done
+check_down:
+    cpi     r19,0b0100_0000 ; checks left
+    brsh    y_done
+    dec     r17
+y_done:
+    call    JOIN_XY
+    ret
+    */

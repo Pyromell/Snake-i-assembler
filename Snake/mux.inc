@@ -31,7 +31,7 @@ MULTIPLEX:
     add     ZL,r17
     adc     ZH,ZERO
 
-    call    COORD2BYTE ; in r16, out r17
+    call    COORD2BYTE ; in r16, out r19
 
     cbi     PORTB,SS ; pulls latch
 
@@ -57,15 +57,15 @@ disp_loop:
     pop     r16
     
     ; transmits anode
-    com     r17 ; invert bytes for DAMatrix
-    push    r17
+    com     r19 ; invert bytes for DAMatrix
+    push    r19
     call    SPI_TX
-    pop     r17
-    com     r17
+    pop     r19
+    com     r19
 
     ; moves Z to next display
-    ldi     r19,32
-    sub     ZL,r19
+    ldi     r17,32
+    sub     ZL,r17
     sbc     ZH,ZERO
 
     dec     r18

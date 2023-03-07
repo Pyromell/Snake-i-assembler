@@ -1,20 +1,21 @@
 READ_JOY:
-; Reads from pin specified by MUX3..0 in r18.
-; Returns ADCH in r19.
+; Reads from pin specified by MUX3..0 in r18
+; Returns ADCH in r19
     lds     r16,ADCSRA
     ori     r16,0b0100_0000 ; set ADSC
     sts     ADCSRA,r16
-    lds     r17,ADMUX
-    add     r17,r18 ; set MUX3..0 = r18
-    sts     ADMUX,r17
+    ;lds     r16,ADMUX
+    ldi     r16,0b0110_0000 ; load default ADMUX
+    or      r16,r18 ; set MUXn = PCn from r18 = n
+    sts     ADMUX,r16
 adc_not_done: ; wait till conversion done
     lds     r16,ADCSRA
     sbrc    r16,ADSC
     rjmp    adc_not_done
 adc_done:
     lds     r19,ADCH ; read 8 MSB
-    sub     r17,r18 ; clear MUX3..0
-    sts     ADMUX,r17 ; restore ADMUX
+    ;ldi     r16,0b0110_0000
+    ;sts     ADMUX,r16 ; reset ADMUX
     ret
 
 
@@ -22,22 +23,24 @@ JOYSTICK_1:
 ; Performs ADC conversion and
 ; updates head coords in SRAM
     ; x-direction
-    ldi     r18,2 ; reads from PC2
+    ldi     r18,J1X
     call    READ_JOY ; returns ADCH in r19
     lds     r16,P1
     call    SEP_XY
     cpi     r19,0b1100_0000 ; checks right
     brlo    not_right
     inc     r16
-    rjmp    all_done
+    rjmp    not_left
 not_right:
     cpi     r19,0b0100_0000 ; checks left
     brsh    not_left
     dec     r16
-    rjmp    all_done
 not_left:
+    call    XLIM
+    call    JOIN_XY
+    sts     P1,r16
     ; y-direction
-    ldi     r18,3 ; reads from PC3
+    ldi     r18,J1Y
     call    READ_JOY  ; returns ADCH in r19
     lds     r16,P1
     call    SEP_XY
@@ -49,26 +52,85 @@ not_up:
     cpi     r19,0b0100_0000 ; checks down
     brsh    all_done
     dec     r17
+
 all_done:
-    call    LIMITS
-    ; writes back to SRAM
+    call    YLIM
     call    JOIN_XY
-    st      Z,r16
+    sts     P1,r16
     ret
 
 
-LIMITS:
+JOYSTICK_2:
+; Performs ADC conversion and
+; updates head coords in SRAM
+    ; x-direction
+    ldi     r18,J2X
+    call    READ_JOY ; returns ADCH in r19
+    lds     r16,P2
+    call    SEP_XY
+    cpi     r19,0b1100_0000 ; checks right
+    brlo    not_right2
+    inc     r16
+    rjmp    not_left2
+not_right2:
+    cpi     r19,0b0100_0000 ; checks left
+    brsh    not_left2
+    dec     r16
+not_left2:
+    call    XLIM
+    call    JOIN_XY
+    sts     P2,r16
+    ; y-direction
+    ldi     r18,J2Y
+    call    READ_JOY  ; returns ADCH in r19
+    lds     r16,P2
+    call    SEP_XY
+    cpi     r19,0b1100_0000 ; checks up
+    brlo    not_up2
+    inc     r17
+    rjmp    all_done2
+not_up2:
+    cpi     r19,0b0100_0000 ; checks down
+    brsh    all_done2
+    dec     r17
+all_done2:
+    call    YLIM
+    call    JOIN_XY
+    sts     P2,r16
+    ret
+
+
+XLIM:
 ; Takes x,y = r16,r17 and
 ; moves them to other side of
 ; screen if outside.
-    sbrc    r16,4 ; x != 16
-    ldi     r16,0
-    sbrc    r16,7 ; x != 255
+    cpi     r16,255
+    breq    x_under
+    cpi     r16,16
+    breq    x_over
+    rjmp    xlim_done
+x_under:
     ldi     r16,15
-    sbrc    r17,3 ; y != 16
-    ldi     r17,0
-    sbrc    r17,7 ; y != 255
+    rjmp    xlim_done
+x_over:
+    ldi     r16,0
+    rjmp    xlim_done
+xlim_done:
+    ret
+
+YLIM:
+    cpi     r17,255
+    breq    y_under
+    cpi     r17,16
+    breq    y_over
+    rjmp    ylim_done
+y_under:
     ldi     r17,15
+    rjmp    ylim_done
+y_over:
+    ldi     r17,0
+    rjmp    ylim_done
+ylim_done:
     ret
 
  

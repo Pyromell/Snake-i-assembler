@@ -1,18 +1,18 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Tue Mar 07 17:06:06 2023
+AVRASM ver. 2.2.7  X:\microdataprojekt\projekt\Snake\main.asm Wed Mar 08 12:03:20 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(29): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(30): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(31): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(32): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(33): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(29): Including file 'X:\microdataprojekt\projekt\Snake\help.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(30): Including file 'X:\microdataprojekt\projekt\Snake\init.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(31): Including file 'X:\microdataprojekt\projekt\Snake\vmem.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(32): Including file 'X:\microdataprojekt\projekt\Snake\mux.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(33): Including file 'X:\microdataprojekt\projekt\Snake\joystick.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(29): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(30): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(31): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(32): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(33): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(29): Including file 'X:\microdataprojekt\projekt\Snake\help.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(30): Including file 'X:\microdataprojekt\projekt\Snake\init.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(31): Including file 'X:\microdataprojekt\projekt\Snake\vmem.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(32): Including file 'X:\microdataprojekt\projekt\Snake\mux.inc'
+X:\microdataprojekt\projekt\Snake\main.asm(33): Including file 'X:\microdataprojekt\projekt\Snake\joystick.inc'
                                  
                                  ; SPI pins
                                  
@@ -1017,10 +1017,10 @@ X:\tsiu51\projekt\Snake\main.asm(33): Including file 'X:\tsiu51\projekt\Snake\jo
                                  .def    ZERO = r2
                                  
                                  .org 0x0000
-000000 940c 016f                     jmp     PROG_START
+000000 940c 01ea                     jmp     PROG_START
                                  
                                  .org OVF0ADDR
-000020 940c 00a7                     jmp     MULTIPLEX
+000020 940c 011d                     jmp     MULTIPLEX
                                  
                                  .include "help.inc"
                                  
@@ -1064,7 +1064,7 @@ X:\tsiu51\projekt\Snake\main.asm(33): Including file 'X:\tsiu51\projekt\Snake\jo
                                  
                                  
                                  DELAY:
-000037 e008                          ldi     r16,8
+000037 e100                          ldi     r16,16
                                  delay0:
 000038 ef1f                          ldi     r17,$ff
                                  delay1:
@@ -1098,473 +1098,568 @@ X:\tsiu51\projekt\Snake\main.asm(33): Including file 'X:\tsiu51\projekt\Snake\jo
 000047 2b01                          or      r16,r17
 000048 9508                          ret
                                  
-                                 /*
-                                 JOYSTICK:
-                                     lds     r16,P1
-                                     call    JOY_X
-                                     sts     P1,r16
                                  
-                                     lds     r16,P1
-                                     call    JOY_Y
-                                     sts     P1,r16
+                                 RANDOM:
+                                 RE_TRY:    
+000049 9100 0204                     lds     r16,SEED
+00004b e0f1                          ldi     ZH,HIGH(P1)
+00004c e8e1                          ldi     ZL,LOW(P1)
+00004d 9110 01c1                     lds     r17,P1_LEN
+                                     
+                                     RANDOM_LOOP1:
+00004f 9121                          ld      r18,Z+
+000050 1720                          cp      r18,r16
+000051 f3b9                          breq    RE_TRY   
+000052 951a                          dec     r17
+000053 f7d9                          brne    RANDOM_LOOP1
                                  
-                                     lds     r16,P2
-                                     call    JOY_X
-                                     sts     P2,r16
+000054 e0f1                          ldi     ZH,HIGH(P2)
+000055 ece2                          ldi     ZL,LOW(P2)
+000056 9110 0202                     lds     r17,P2_LEN
                                  
-                                     lds     r16,P2
-                                     call    JOY_Y
-                                     sts     P2,r16
-                                     ret
+                                     RANDOM_LOOP2:
+000058 9121                          ld      r18,Z+
+000059 1720                          cp      r18,r16
+00005a f371                          breq    RE_TRY   
+00005b 951a                          dec     r17
+00005c f7d9                          brne    RANDOM_LOOP2
+                                 
+00005d 9300 0203                     sts     FRUIT,r16
+00005f 9508                          ret
                                  
                                  
-                                 JOY_X:
-                                 ; Performs ADC conversion and
-                                 ; updates head coords in SRAM
-                                     ldi     r18,3 ; reads from PC3
-                                     push    r16
-                                     call    READ_JOY ; returns ADCH in r19
-                                     pop     r16
-                                     call    SEP_XY
-                                 check_right:
-                                     cpi     r19,0b1100_0000 ; checks right
-                                     brlo    check_left
-                                     inc     r16
-                                     rjmp    x_done
-                                 check_left:
-                                     cpi     r19,0b0100_0000 ; checks left
-                                     brsh    x_done
-                                     dec     r16
-                                 x_done:
-                                     call    JOIN_XY
-                                     ret
                                  
-                                 JOY_Y:
-                                 ; Performs ADC conversion and
-                                 ; updates head coords in SRAM
-                                     ldi     r18,2 ; reads from PC2
-                                     push    r16
-                                     call    READ_JOY ; returns ADCH in r19
-                                     pop     r16
-                                     call    SEP_XY
-                                 check_up:
-                                     cpi     r19,0b1100_0000 ; checks right
-                                     brlo    check_down
-                                     inc     r17
-                                     rjmp    y_done
-                                 check_down:
-                                     cpi     r19,0b0100_0000 ; checks left
-                                     brsh    y_done
-                                     dec     r17
-                                 y_done:
-                                     call    JOIN_XY
-                                     ret
+                                 HIT:
+                                     
+000060 e0f1                          ldi     ZH,HIGH(P1)
+000061 e8e1                          ldi     ZL,LOW(P1)
+                                 
+000062 e0d1                          ldi     YH,HIGH(P2)
+000063 ecc2                          ldi     YL,LOW(P2)
+                                    
+000064 8100                          ld      r16,Z
+000065 8118                          ld      r17,Y
+                                 
+000066 1701                          cp      r16,r17
+000067 f079                          breq    TIE
+000068 9120 0202                     lds     r18,P2_LEN
+                                 
+                                 COLIDE_P2_LOOP:
+00006a 9119                          ld      r17,Y+
+00006b 1701                          cp     r16,r17  
+00006c f051                          breq    P2_WIN
+                                 
+00006d 952a                          dec     r18
+00006e f7d9                          brne    COLIDE_P2_LOOP
+                                 
+00006f e0d1                          ldi     YH,HIGH(P2)
+000070 ecc2                          ldi     YL,LOW(P2)
+                                     // RESETING Y TO POINT AT HEAD
+                                 
+                                 COLIDE_P1_LOOP:
+000071 9101                          ld      r16,Z+
+000072 1701                          cp     r16,r17    
+000073 f019                          breq    P1_WIN
+000074 952a                          dec     r18
+000075 f7d9                          brne    COLIDE_P1_LOOP
+                                    
+000076 c000                          rjmp    SNAKE_HIT_DONE
+                                 
+                                 // Exercise for the reader :D
+                                 TIE:
+                                 P1_WIN:
+                                 P2_WIN:        
+                                 
+                                 SNAKE_HIT_DONE:
+                                 
+000077 e0f1                          ldi     ZH,HIGH(P1)
+000078 e8e1                          ldi     ZL,LOW(P1)
+                                 
+000079 8100                          ld      r16,Z
+00007a 8118                          ld      r17,Y
+00007b 9120 0203                     lds     r18,FRUIT
+                                     
+00007d 1720                          cp      r18,r16
+00007e f439                          brne    P1_NO_FRUIT
+                                         
+00007f 9100 01c1                     lds     r16,P1_LEN
+000081 9503                          inc     r16
+000082 9300 01c1                     sts     P1_LEN,r16  
+000084 940e 0049                     call    RANDOM
+                                 P1_NO_FRUIT:
+                                 
+000086 1721                          cp      r18,r17
+000087 f439                          brne    P2_NO_FRUIT
+                                 
+000088 9110 01c1                     lds     r17,P1_LEN
+00008a 9513                          inc     r17
+00008b 9310 0202                     sts     P2_LEN,r17
+00008d 940e 0049                     call    RANDOM
+                                 P2_NO_FRUIT:
+                                 
+00008f 9508                          ret
+                                 
+                                 
+                                 // this need to be done differently in joystick
+                                 AUTO_RUN:
+                                     // Attempt to make the snake auto move
+000090 e0f1                          ldi     ZH,HIGH(P1)
+000091 e8e1                          ldi     ZL,LOW(P1)
+                                 
+000092 8100                          ld      r16,Z
+000093 940e 0041                     call    SEP_XY
+000095 2f20                          mov     r18,r16  // Head X Pos
+000096 2f31                          mov     r19,r17  // Head Y Pos
+                                 
+000097 8101                          ldd     r16,Z+1 
+000098 940e 0041                     call    SEP_XY   
+                                     // r16 1st tail X pos
+                                     // r17 1st tail Y pos
+00009a 1702                          cp      r16,r18
+00009b f451                          brne    X_USED
+                                     
+00009c 8102                          ldd     r16,Z+2
+00009d 9502                          swap    r16
+00009e 700f                          andi    r16,0b0000_1111
+                                 
+00009f 1720                          cp      r18,r16
+0000a0 f029                          breq    X_USED  
+                                 
+0000a1 1720                          cp      r18,r16
+0000a2 f410                          brsh    INC_X_POS
+                                 
+0000a3 952a                          dec     r18    
+0000a4 c001                          rjmp    X_USED     
+                                 INC_X_POS:  
+0000a5 9523                          inc     r18
+                                 X_USED:
+0000a6 8102                          ldd     r16,Z+2
+0000a7 700f                          andi    r16,0b0000_1111
+                                     
+0000a8 1730                          cp      r19,r16
+0000a9 f029                          breq    DONE_AUTO    
+                                 
+0000aa 1730                          cp      r19,r16
+0000ab f410                          brsh    INC_Y_POS
+0000ac 953a                          dec     r19
+0000ad c001                          rjmp    DONE_AUTO
+                                 INC_Y_POS:
+0000ae 9533                          inc     r19
+                                 DONE_AUTO:
+0000af 2f02                          mov     r16,r18
+0000b0 2f13                          mov     r17,r19
+0000b1 940e 0046                     call    JOIN_XY
+0000b3 940e 01c6                     call    XLIM
+0000b5 8300                          st      Z,r16
                                  .include "init.inc"
-                                 
+0000b6 9508                      
                                  ; Entry point for call from main
                                  spi_init:
                                      ; Set MOSI and SCK output, all others input
-000049 e20c                          ldi     r16,( 1 << MOSI | 1 << SCK | 1 << SS )
-00004a b904                          out     DDRB,r16
+0000b7 e20c                          ldi     r16,( 1 << MOSI | 1 << SCK | 1 << SS )
+0000b8 b904                          out     DDRB,r16
                                  
                                      ; Enable SPI, Master, set clock rate fck/16
                                      ldi     r16,( 1 << SPE  | 1 << MSTR |\
-00004b e500                                        0 << SPR0 | 0 << SPR1 )
-00004c bd0c                          out     SPCR,r16
+0000b9 e500                                        0 << SPR0 | 0 << SPR1 )
+0000ba bd0c                          out     SPCR,r16
                                  
-00004d e010                          ldi     r17,( 0 << SPI2X )
-00004e bd1d                          out     SPSR,r17
+0000bb e010                          ldi     r17,( 0 << SPI2X )
+0000bc bd1d                          out     SPSR,r17
                                  
                                  adc_init:
                                      ; ADC Control and Status Register A:
                                      ; ADEN, ADSC, ADATE, ADIF, ADIE, ADPS2..0
                                      ; Prescaler 2..0: Set to 1/128 => 125 kHz
-00004f e807                          ldi     r16,0b1000_0111
-000050 9300 007a                     sts     ADCSRA,r16
+0000bd e807                          ldi     r16,0b1000_0111
+0000be 9300 007a                     sts     ADCSRA,r16
                                  
                                      ; ADC Multiplexer Selection Register:
                                      ; REFS1..0, ADLAR, --, MUX3..0
                                      ; Ref set to AVCC (01)
                                      ; Channel Selection 3..0: 0000 = ADC0
-000052 e600                          ldi     r16,0b0110_0000
-000053 9300 007c                     sts     ADMUX,r16
+0000c0 e600                          ldi     r16,0b0110_0000
+0000c1 9300 007c                     sts     ADMUX,r16
                                  
                                  interrupt_init:
                                      ldi     r16,( 0 << COM0A1 | 0 << COM0A0 |\
-000055 e000                                        0 << WGM01  | 0 << WGM00  )
-000056 bd04                          out     TCCR0A,r16
+0000c3 e000                                        0 << WGM01  | 0 << WGM00  )
+0000c4 bd04                          out     TCCR0A,r16
                                  
                                      ldi     r16,( 0 << WGM02 | 0 << CS02 |\
-000057 e003                                        1 << CS01  | 1 << CS00 )
-000058 bd05                          out     TCCR0B,r16
+0000c5 e003                                        1 << CS01  | 1 << CS00 )
+0000c6 bd05                          out     TCCR0B,r16
                                      
-000059 e001                          ldi     r16,( 1 << TOIE0 )
-00005a 9300 006e                     sts     TIMSK0,r16
+0000c7 e001                          ldi     r16,( 1 << TOIE0 )
+0000c8 9300 006e                     sts     TIMSK0,r16
                                  
                                  data_init:
-00005c e8e1                          ldi     ZL,LOW(P1)
-00005d e0f1                          ldi     ZH,HIGH(P1)
-00005e 8220                          st      Z,ZERO
+0000ca e8e1                          ldi     ZL,LOW(P1)
+0000cb e0f1                          ldi     ZH,HIGH(P1)
+0000cc 8220                          st      Z,ZERO
                                  
-00005f ece2                          ldi     ZL,LOW(P2)
-000060 e0f1                          ldi     ZH,HIGH(P2)
-000061 8220                          st      Z,ZERO
+0000cd ece2                          ldi     ZL,LOW(P2)
+0000ce e0f1                          ldi     ZH,HIGH(P2)
+0000cf 8220                          st      Z,ZERO
                                  
-000062 e0e3                          ldi     ZL,LOW(FRUIT)
-000063 e0f2                          ldi     ZH,HIGH(FRUIT)
-000064 8220                          st      Z,ZERO
+0000d0 e0e3                          ldi     ZL,LOW(FRUIT)
+0000d1 e0f2                          ldi     ZH,HIGH(FRUIT)
+0000d2 8220                          st      Z,ZERO
                                  
-000065 9220 0180                     sts     LINE,ZERO
+0000d3 9220 0180                     sts     LINE,ZERO
                                  
-000067 9508                      ret ; from INIT
+0000d5 9508                      ret ; from INIT
                                  .include "vmem.inc"
                                  
-000068 93ff                          push    ZH
-000069 93ef                          push    ZL
-00006a e0f1                          ldi     ZH,HIGH(VMEM)
-00006b e0e0                          ldi     ZL,LOW(VMEM)
-00006c e800                          ldi     r16,128
+0000d6 93ff                          push    ZH
+0000d7 93ef                          push    ZL
+0000d8 e0f1                          ldi     ZH,HIGH(VMEM)
+0000d9 e0e0                          ldi     ZL,LOW(VMEM)
+0000da e800                          ldi     r16,128
                                  clear_byte:
-00006d 9221                          st      Z+,ZERO
-00006e 950a                          dec     r16
-00006f f7e9                          brne    clear_byte
-000070 91ef                          pop     ZL
-000071 91ff                          pop     ZH
-000072 9508                          ret
+0000db 9221                          st      Z+,ZERO
+0000dc 950a                          dec     r16
+0000dd f7e9                          brne    clear_byte
+0000de 91ef                          pop     ZL
+0000df 91ff                          pop     ZH
+0000e0 9508                          ret
                                  
                                  
                                  UPDATE_VMEM:
-000073 93ff                          push    ZH
-000074 93ef                          push    ZL
+0000e1 93ff                          push    ZH
+0000e2 93ef                          push    ZL
                                  
                                  update_p1:
-000075 e0f1                          ldi     ZH,HIGH(P1)
-000076 e8e1                          ldi     ZL,LOW(P1)
-                                 ;    lds     r20,P1_LEN
-                                 ;update_p1_loop:
-000077 9101                          ld      r16,Z+
+0000e3 e0f1                          ldi     ZH,HIGH(P1)
+0000e4 e8e1                          ldi     ZL,LOW(P1)
+0000e5 9140 01c1                     lds     r20,P1_LEN
+                                 update_p1_loop:
+0000e7 9101                          ld      r16,Z+
                                      ; sets Y to correct line in VMEM
                                      ; returns DAMatrix byte in r19
-000078 940e 0090                     call    POINT_AT_LINE
+0000e8 940e 0106                     call    POINT_AT_LINE
                                      ; adds player color at coord to that byte
-00007a 810a                          ldd     r16,Y+P1_COLOR
-00007b 2b30                          or      r19,r16
-00007c 833a                          std     Y+P1_COLOR,r19
-                                 ;    dec     r20
-                                 ;    brne    update_p1_loop
+0000ea 810a                          ldd     r16,Y+P1_COLOR
+0000eb 2b30                          or      r19,r16
+0000ec 833a                          std     Y+P1_COLOR,r19
+0000ed 954a                          dec     r20
+0000ee f7c1                          brne    update_p1_loop
                                  
                                  update_p2:  ; same as p1
-00007d e0f1                          ldi     ZH,HIGH(P2)
-00007e ece2                          ldi     ZL,LOW(P2)
-                                 ;    lds     r20,P2_LEN
-                                 ;update_p2_loop:
-00007f 9101                          ld      r16,Z+
-000080 940e 0090                     call    POINT_AT_LINE
-000082 8108                          ldd     r16,Y+P2_COLOR
-000083 2b30                          or      r19,r16
-000084 8338                          std     Y+P2_COLOR,r19
-                                 ;    dec     r20
-                                 ;    brne    update_p2_loop
+0000ef e0f1                          ldi     ZH,HIGH(P2)
+0000f0 ece2                          ldi     ZL,LOW(P2)
+0000f1 9140 0202                     lds     r20,P2_LEN
+                                 update_p2_loop:
+0000f3 9101                          ld      r16,Z+
+0000f4 940e 0106                     call    POINT_AT_LINE
+0000f6 8108                          ldd     r16,Y+P2_COLOR
+0000f7 2b30                          or      r19,r16
+0000f8 8338                          std     Y+P2_COLOR,r19
+0000f9 954a                          dec     r20
+0000fa f7c1                          brne    update_p2_loop
                                  
                                  update_fruit:
-000085 e0f2                          ldi     ZH,HIGH(FRUIT)
-000086 e0e3                          ldi     ZL,LOW(FRUIT)
-000087 8100                          ld      r16,Z
-000088 940e 0090                     call    POINT_AT_LINE
-00008a 8109                          ldd     r16,Y+FRUIT_COLOR
-00008b 2b30                          or      r19,r16
-00008c 8339                          std     Y+FRUIT_COLOR,r19
+0000fb e0f2                          ldi     ZH,HIGH(FRUIT)
+0000fc e0e3                          ldi     ZL,LOW(FRUIT)
+0000fd 8100                          ld      r16,Z
+0000fe 940e 0106                     call    POINT_AT_LINE
+000100 8109                          ldd     r16,Y+FRUIT_COLOR
+000101 2b30                          or      r19,r16
+000102 8339                          std     Y+FRUIT_COLOR,r19
                                  
                                  update_done:
-00008d 91ef                          pop     ZL
-00008e 91ff                          pop     ZH
-00008f 9508                          ret
+000103 91ef                          pop     ZL
+000104 91ff                          pop     ZH
+000105 9508                          ret
                                  
                                  
                                  POINT_AT_LINE:
                                  ; Sets Y to line with r16=x,y in VMEM.
                                  ; Returns byte to write in r19
-000090 e0d1                          ldi     YH,HIGH(VMEM)
-000091 e0c0                          ldi     YL,LOW(VMEM)
-000092 940e 0041                     call    SEP_XY ; x,y = r16,r17
+000106 e0d1                          ldi     YH,HIGH(VMEM)
+000107 e0c0                          ldi     YL,LOW(VMEM)
+000108 940e 0041                     call    SEP_XY ; x,y = r16,r17
                                      ; determine if upper display
-000094 3018                          cpi     r17,8
-000095 f020                          brlo    upper_lower_chosen
+00010a 3018                          cpi     r17,8
+00010b f020                          brlo    upper_lower_chosen
                                      ; move Y to upper display
-000096 5018                          subi    r17,8
-000097 e420                          ldi     r18,64
-000098 0fc2                          add     YL,r18
-000099 1dd2                          adc     YH,ZERO
+00010c 5018                          subi    r17,8
+00010d e420                          ldi     r18,64
+00010e 0fc2                          add     YL,r18
+00010f 1dd2                          adc     YH,ZERO
                                  upper_lower_chosen:
                                      ; Y += y * 4 to point at line
-00009a 0f11                          lsl     r17
-00009b 0f11                          lsl     r17
-00009c 0fc1                          add     YL,r17
-00009d 1dd2                          adc     YH,ZERO
+000110 0f11                          lsl     r17
+000111 0f11                          lsl     r17
+000112 0fc1                          add     YL,r17
+000113 1dd2                          adc     YH,ZERO
                                      ; determine if right display
-00009e 3008                          cpi     r16,8
-00009f f020                          brlo    left_right_chosen
+000114 3008                          cpi     r16,8
+000115 f020                          brlo    left_right_chosen
                                      ; move Y to right display
-0000a0 5008                          subi    r16,8
-0000a1 e220                          ldi     r18,32
-0000a2 0fc2                          add     YL,r18
-0000a3 1dd2                          adc     YH,ZERO
+000116 5008                          subi    r16,8
+000117 e220                          ldi     r18,32
+000118 0fc2                          add     YL,r18
+000119 1dd2                          adc     YH,ZERO
                                  left_right_chosen:
                                      ; convert x to byte for DAMatrix
-0000a4 940e 0022                     call    COORD2BYTE ; in r16, out r19
+00011a 940e 0022                     call    COORD2BYTE ; in r16, out r19
                                  .include "mux.inc"
-0000a6 9508                      
+00011c 9508                      
                                  ; Multiplexes DAMatrix.
                                  ; Draws LINE on each display 3..0.
-0000a7 93ff                          push    ZH
-0000a8 93ef                          push    ZL
-0000a9 930f                          push    r16
-0000aa 931f                          push    r17
-0000ab 932f                          push    r18
-0000ac 933f                          push    r19
+00011d 93ff                          push    ZH
+00011e 93ef                          push    ZL
+00011f 930f                          push    r16
+000120 931f                          push    r17
+000121 932f                          push    r18
+000122 933f                          push    r19
                                  
-0000ad b70f                          in      r16,SREG
-0000ae 930f                          push    r16 
+000123 b70f                          in      r16,SREG
+000124 930f                          push    r16 
                                  
-0000af e0e0                          ldi     ZL,LOW(VMEM)
-0000b0 e0f1                          ldi     ZH,HIGH(VMEM)
+000125 e0e0                          ldi     ZL,LOW(VMEM)
+000126 e0f1                          ldi     ZH,HIGH(VMEM)
                                  
                                      ; sets Z to start of display 3
-0000b1 e610                          ldi     r17,96
-0000b2 0fe1                          add     ZL,r17
-0000b3 1df2                          adc     ZH,ZERO
+000127 e610                          ldi     r17,96
+000128 0fe1                          add     ZL,r17
+000129 1df2                          adc     ZH,ZERO
                                  
                                      ; resets LINE to 0 if 8
-0000b4 9100 0180                     lds     r16,LINE
-0000b6 7007                          andi    r16,7
-0000b7 2f10                          mov     r17,r16
+00012a 9100 0180                     lds     r16,LINE
+00012c 7007                          andi    r16,7
+00012d 2f10                          mov     r17,r16
                                  
                                      ; LINE * 4 to get row in VMEM,
                                      ; sets Z to that row
-0000b8 0f11                          lsl     r17
-0000b9 0f11                          lsl     r17
-0000ba 0fe1                          add     ZL,r17
-0000bb 1df2                          adc     ZH,ZERO
+00012e 0f11                          lsl     r17
+00012f 0f11                          lsl     r17
+000130 0fe1                          add     ZL,r17
+000131 1df2                          adc     ZH,ZERO
                                  
-0000bc 940e 0022                     call    COORD2BYTE ; in r16, out r19
+000132 940e 0022                     call    COORD2BYTE ; in r16, out r19
                                  
-0000be 982a                          cbi     PORTB,SS ; pulls latch
+000134 982a                          cbi     PORTB,SS ; pulls latch
                                  
                                      ; loops through displays
-0000bf e024                          ldi     r18,4
+000135 e024                          ldi     r18,4
                                  disp_loop:
                                      ; transmits blue
-0000c0 8100                          ldd     r16,Z+B 
-0000c1 930f                          push    r16
-0000c2 940e 0029                     call    SPI_TX
-0000c4 910f                          pop     r16
+000136 8100                          ldd     r16,Z+B 
+000137 930f                          push    r16
+000138 940e 0029                     call    SPI_TX
+00013a 910f                          pop     r16
                                  
                                      ; transmits green
-0000c5 8101                          ldd     r16,Z+G
-0000c6 930f                          push    r16
-0000c7 940e 0029                     call    SPI_TX
-0000c9 910f                          pop     r16
+00013b 8101                          ldd     r16,Z+G
+00013c 930f                          push    r16
+00013d 940e 0029                     call    SPI_TX
+00013f 910f                          pop     r16
                                  
                                      ; transmits red
-0000ca 8102                          ldd     r16,Z+R
-0000cb 930f                          push    r16
-0000cc 940e 0029                     call    SPI_TX
-0000ce 910f                          pop     r16
+000140 8102                          ldd     r16,Z+R
+000141 930f                          push    r16
+000142 940e 0029                     call    SPI_TX
+000144 910f                          pop     r16
                                      
                                      ; transmits anode
-0000cf 9530                          com     r19 ; invert bytes for DAMatrix
-0000d0 933f                          push    r19
-0000d1 940e 0029                     call    SPI_TX
-0000d3 913f                          pop     r19
-0000d4 9530                          com     r19
+000145 9530                          com     r19 ; invert bytes for DAMatrix
+000146 933f                          push    r19
+000147 940e 0029                     call    SPI_TX
+000149 913f                          pop     r19
+00014a 9530                          com     r19
                                  
                                      ; moves Z to next display
-0000d5 e210                          ldi     r17,32
-0000d6 1be1                          sub     ZL,r17
-0000d7 09f2                          sbc     ZH,ZERO
+00014b e210                          ldi     r17,32
+00014c 1be1                          sub     ZL,r17
+00014d 09f2                          sbc     ZH,ZERO
                                  
-0000d8 952a                          dec     r18
-0000d9 f731                          brne    disp_loop
+00014e 952a                          dec     r18
+00014f f731                          brne    disp_loop
                                  
-0000da 9a2a                          sbi     PORTB,SS ; pulls latch
+000150 9a2a                          sbi     PORTB,SS ; pulls latch
                                  
                                      ; incs LINE before next INT
-0000db 9100 0180                     lds     r16,LINE
-0000dd 9503                          inc     r16
-0000de 9300 0180                     sts     LINE,r16
+000151 9100 0180                     lds     r16,LINE
+000153 9503                          inc     r16
+000154 9300 0180                     sts     LINE,r16
                                  
-0000e0 910f                          pop     r16
-0000e1 bf0f                          out     SREG,r16
+                                     ; Upcount random
+000156 9100 0204                     lds     r16,SEED
+000158 9503                          inc     r16
+000159 9300 0204                     sts     SEED,r16
                                  
-0000e2 913f                          pop     r19
-0000e3 912f                          pop     r18
-0000e4 911f                          pop     r17
-0000e5 910f                          pop     r16
-0000e6 91ef                          pop     ZL
-0000e7 91ff                          pop     ZH
+00015b 910f                          pop     r16
+00015c bf0f                          out     SREG,r16
+                                 
+00015d 913f                          pop     r19
+00015e 912f                          pop     r18
+00015f 911f                          pop     r17
+000160 910f                          pop     r16
+000161 91ef                          pop     ZL
+000162 91ff                          pop     ZH
                                  .include "joystick.inc"
-0000e8 9518                      
+000163 9518                      
                                  ; Reads from pin specified by MUX3..0 in r18
                                  ; Returns ADCH in r19
-0000e9 9100 007a                     lds     r16,ADCSRA
-0000eb 6400                          ori     r16,0b0100_0000 ; set ADSC
-0000ec 9300 007a                     sts     ADCSRA,r16
-                                     ;lds     r16,ADMUX
-0000ee e600                          ldi     r16,0b0110_0000 ; load default ADMUX
-0000ef 2b02                          or      r16,r18 ; set MUXn = PCn from r18 = n
-0000f0 9300 007c                     sts     ADMUX,r16
+000164 9100 007a                     lds     r16,ADCSRA
+000166 6400                          ori     r16,0b0100_0000 ; set ADSC
+000167 9300 007a                     sts     ADCSRA,r16
+000169 e600                          ldi     r16,0b0110_0000 ; load default ADMUX
+00016a 2b02                          or      r16,r18 ; set MUXn = PCn from r18 = n
+00016b 9300 007c                     sts     ADMUX,r16
                                  adc_not_done: ; wait till conversion done
-0000f2 9100 007a                     lds     r16,ADCSRA
-0000f4 fd06                          sbrc    r16,ADSC
-0000f5 cffc                          rjmp    adc_not_done
+00016d 9100 007a                     lds     r16,ADCSRA
+00016f fd06                          sbrc    r16,ADSC
+000170 cffc                          rjmp    adc_not_done
                                  adc_done:
-0000f6 9130 0079                     lds     r19,ADCH ; read 8 MSB
-                                     ;ldi     r16,0b0110_0000
-                                     ;sts     ADMUX,r16 ; reset ADMUX
-0000f8 9508                          ret
+000171 9130 0079                     lds     r19,ADCH ; read 8 MSB
+000173 9508                          ret
                                  
                                  
                                  JOYSTICK_1:
                                  ; Performs ADC conversion and
                                  ; updates head coords in SRAM
                                      ; x-direction
-0000f9 e023                          ldi     r18,J1X
-0000fa 940e 00e9                     call    READ_JOY ; returns ADCH in r19
-0000fc 9100 0181                     lds     r16,P1
-0000fe 940e 0041                     call    SEP_XY
-000100 3c30                          cpi     r19,0b1100_0000 ; checks right
-000101 f010                          brlo    not_right
-000102 9503                          inc     r16
-000103 c003                          rjmp    not_left
+000174 e023                          ldi     r18,J1X
+000175 940e 0164                     call    READ_JOY ; returns ADCH in r19
+000177 9100 0181                     lds     r16,P1
+000179 940e 0041                     call    SEP_XY
+00017b 3c30                          cpi     r19,0b1100_0000 ; checks right
+00017c f010                          brlo    not_right
+00017d 9503                          inc     r16
+00017e c003                          rjmp    not_left
                                  not_right:
-000104 3430                          cpi     r19,0b0100_0000 ; checks left
-000105 f408                          brsh    not_left
-000106 950a                          dec     r16
+00017f 3430                          cpi     r19,0b0100_0000 ; checks left
+000180 f408                          brsh    not_left
+000181 950a                          dec     r16
                                  not_left:
-000107 940e 014b                     call    XLIM
-000109 940e 0046                     call    JOIN_XY
-00010b 9300 0181                     sts     P1,r16
+000182 940e 01c6                     call    XLIM
+000184 940e 0046                     call    JOIN_XY
+000186 9300 0181                     sts     P1,r16
                                      ; y-direction
-00010d e020                          ldi     r18,J1Y
-00010e 940e 00e9                     call    READ_JOY  ; returns ADCH in r19
-000110 9100 0181                     lds     r16,P1
-000112 940e 0041                     call    SEP_XY
-000114 3c30                          cpi     r19,0b1100_0000 ; checks up
-000115 f010                          brlo    not_up
-000116 9513                          inc     r17
-000117 c003                          rjmp    all_done
+000188 e020                          ldi     r18,J1Y
+000189 940e 0164                     call    READ_JOY  ; returns ADCH in r19
+00018b 9100 0181                     lds     r16,P1
+00018d 940e 0041                     call    SEP_XY
+00018f 3c30                          cpi     r19,0b1100_0000 ; checks up
+000190 f010                          brlo    not_up
+000191 9513                          inc     r17
+000192 c003                          rjmp    all_done
                                  not_up:
-000118 3430                          cpi     r19,0b0100_0000 ; checks down
-000119 f408                          brsh    all_done
-00011a 951a                          dec     r17
+000193 3430                          cpi     r19,0b0100_0000 ; checks down
+000194 f408                          brsh    all_done
+000195 951a                          dec     r17
                                  
                                  all_done:
-00011b 940e 0155                     call    YLIM
-00011d 940e 0046                     call    JOIN_XY
-00011f 9300 0181                     sts     P1,r16
-000121 9508                          ret
+000196 940e 01d0                     call    YLIM
+000198 940e 0046                     call    JOIN_XY
+00019a 9300 0181                     sts     P1,r16
+                                    
+00019c 9508                          ret
                                  
                                  
                                  JOYSTICK_2:
                                  ; Performs ADC conversion and
                                  ; updates head coords in SRAM
                                      ; x-direction
-000122 e021                          ldi     r18,J2X
-000123 940e 00e9                     call    READ_JOY ; returns ADCH in r19
-000125 9100 01c2                     lds     r16,P2
-000127 940e 0041                     call    SEP_XY
-000129 3c30                          cpi     r19,0b1100_0000 ; checks right
-00012a f010                          brlo    not_right2
-00012b 9503                          inc     r16
-00012c c003                          rjmp    not_left2
+00019d e021                          ldi     r18,J2X
+00019e 940e 0164                     call    READ_JOY ; returns ADCH in r19
+0001a0 9100 01c2                     lds     r16,P2
+0001a2 940e 0041                     call    SEP_XY
+0001a4 3c30                          cpi     r19,0b1100_0000 ; checks right
+0001a5 f010                          brlo    not_right2
+0001a6 9503                          inc     r16
+0001a7 c003                          rjmp    not_left2
                                  not_right2:
-00012d 3430                          cpi     r19,0b0100_0000 ; checks left
-00012e f408                          brsh    not_left2
-00012f 950a                          dec     r16
+0001a8 3430                          cpi     r19,0b0100_0000 ; checks left
+0001a9 f408                          brsh    not_left2
+0001aa 950a                          dec     r16
                                  not_left2:
-000130 940e 014b                     call    XLIM
-000132 940e 0046                     call    JOIN_XY
-000134 9300 01c2                     sts     P2,r16
+0001ab 940e 01c6                     call    XLIM
+0001ad 940e 0046                     call    JOIN_XY
+0001af 9300 01c2                     sts     P2,r16
                                      ; y-direction
-000136 e022                          ldi     r18,J2Y
-000137 940e 00e9                     call    READ_JOY  ; returns ADCH in r19
-000139 9100 01c2                     lds     r16,P2
-00013b 940e 0041                     call    SEP_XY
-00013d 3c30                          cpi     r19,0b1100_0000 ; checks up
-00013e f010                          brlo    not_up2
-00013f 9513                          inc     r17
-000140 c003                          rjmp    all_done2
+0001b1 e022                          ldi     r18,J2Y
+0001b2 940e 0164                     call    READ_JOY  ; returns ADCH in r19
+0001b4 9100 01c2                     lds     r16,P2
+0001b6 940e 0041                     call    SEP_XY
+0001b8 3c30                          cpi     r19,0b1100_0000 ; checks up
+0001b9 f010                          brlo    not_up2
+0001ba 9513                          inc     r17
+0001bb c003                          rjmp    all_done2
                                  not_up2:
-000141 3430                          cpi     r19,0b0100_0000 ; checks down
-000142 f408                          brsh    all_done2
-000143 951a                          dec     r17
+0001bc 3430                          cpi     r19,0b0100_0000 ; checks down
+0001bd f408                          brsh    all_done2
+0001be 951a                          dec     r17
                                  all_done2:
-000144 940e 0155                     call    YLIM
-000146 940e 0046                     call    JOIN_XY
-000148 9300 01c2                     sts     P2,r16
-00014a 9508                          ret
+0001bf 940e 01d0                     call    YLIM
+0001c1 940e 0046                     call    JOIN_XY
+0001c3 9300 01c2                     sts     P2,r16
+0001c5 9508                          ret
                                  
                                  
                                  XLIM:
                                  ; Takes x,y = r16,r17 and
                                  ; moves them to other side of
                                  ; screen if outside.
-00014b 3f0f                          cpi     r16,255
-00014c f019                          breq    x_under
-00014d 3100                          cpi     r16,16
-00014e f019                          breq    x_over
-00014f c004                          rjmp    xlim_done
+0001c6 3f0f                          cpi     r16,255
+0001c7 f019                          breq    x_under
+0001c8 3100                          cpi     r16,16
+0001c9 f019                          breq    x_over
+0001ca c004                          rjmp    xlim_done
                                  x_under:
-000150 e00f                          ldi     r16,15
-000151 c002                          rjmp    xlim_done
+0001cb e00f                          ldi     r16,15
+0001cc c002                          rjmp    xlim_done
                                  x_over:
-000152 e000                          ldi     r16,0
-000153 c000                          rjmp    xlim_done
+0001cd e000                          ldi     r16,0
+0001ce c000                          rjmp    xlim_done
                                  xlim_done:
-000154 9508                          ret
+0001cf 9508                          ret
                                  
                                  YLIM:
-000155 3f1f                          cpi     r17,255
-000156 f019                          breq    y_under
-000157 3110                          cpi     r17,16
-000158 f019                          breq    y_over
-000159 c004                          rjmp    ylim_done
+0001d0 3f1f                          cpi     r17,255
+0001d1 f019                          breq    y_under
+0001d2 3110                          cpi     r17,16
+0001d3 f019                          breq    y_over
+0001d4 c004                          rjmp    ylim_done
                                  y_under:
-00015a e01f                          ldi     r17,15
-00015b c002                          rjmp    ylim_done
+0001d5 e01f                          ldi     r17,15
+0001d6 c002                          rjmp    ylim_done
                                  y_over:
-00015c e010                          ldi     r17,0
-00015d c000                          rjmp    ylim_done
+0001d7 e010                          ldi     r17,0
+0001d8 c000                          rjmp    ylim_done
                                  ylim_done:
-00015e 9508                          ret
+0001d9 9508                          ret
                                  
                                   
                                  MOVE_P1_BODY:
-00015f 930f                          push    r16
-000160 931f                          push    r17
+0001da 930f                          push    r16
+0001db 931f                          push    r17
                                  
-000161 e0f1                          ldi     ZH,HIGH(P1)
-000162 e8e1                          ldi     ZL,LOW(P1)
-000163 9100 01c1                     lds     r16,P1_LEN
+0001dc e0f1                          ldi     ZH,HIGH(P1)
+0001dd e8e1                          ldi     ZL,LOW(P1)
+0001de 9100 01c1                     lds     r16,P1_LEN
                                      // Head location starts at 0 instead of 1
-000165 950a                          dec     r16 
+0001e0 950a                          dec     r16 
                                      // Start looking at the back of the snake 
-000166 0fe0                          add     ZL,r16
-000167 1df2                          adc     ZH,ZERO
+0001e1 0fe0                          add     ZL,r16
+0001e2 1df2                          adc     ZH,ZERO
                                  move_p1_loop:
                                      // Example: if size = 3 then takes
                                      // from 2nd and put into 3rd
-000168 9112                          ld      r17,-Z
-000169 8311                          std     Z+1,r17
-00016a 950a                          dec     r16
-00016b f7e1                          brne    move_p1_loop
+0001e3 9112                          ld      r17,-Z
+0001e4 8311                          std     Z+1,r17
+0001e5 950a                          dec     r16
+0001e6 f7e1                          brne    move_p1_loop
                                      // Now Head is the same value as
                                      // first part of tail
                                      // After this call we want to update
                                      // head with new cord from Joystick
-00016c 911f                          pop        r17
-00016d 910f                          pop        r16
-00016e 9508                          ret
+0001e7 911f                          pop        r17
+0001e8 910f                          pop        r16
+0001e9 9508                          ret
                                  
                                  
                                  /*
@@ -1594,72 +1689,74 @@ X:\tsiu51\projekt\Snake\main.asm(33): Including file 'X:\tsiu51\projekt\Snake\jo
                                  
 000203                               FRUIT:  .byte 1	  ; $xy
                                  
+000204                               SEED:   .byte 1 ; upconunt
                                  .cseg
                                  
                                  
                                  PROG_START:
-00016f e008                          ldi     r16,HIGH(RAMEND)
-000170 bf0e                          out     SPH,r16
-000171 ef0f                          ldi     r16,LOW(RAMEND)
-000172 bf0d                          out     SPL,r16
-000173 2422                          clr     ZERO
-000174 940e 0049                     call    INIT
+0001ea e008                          ldi     r16,HIGH(RAMEND)
+0001eb bf0e                          out     SPH,r16
+0001ec ef0f                          ldi     r16,LOW(RAMEND)
+0001ed bf0d                          out     SPL,r16
+0001ee 2422                          clr     ZERO
+0001ef 940e 00b7                     call    INIT
                                  
                                  
                                  SETUP:
                                  ; Initiates player positions
                                  
-000176 e007                          ldi     r16,$07
-000177 9300 0181                     sts     P1,r16
                                  
-000179 ef07                          ldi     r16,$f7
-00017a 9300 01c2                     sts     P2,r16
+0001f1 e8e1                          ldi		ZL,LOW(P1)
+0001f2 e0f1                      	ldi		ZH,HIGH(P1)
                                  
-00017c e707                          ldi     r16,$77
-00017d 9300 0203                     sts     FRUIT,r16
+0001f3 ed07                      	ldi		r16,0b1101_0111  // head with x = 13, y = 7
+0001f4 8300                      	st		Z,r16		
+0001f5 ee07                      	ldi		r16,0b1110_0111  // tail with x = 14, y = 7
+0001f6 8301                      	std		Z+1,r16
+0001f7 ef07                      	ldi		r16,0b1111_0111  // tail with x = 15, y = 7
+0001f8 8302                      	std		Z+2,r16
+0001f9 e003                      	ldi		r16,3
+0001fa 9300 01c1                 	sts		P1_LEN,r16		 // store lenght of the snake
+                                 
+0001fc ece2                      	ldi		ZL,LOW(P2)
+0001fd e0f1                      	ldi		ZH,HIGH(P2)
+                                 
+0001fe e208                      	ldi		r16,0b0010_1000  // head with x = 2, y = 8
+0001ff 8300                      	st		Z,r16		
+000200 e108                      	ldi		r16,0b0001_1000  // tail with x = 1, y = 8
+000201 8301                      	std		Z+1,r16
+000202 e008                      	ldi		r16,0b0000_1000  // tail with x = 0, y = 8
+000203 8302                      	std		Z+2,r16
+000204 e003                      	ldi		r16,3
+000205 9300 0202                 	sts		P2_LEN,r16		 // store lenght of the snake
+                                 
+                                 
+                                 /*
+                                     ldi     r16,$07
+                                     sts     P1,r16
+                                 
+                                     ldi     r16,$f7
+                                     sts     P2,r16
+                                 */
+000207 e707                          ldi     r16,$77
+000208 9300 0203                     sts     FRUIT,r16
                                     
-00017f 940e 0068                     call    ERASE_VMEM
-000181 940e 0073                     call    UPDATE_VMEM
+00020a 940e 00d6                     call    ERASE_VMEM
+00020c 940e 00e1                     call    UPDATE_VMEM
                                  
-000183 9478                          sei ; interrupt enabled
-                                 
+00020e 9478                          sei ; interrupt enabled
+00020f 940e 0049                     call    RANDOM
                                  
                                  PLAY:
-000184 940e 00f9                     call    JOYSTICK_1
-000186 940e 0122                     call    JOYSTICK_2
-000188 940e 0068                     call    ERASE_VMEM
-00018a 940e 0073                     call    UPDATE_VMEM
-00018c 940e 0037                     call    DELAY
-00018e cff5                          rjmp    PLAY
+000211 940e 0174                     call    JOYSTICK_1
+000213 940e 01da                     call    MOVE_P1_BODY
+000215 940e 019d                     call    JOYSTICK_2
+000217 940e 00d6                     call    ERASE_VMEM
+000219 940e 00e1                     call    UPDATE_VMEM
+00021b 940e 0037                     call    DELAY
+00021d 940e 0060                     call    HIT
                                  
-                                 
-                                 
-                                 
-                                     /*-----Option for start positions
-                                 
-                                 	ldi		ZL,LOW(P1)
-                                 	ldi		ZH,HIGH(P1)
-                                 
-                                 	ldi		r16,0b1101_0111  // head with x = 13, y = 7
-                                 	st		Z,r16		
-                                 	ldi		r16,0b1110_0111  // tail with x = 14, y = 7
-                                 	std		Z+1,r16
-                                 	ldi		r16,0b1111_0111  // tail with x = 15, y = 7
-                                 	std		Z+2,r16
-                                 	ldi		r16,3
-                                 	sts		P1_LEN,r16		 // store lenght of the snake
-                                 
-                                 	ldi		ZL,LOW(P2)
-                                 	ldi		ZH,HIGH(P2)
-                                 
-                                 	ldi		r16,0b0010_1000  // head with x = 2, y = 8
-                                 	st		Z,r16		
-                                 	ldi		r16,0b0001_1000  // tail with x = 1, y = 8
-                                 	std		Z+1,r16
-                                 	ldi		r16,0b0000_1000  // tail with x = 0, y = 8
-                                 	std		Z+2,r16
-                                 	ldi		r16,3
-                                 	sts		P2_LEN,r16		 // store lenght of the snake
+00021f cff1                          rjmp    PLAY
                                  
 
 
@@ -1678,40 +1775,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   6 z  :  13 r0 :   0 r1 :   0 r2 :  13 r3 :   0 r4 :   0 
+x  :   0 y  :   9 z  :  29 r0 :   0 r1 :   0 r2 :  13 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16: 103 r17:  34 r18:  15 r19:  23 r20:   0 
-r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   4 
-r29:   4 r30:  22 r31:  22 
-Registers used: 11 out of 35 (31.4%)
+r13:   0 r14:   0 r15:   0 r16: 147 r17:  50 r18:  32 r19:  29 r20:   4 
+r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   6 
+r29:   6 r30:  29 r31:  29 
+Registers used: 12 out of 35 (34.3%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   6 add   :   6 adiw  :   0 and   :   0 
-andi  :   3 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   5 brge  :   0 brhc  :   0 
+andi  :   5 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :  12 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   6 brlt  :   0 brmi  :   0 
-brne  :   7 brpl  :   0 brsh  :   4 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  34 cbi   :   1 cbr   :   0 
+brne  :  16 brpl  :   0 brsh  :   6 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  43 cbi   :   1 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   0 cpc   :   0 
-cpi   :  15 cpse  :   0 dec   :  12 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   5 jmp   :   2 
-ld    :   4 ldd   :   7 ldi   :  52 lds   :  10 lpm   :   0 lsl   :   4 
-lsr   :   1 mov   :   2 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :  12 cpc   :   0 
+cpi   :  15 cpse  :   0 dec   :  20 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :  10 jmp   :   2 
+ld    :  13 ldd   :  10 ldi   :  76 lds   :  20 lpm   :   0 lsl   :   4 
+lsr   :   1 mov   :   6 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   5 ori   :   1 out   :   9 pop   :  20 
-push  :  20 rcall :   0 ret   :  15 reti  :   1 rjmp  :  13 rol   :   0 
+push  :  20 rcall :   0 ret   :  18 reti  :   1 rjmp  :  16 rol   :   0 
 ror   :   0 sbc   :   1 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   1 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   4 std   :   4 sts   :  14 
-sub   :   1 subi  :   2 swap  :   2 tst   :   0 wdr   :   0 
-Instructions used: 42 out of 113 (37.2%)
+sez   :   0 sleep :   0 spm   :   0 st    :   7 std   :   8 sts   :  18 
+sub   :   1 subi  :   2 swap  :   3 tst   :   0 wdr   :   0 
+Instructions used: 43 out of 113 (38.1%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00031e    738      0    738   32768   2.3%
-[.dseg] 0x000100 0x000204      0    260    260    2048  12.7%
+[.cseg] 0x000000 0x000440   1028      0   1028   32768   3.1%
+[.dseg] 0x000100 0x000205      0    261    261    2048  12.7%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
 Assembly complete, 0 errors, 0 warnings

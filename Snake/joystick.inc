@@ -4,7 +4,6 @@ READ_JOY:
     lds     r16,ADCSRA
     ori     r16,0b0100_0000 ; set ADSC
     sts     ADCSRA,r16
-    ;lds     r16,ADMUX
     ldi     r16,0b0110_0000 ; load default ADMUX
     or      r16,r18 ; set MUXn = PCn from r18 = n
     sts     ADMUX,r16
@@ -14,8 +13,6 @@ adc_not_done: ; wait till conversion done
     rjmp    adc_not_done
 adc_done:
     lds     r19,ADCH ; read 8 MSB
-    ;ldi     r16,0b0110_0000
-    ;sts     ADMUX,r16 ; reset ADMUX
     ret
 
 
@@ -57,6 +54,7 @@ all_done:
     call    YLIM
     call    JOIN_XY
     sts     P1,r16
+   
     ret
 
 

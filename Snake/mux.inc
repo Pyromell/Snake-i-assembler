@@ -78,6 +78,11 @@ disp_loop:
     inc     r16
     sts     LINE,r16
 
+    ; Upcount random
+    lds     r16,SEED
+    inc     r16
+    sts     SEED,r16
+
     pop     r16
     out     SREG,r16
 

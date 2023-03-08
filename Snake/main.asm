@@ -44,6 +44,7 @@
 
     FRUIT:  .byte 1	  ; $xy
 
+    SEED:   .byte 1 ; upconunt
 .cseg
 
 
@@ -59,35 +60,8 @@ PROG_START:
 SETUP:
 ; Initiates player positions
 
-    ldi     r16,$07
-    sts     P1,r16
 
-    ldi     r16,$f7
-    sts     P2,r16
-
-    ldi     r16,$77
-    sts     FRUIT,r16
-   
-    call    ERASE_VMEM
-    call    UPDATE_VMEM
-
-    sei ; interrupt enabled
-
-
-PLAY:
-    call    JOYSTICK_1
-    call    JOYSTICK_2
-    call    ERASE_VMEM
-    call    UPDATE_VMEM
-    call    DELAY
-    rjmp    PLAY
-
-
-
-
-    /*-----Option for start positions
-
-	ldi		ZL,LOW(P1)
+    ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
 
 	ldi		r16,0b1101_0111  // head with x = 13, y = 7
@@ -111,4 +85,31 @@ PLAY:
 	ldi		r16,3
 	sts		P2_LEN,r16		 // store lenght of the snake
 
-	*/
+
+/*
+    ldi     r16,$07
+    sts     P1,r16
+
+    ldi     r16,$f7
+    sts     P2,r16
+*/
+    ldi     r16,$77
+    sts     FRUIT,r16
+   
+    call    ERASE_VMEM
+    call    UPDATE_VMEM
+
+    sei ; interrupt enabled
+    call    RANDOM
+
+PLAY:
+    call    JOYSTICK_1
+    call    MOVE_P1_BODY
+    call    JOYSTICK_2
+    call    ERASE_VMEM
+    call    UPDATE_VMEM
+    call    DELAY
+    call    HIT
+
+    rjmp    PLAY
+

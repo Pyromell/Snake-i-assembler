@@ -39,7 +39,7 @@ spi_tx_wait:
 
 
 DELAY:
-    ldi     r16,8
+    ldi     r16,16
 delay0:
     ldi     r17,$ff
 delay1:
@@ -73,65 +73,157 @@ JOIN_XY:
     or      r16,r17
     ret
 
-/*
-JOYSTICK:
-    lds     r16,P1
-    call    JOY_X
-    sts     P1,r16
 
-    lds     r16,P1
-    call    JOY_Y
-    sts     P1,r16
-
-    lds     r16,P2
-    call    JOY_X
-    sts     P2,r16
-
-    lds     r16,P2
-    call    JOY_Y
-    sts     P2,r16
-    ret
-
-
-JOY_X:
-; Performs ADC conversion and
-; updates head coords in SRAM
-    ldi     r18,3 ; reads from PC3
-    push    r16
-    call    READ_JOY ; returns ADCH in r19
-    pop     r16
-    call    SEP_XY
-check_right:
-    cpi     r19,0b1100_0000 ; checks right
-    brlo    check_left
-    inc     r16
-    rjmp    x_done
-check_left:
-    cpi     r19,0b0100_0000 ; checks left
-    brsh    x_done
-    dec     r16
-x_done:
-    call    JOIN_XY
-    ret
-
-JOY_Y:
-; Performs ADC conversion and
-; updates head coords in SRAM
-    ldi     r18,2 ; reads from PC2
-    push    r16
-    call    READ_JOY ; returns ADCH in r19
-    pop     r16
-    call    SEP_XY
-check_up:
-    cpi     r19,0b1100_0000 ; checks right
-    brlo    check_down
-    inc     r17
-    rjmp    y_done
-check_down:
-    cpi     r19,0b0100_0000 ; checks left
-    brsh    y_done
+RANDOM:
+RE_TRY:    
+    lds     r16,SEED
+    ldi     ZH,HIGH(P1)
+    ldi     ZL,LOW(P1)
+    lds     r17,P1_LEN
+    
+    RANDOM_LOOP1:
+    ld      r18,Z+
+    cp      r18,r16
+    breq    RE_TRY   
     dec     r17
-y_done:
-    call    JOIN_XY
+    brne    RANDOM_LOOP1
+
+    ldi     ZH,HIGH(P2)
+    ldi     ZL,LOW(P2)
+    lds     r17,P2_LEN
+
+    RANDOM_LOOP2:
+    ld      r18,Z+
+    cp      r18,r16
+    breq    RE_TRY   
+    dec     r17
+    brne    RANDOM_LOOP2
+
+    sts     FRUIT,r16
     ret
-    */
+
+
+
+HIT:
+    
+    ldi     ZH,HIGH(P1)
+    ldi     ZL,LOW(P1)
+
+    ldi     YH,HIGH(P2)
+    ldi     YL,LOW(P2)
+   
+    ld      r16,Z
+    ld      r17,Y
+
+    cp      r16,r17
+    breq    TIE
+    lds     r18,P2_LEN
+
+COLIDE_P2_LOOP:
+    ld      r17,Y+
+    cp     r16,r17  
+    breq    P2_WIN
+
+    dec     r18
+    brne    COLIDE_P2_LOOP
+
+    ldi     YH,HIGH(P2)
+    ldi     YL,LOW(P2)
+    // RESETING Y TO POINT AT HEAD
+
+COLIDE_P1_LOOP:
+    ld      r16,Z+
+    cp     r16,r17    
+    breq    P1_WIN
+    dec     r18
+    brne    COLIDE_P1_LOOP
+   
+    rjmp    SNAKE_HIT_DONE
+
+// Exercise for the reader :D
+TIE:
+P1_WIN:
+P2_WIN:        
+
+SNAKE_HIT_DONE:
+
+    ldi     ZH,HIGH(P1)
+    ldi     ZL,LOW(P1)
+
+    ld      r16,Z
+    ld      r17,Y
+    lds     r18,FRUIT
+    
+    cp      r18,r16
+    brne    P1_NO_FRUIT
+        
+    lds     r16,P1_LEN
+    inc     r16
+    sts     P1_LEN,r16  
+    call    RANDOM
+P1_NO_FRUIT:
+
+    cp      r18,r17
+    brne    P2_NO_FRUIT
+
+    lds     r17,P1_LEN
+    inc     r17
+    sts     P2_LEN,r17
+    call    RANDOM
+P2_NO_FRUIT:
+
+    ret
+
+
+// this need to be done differently in joystick
+AUTO_RUN:
+    // Attempt to make the snake auto move
+    ldi     ZH,HIGH(P1)
+    ldi     ZL,LOW(P1)
+
+    ld      r16,Z
+    call    SEP_XY
+    mov     r18,r16  // Head X Pos
+    mov     r19,r17  // Head Y Pos
+
+    ldd     r16,Z+1 
+    call    SEP_XY   
+    // r16 1st tail X pos
+    // r17 1st tail Y pos
+    cp      r16,r18
+    brne    X_USED
+    
+    ldd     r16,Z+2
+    swap    r16
+    andi    r16,0b0000_1111
+
+    cp      r18,r16
+    breq    X_USED  
+
+    cp      r18,r16
+    brsh    INC_X_POS
+
+    dec     r18    
+    rjmp    X_USED     
+INC_X_POS:  
+    inc     r18
+X_USED:
+    ldd     r16,Z+2
+    andi    r16,0b0000_1111
+    
+    cp      r19,r16
+    breq    DONE_AUTO    
+
+    cp      r19,r16
+    brsh    INC_Y_POS
+    dec     r19
+    rjmp    DONE_AUTO
+INC_Y_POS:
+    inc     r19
+DONE_AUTO:
+    mov     r16,r18
+    mov     r17,r19
+    call    JOIN_XY
+    call    XLIM
+    st      Z,r16
+    ret

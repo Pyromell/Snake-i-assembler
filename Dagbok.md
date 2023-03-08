@@ -15,4 +15,7 @@ Datum        | Ansvarig   | Aktivitetsbeskrivning
 2023-02-28   | joh, chr   | Bytte avbrott igen för felsökning men kom fram till att det var något kodmässigt fel med funktionen
 2023-02-28   | joh, chr   | Fixade multiplexen så den fungerar för all våra test samt infört en trevligt ljusstyrka
 2023-03-03   | ker, chr   | Skrivit kod för AD omvanldingen samt jobbat på rapporten. Inledning nästan klart
-2023-03-04   | ker, chr   | Filuppdelning, kommentering, joystick kan flytta i x- och y-led men inte b�da
+2023-03-04   | ker, chr   | Filuppdelning, kommentering, joystick kan flytta i x- och y-led men inte b�da
+2023-03-06   | joh        | Arbetade på funktionen för att svansen ska följa efter huvudet
+2023-03-07   | ker,chr    | Lyckades äntligen få joystick att fungera på rätt sätt. Även limits fungerar
+2023-03-08   | joh,chr    | Fick till random för frukt, Ormen kan vara längre än huvud, Träff funkar ish.

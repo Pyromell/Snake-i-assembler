@@ -61,8 +61,8 @@ SETUP:
 ; Initiates player positions
 
 
-    ldi		ZL,LOW(P1)
-	ldi		ZH,HIGH(P1)
+    ldi		ZL,LOW(P2)
+	ldi		ZH,HIGH(P2)
 
 	ldi		r16,0b1101_0111  // head with x = 13, y = 7
 	st		Z,r16		
@@ -73,8 +73,8 @@ SETUP:
 	ldi		r16,3
 	sts		P1_LEN,r16		 // store lenght of the snake
 
-	ldi		ZL,LOW(P2)
-	ldi		ZH,HIGH(P2)
+	ldi		ZL,LOW(P1)
+	ldi		ZH,HIGH(P1)
 
 	ldi		r16,0b0010_1000  // head with x = 2, y = 8
 	st		Z,r16		
@@ -85,16 +85,6 @@ SETUP:
 	ldi		r16,3
 	sts		P2_LEN,r16		 // store lenght of the snake
 
-
-/*
-    ldi     r16,$07
-    sts     P1,r16
-
-    ldi     r16,$f7
-    sts     P2,r16
-*/
-    ldi     r16,$77
-    sts     FRUIT,r16
    
     call    ERASE_VMEM
     call    UPDATE_VMEM
@@ -103,8 +93,8 @@ SETUP:
     call    RANDOM
 
 PLAY:
+	call    MOVE_BODYS
     call    JOYSTICK_1
-    call    MOVE_P1_BODY
     call    JOYSTICK_2
     call    ERASE_VMEM
     call    UPDATE_VMEM

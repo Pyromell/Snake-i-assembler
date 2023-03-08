@@ -33,6 +33,7 @@ update_p1_loop:
     dec     r20
     brne    update_p1_loop
 
+
 update_p2:  ; same as p1
     ldi     ZH,HIGH(P2)
     ldi     ZL,LOW(P2)

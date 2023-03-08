@@ -133,7 +133,7 @@ COLIDE_P2_LOOP:
 
 COLIDE_P1_LOOP:
     ld      r16,Z+
-    cp     r16,r17    
+    cp      r16,r17    
     breq    P1_WIN
     dec     r18
     brne    COLIDE_P1_LOOP
@@ -149,6 +149,8 @@ SNAKE_HIT_DONE:
 
     ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
+	ldi		YH,HIGH(P2)
+	ldi		YL,LOW(P2)
 
     ld      r16,Z
     ld      r17,Y
@@ -175,55 +177,3 @@ P2_NO_FRUIT:
     ret
 
 
-// this need to be done differently in joystick
-AUTO_RUN:
-    // Attempt to make the snake auto move
-    ldi     ZH,HIGH(P1)
-    ldi     ZL,LOW(P1)
-
-    ld      r16,Z
-    call    SEP_XY
-    mov     r18,r16  // Head X Pos
-    mov     r19,r17  // Head Y Pos
-
-    ldd     r16,Z+1 
-    call    SEP_XY   
-    // r16 1st tail X pos
-    // r17 1st tail Y pos
-    cp      r16,r18
-    brne    X_USED
-    
-    ldd     r16,Z+2
-    swap    r16
-    andi    r16,0b0000_1111
-
-    cp      r18,r16
-    breq    X_USED  
-
-    cp      r18,r16
-    brsh    INC_X_POS
-
-    dec     r18    
-    rjmp    X_USED     
-INC_X_POS:  
-    inc     r18
-X_USED:
-    ldd     r16,Z+2
-    andi    r16,0b0000_1111
-    
-    cp      r19,r16
-    breq    DONE_AUTO    
-
-    cp      r19,r16
-    brsh    INC_Y_POS
-    dec     r19
-    rjmp    DONE_AUTO
-INC_Y_POS:
-    inc     r19
-DONE_AUTO:
-    mov     r16,r18
-    mov     r17,r19
-    call    JOIN_XY
-    call    XLIM
-    st      Z,r16
-    ret

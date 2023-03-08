@@ -20,6 +20,11 @@ JOYSTICK_1:
 ; Performs ADC conversion and
 ; updates head coords in SRAM
     ; x-direction
+
+	// Prep for auto_run
+	lds		r20,P1
+	// end of prep
+
     ldi     r18,J1X
     call    READ_JOY ; returns ADCH in r19
     lds     r16,P1
@@ -53,15 +58,27 @@ not_up:
 all_done:
     call    YLIM
     call    JOIN_XY
-    sts     P1,r16
-   
-    ret
+    st      Z,r16
+	
+	ldi     ZH,HIGH(P1)
+    ldi     ZL,LOW(P1)
+	call	AUTO_RUN
+     
+	 ret
+
+
 
 
 JOYSTICK_2:
 ; Performs ADC conversion and
 ; updates head coords in SRAM
     ; x-direction
+
+	// prep for auto run
+	lds		r20,P2
+	// end of prep
+
+
     ldi     r18,J2X
     call    READ_JOY ; returns ADCH in r19
     lds     r16,P2
@@ -95,6 +112,12 @@ all_done2:
     call    YLIM
     call    JOIN_XY
     sts     P2,r16
+	
+	ldi		ZH,HIGH(P2)
+	ldi		ZL,LOW(P2)
+	call	AUTO_RUN
+	
+
     ret
 
 
@@ -131,33 +154,129 @@ y_over:
 ylim_done:
     ret
 
- 
-MOVE_P1_BODY:
-    push    r16
-    push    r17
-
-    ldi     ZH,HIGH(P1)
+MOVE_BODYS:
+	push	ZH
+	push	ZL
+	ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
     lds     r16,P1_LEN
+	call	MOVE_BODY
+	
+	
+	ldi     ZH,HIGH(P2)
+    ldi     ZL,LOW(P2)
+    lds     r16,P2_LEN
+	call	MOVE_BODY
+	
+	pop		ZL
+	pop		ZH
+	ret
+ 
+MOVE_BODY:
     // Head location starts at 0 instead of 1
     dec     r16 
     // Start looking at the back of the snake 
     add     ZL,r16
     adc     ZH,ZERO
-move_p1_loop:
+move_loop:
     // Example: if size = 3 then takes
     // from 2nd and put into 3rd
     ld      r17,-Z
     std     Z+1,r17
     dec     r16
-    brne    move_p1_loop
+    brne    move_loop
     // Now Head is the same value as
     // first part of tail
     // After this call we want to update
     // head with new cord from Joystick
-    pop        r17
-    pop        r16
     ret
+
+
+
+	AUTO_RUN:
+
+	ld		r16,Z
+	cp		r16,r20			// CHECK IF JOYSTICK HAS BEEN USED
+	brne	AUTO_DONE
+
+	ldd		r17,Z+2			// Compares with +2 due to body function
+	swap	r16
+	swap	r17
+	andi	r16,0b0000_1111  
+	andi	r17,0b0000_1111
+
+	cp		r16,r17
+	breq	AUTO_X_DONE
+	
+	cpi		r16,0			// Due to limits special cases are needed
+	brne	NO_LIM_X1
+	cpi		r17,15
+	brne	NO_LIM_X1
+	ldi		r16,1
+	rjmp	AUTO_X_DONE
+NO_LIM_X1:
+
+	cpi		r16,15
+	brne	NO_LIM_X2
+	cpi		r17,0
+	brne	NO_LIM_X2
+	ldi		r16,14
+	rjmp	AUTO_X_DONE
+
+	
+NO_LIM_X2:					// The normal cases
+	cp		r16,r17
+	brsh	INC_AUTO_X
+	dec		r16
+	call	XLIM
+	rjmp	AUTO_X_DONE
+
+INC_AUTO_X:
+	inc		r16
+	call	XLIM
+AUTO_X_DONE:
+
+	ld		r17,Z
+	ldd		r18,Z+2
+	andi	r17,0b0000_1111
+	andi	r18,0b0000_1111
+
+	cp		r17,r18
+	breq	AUTO_Y_DONE
+
+	cpi		r17,0				// Due to limits special cases are needed
+	brne	NO_LIM_Y1
+	cpi		r18,15
+	brne	NO_LIM_Y1
+	ldi		r17,1
+	rjmp	AUTO_Y_DONE	
+NO_LIM_Y1:
+	cpi		r17,15
+	brne	NO_LIM_Y2
+	cpi		r18,0
+	brne	NO_LIM_Y2
+	ldi		r17,14
+	rjmp	AUTO_Y_DONE	
+	
+NO_LIM_Y2:
+	cp		r17,r18				// the normal cases
+	brsh	INC_AUTO_Y
+
+	dec		r17
+	call	YLIM
+	rjmp	AUTO_Y_DONE
+INC_AUTO_Y:
+	inc		r17
+	call	YLIM
+AUTO_Y_DONE:
+		
+	call	JOIN_XY
+	st		Z,r16
+AUTO_DONE:
+
+    ret
+
+
 
 
 /*

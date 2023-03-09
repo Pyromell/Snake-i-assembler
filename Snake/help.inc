@@ -39,7 +39,7 @@ spi_tx_wait:
 
 
 DELAY:
-    ldi     r16,16
+    ldi     r16,18
 delay0:
     ldi     r17,$ff
 delay1:
@@ -103,36 +103,29 @@ RE_TRY:
     ret
 
 
-
 HIT:
-    
-    ldi     ZH,HIGH(P1)
-    ldi     ZL,LOW(P1)
-
-    ldi     YH,HIGH(P2)
-    ldi     YL,LOW(P2)
-   
-    ld      r16,Z
-    ld      r17,Y
-
+    lds     r16,P1
+    lds     r17,P2
     cp      r16,r17
     breq    TIE
+
+    ldi     ZH,HIGH(P2)
+    ldi     ZL,LOW(P2)
+    lds     r16,P1
     lds     r18,P2_LEN
-
 COLIDE_P2_LOOP:
-    ld      r17,Y+
-    cp     r16,r17  
+    ld      r17,Z+
+    cp      r16,r17  
     breq    P2_WIN
-
     dec     r18
     brne    COLIDE_P2_LOOP
 
-    ldi     YH,HIGH(P2)
-    ldi     YL,LOW(P2)
-    // RESETING Y TO POINT AT HEAD
-
+    ldi     ZH,HIGH(P1)
+    ldi     ZL,LOW(P1)
+    lds     r16,P2
+    lds     r18,P1_LEN
 COLIDE_P1_LOOP:
-    ld      r16,Z+
+    ld      r17,Z+
     cp      r16,r17    
     breq    P1_WIN
     dec     r18
@@ -143,37 +136,35 @@ COLIDE_P1_LOOP:
 // Exercise for the reader :D
 TIE:
 P1_WIN:
-P2_WIN:        
+P2_WIN:
+    call    DELAY
+    call    DELAY
+    call    DELAY
+    call    DELAY
+    call    DELAY
+    jmp     PROG_START
+	   
 
 SNAKE_HIT_DONE:
-
-    ldi     ZH,HIGH(P1)
-    ldi     ZL,LOW(P1)
-	ldi		YH,HIGH(P2)
-	ldi		YL,LOW(P2)
-
-    ld      r16,Z
-    ld      r17,Y
-    lds     r18,FRUIT
-    
+	lds     r18,FRUIT
+    lds     r16,P1
     cp      r18,r16
     brne    P1_NO_FRUIT
-        
     lds     r16,P1_LEN
+	ldi		r17,MAX_LEN
+	cpse	r16,r17
     inc     r16
     sts     P1_LEN,r16  
     call    RANDOM
 P1_NO_FRUIT:
-
-    cp      r18,r17
+	lds     r16,P2
+    cp      r18,r16
     brne    P2_NO_FRUIT
-
-    lds     r17,P1_LEN
-    inc     r17
-    sts     P2_LEN,r17
+    lds     r16,P2_LEN
+	ldi		r17,MAX_LEN
+	cpse	r16,r17
+    inc     r16
+    sts     P2_LEN,r16
     call    RANDOM
 P2_NO_FRUIT:
-
     ret
-
-

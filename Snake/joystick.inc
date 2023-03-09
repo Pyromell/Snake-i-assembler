@@ -1,18 +1,21 @@
 READ_JOY:
 ; Reads from pin specified by MUX3..0 in r18
-; Returns ADCH in r19
-    lds     r16,ADCSRA
-    ori     r16,0b0100_0000 ; set ADSC
-    sts     ADCSRA,r16
+; Returns ADCH in r19    
     ldi     r16,0b0110_0000 ; load default ADMUX
     or      r16,r18 ; set MUXn = PCn from r18 = n
     sts     ADMUX,r16
+    lds     r16,ADCSRA
+    ori     r16,0b0100_0000 ; set ADSC
+    sts     ADCSRA,r16
+
 adc_not_done: ; wait till conversion done
     lds     r16,ADCSRA
     sbrc    r16,ADSC
     rjmp    adc_not_done
 adc_done:
     lds     r19,ADCH ; read 8 MSB
+    ;ldi     r16,0b0110_0000
+    ;sts     ADMUX,r16 ; reset ADMUX
     ret
 
 
@@ -20,11 +23,6 @@ JOYSTICK_1:
 ; Performs ADC conversion and
 ; updates head coords in SRAM
     ; x-direction
-
-	// Prep for auto_run
-	lds		r20,P1
-	// end of prep
-
     ldi     r18,J1X
     call    READ_JOY ; returns ADCH in r19
     lds     r16,P1
@@ -58,27 +56,18 @@ not_up:
 all_done:
     call    YLIM
     call    JOIN_XY
-    st      Z,r16
-	
-	ldi     ZH,HIGH(P1)
+    sts     P1,r16
+
+    ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
-	call	AUTO_RUN
-     
-	 ret
-
-
+    call    AUTO_RUN
+    ret
 
 
 JOYSTICK_2:
 ; Performs ADC conversion and
 ; updates head coords in SRAM
     ; x-direction
-
-	// prep for auto run
-	lds		r20,P2
-	// end of prep
-
-
     ldi     r18,J2X
     call    READ_JOY ; returns ADCH in r19
     lds     r16,P2
@@ -112,12 +101,10 @@ all_done2:
     call    YLIM
     call    JOIN_XY
     sts     P2,r16
-	
-	ldi		ZH,HIGH(P2)
-	ldi		ZL,LOW(P2)
-	call	AUTO_RUN
-	
 
+    ldi     ZH,HIGH(P2)
+    ldi     ZL,LOW(P2)
+    call    AUTO_RUN
     ret
 
 
@@ -153,6 +140,7 @@ y_over:
     rjmp    ylim_done
 ylim_done:
     ret
+
 
 MOVE_BODYS:
 	push	ZH
@@ -193,10 +181,11 @@ move_loop:
 
 
 
-	AUTO_RUN:
+AUTO_RUN:
 
 	ld		r16,Z
-	cp		r16,r20			// CHECK IF JOYSTICK HAS BEEN USED
+    ldd     r17,Z+1
+	cp		r16,r17			// CHECK IF JOYSTICK HAS BEEN USED
 	brne	AUTO_DONE
 
 	ldd		r17,Z+2			// Compares with +2 due to body function

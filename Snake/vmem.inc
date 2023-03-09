@@ -16,7 +16,8 @@ clear_byte:
 UPDATE_VMEM:
     push    ZH
     push    ZL
-
+    push    YH
+    push    YL
 update_p1:
     ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
@@ -57,6 +58,8 @@ update_fruit:
     std     Y+FRUIT_COLOR,r19
 
 update_done:
+    pop     YL
+    pop     YH
     pop     ZL
     pop     ZH
     ret

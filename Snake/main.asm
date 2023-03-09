@@ -13,10 +13,10 @@
 .equ	FRUIT_COLOR = G
 .equ	MAX_LEN  = 64
 ; Controls
-.equ    J1X = 3
-.equ    J1Y = 0
-.equ    J2X = 1
-.equ    J2Y = 2
+.equ    J1X = 2
+.equ    J1Y = 3
+.equ    J2X = 0
+.equ    J2Y = 1
 ; Registers
 .def    ZERO = r2
 
@@ -59,16 +59,14 @@ PROG_START:
 
 SETUP:
 ; Initiates player positions
-
-
     ldi		ZL,LOW(P2)
 	ldi		ZH,HIGH(P2)
 
-	ldi		r16,0b1101_0111  // head with x = 13, y = 7
+	ldi		r16,$d7  // head with x = 13, y = 7
 	st		Z,r16		
-	ldi		r16,0b1110_0111  // tail with x = 14, y = 7
+	ldi		r16,$e7  // tail with x = 14, y = 7
 	std		Z+1,r16
-	ldi		r16,0b1111_0111  // tail with x = 15, y = 7
+	ldi		r16,$f7  // tail with x = 15, y = 7
 	std		Z+2,r16
 	ldi		r16,3
 	sts		P1_LEN,r16		 // store lenght of the snake
@@ -76,16 +74,16 @@ SETUP:
 	ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
 
-	ldi		r16,0b0010_1000  // head with x = 2, y = 8
+	ldi		r16,$28  // head with x = 2, y = 8
 	st		Z,r16		
-	ldi		r16,0b0001_1000  // tail with x = 1, y = 8
+	ldi		r16,$18  // tail with x = 1, y = 8
 	std		Z+1,r16
-	ldi		r16,0b0000_1000  // tail with x = 0, y = 8
+	ldi		r16,$08  // tail with x = 0, y = 8
 	std		Z+2,r16
 	ldi		r16,3
 	sts		P2_LEN,r16		 // store lenght of the snake
+    
 
-   
     call    ERASE_VMEM
     call    UPDATE_VMEM
 

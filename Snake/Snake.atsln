@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		help.inc = help.inc
 		init.inc = init.inc
 		joystick.inc = joystick.inc
+		ljud.inc = ljud.inc
+		move.inc = move.inc
 		mux.inc = mux.inc
 		vmem.inc = vmem.inc
 	EndProjectSection

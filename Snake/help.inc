@@ -1,4 +1,50 @@
-COORD2BYTE:
+SETUP:
+; Initiates player positions
+    ; player 1
+    ldi		ZL,LOW(P1)
+	ldi		ZH,HIGH(P1)
+    ; head
+	ldi		r16,$28
+	st		Z,r16
+    ; body
+	ldi		r16,$18
+	std		Z+1,r16
+	ldi		r16,$08
+	std		Z+2,r16
+    ; length
+	ldi		r16,3
+	sts		P1_LEN,r16
+    ; direction
+    clr     r16
+    sbr     r16,(1 << RIGHT)
+    sts     P1_DIR,r16
+    
+    ; player 2
+    ldi		ZL,LOW(P2)
+	ldi		ZH,HIGH(P2)
+    ; head
+	ldi		r16,$d7
+	st		Z,r16
+    ; body	
+	ldi		r16,$e7
+	std		Z+1,r16
+	ldi		r16,$f7
+	std		Z+2,r16
+    ; length
+	ldi		r16,3
+	sts		P2_LEN,r16
+    ; direction
+    clr     r16
+    sbr     r16,(1 << LEFT)
+    sts     P2_DIR,r16
+
+    ; clear and place
+    sei     ; interrupt enabled
+    call    PLACE_FRUIT
+    ret
+    
+ 
+ COORD2BYTE:
 ; Converts coordinate in r16
 ; to byte for DAMatrix in r19
 
@@ -39,7 +85,7 @@ spi_tx_wait:
 
 
 DELAY:
-    ldi     r16,18
+    ldi     r16,SPEED
 delay0:
     ldi     r17,$ff
 delay1:
@@ -74,7 +120,7 @@ JOIN_XY:
     ret
 
 
-RANDOM:
+PLACE_FRUIT:
 RE_TRY:    
     lds     r16,SEED
     ldi     ZH,HIGH(P1)
@@ -100,71 +146,4 @@ RE_TRY:
     brne    RANDOM_LOOP2
 
     sts     FRUIT,r16
-    ret
-
-
-HIT:
-    lds     r16,P1
-    lds     r17,P2
-    cp      r16,r17
-    breq    TIE
-
-    ldi     ZH,HIGH(P2)
-    ldi     ZL,LOW(P2)
-    lds     r16,P1
-    lds     r18,P2_LEN
-COLIDE_P2_LOOP:
-    ld      r17,Z+
-    cp      r16,r17  
-    breq    P2_WIN
-    dec     r18
-    brne    COLIDE_P2_LOOP
-
-    ldi     ZH,HIGH(P1)
-    ldi     ZL,LOW(P1)
-    lds     r16,P2
-    lds     r18,P1_LEN
-COLIDE_P1_LOOP:
-    ld      r17,Z+
-    cp      r16,r17    
-    breq    P1_WIN
-    dec     r18
-    brne    COLIDE_P1_LOOP
-   
-    rjmp    SNAKE_HIT_DONE
-
-// Exercise for the reader :D
-TIE:
-P1_WIN:
-P2_WIN:
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    jmp     PROG_START
-	   
-
-SNAKE_HIT_DONE:
-	lds     r18,FRUIT
-    lds     r16,P1
-    cp      r18,r16
-    brne    P1_NO_FRUIT
-    lds     r16,P1_LEN
-	ldi		r17,MAX_LEN
-	cpse	r16,r17
-    inc     r16
-    sts     P1_LEN,r16  
-    call    RANDOM
-P1_NO_FRUIT:
-	lds     r16,P2
-    cp      r18,r16
-    brne    P2_NO_FRUIT
-    lds     r16,P2_LEN
-	ldi		r17,MAX_LEN
-	cpse	r16,r17
-    inc     r16
-    sts     P2_LEN,r16
-    call    RANDOM
-P2_NO_FRUIT:
     ret

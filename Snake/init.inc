@@ -53,5 +53,6 @@ data_init:
     st      Z,ZERO
 
     sts     LINE,ZERO
+    sts     STATUS,ZERO
 
 ret ; from INIT

@@ -1,3 +1,7 @@
+LJUD:
+ldi     r16,1
+out     DDRB,r16
+
 .dseg
   BEEP_PITCH_1:     .byte 1
   BEEP_PITCH_2:     .byte 1
@@ -6,75 +10,75 @@
 
 ldi     r16,50
 sts     BEEP_LENGTH,r16
-call G
-call G
-call D
-call D
-call E
-call E
-call D ;  halv not
-call C
-call C
-call B
-call B
-call A
-call A
-call G ; Halv not
-call D
-call D
-call C
-call C
-call B
-call B
-call A ; Halv not
-call D
-call D
-call C
-call C
-call B
-call B
-call A ; Halv not
-call G
-call G
-call D
-call D
-call E
-call E
-call D ; Halv not
-call E
-call E
-call D
-call C
-call C
-call B
-call B
-call A
-call A
-call G ; Halv not
+call NOTE_G
+call NOTE_G
+call NOTE_D
+call NOTE_D
+call NOTE_E
+call NOTE_E
+call NOTE_D ;  halv not
+call NOTE_C
+call NOTE_C
+call NOTE_B
+call NOTE_B
+call NOTE_A
+call NOTE_A
+call NOTE_G ; Halv not
+call NOTE_D
+call NOTE_D
+call NOTE_C
+call NOTE_C
+call NOTE_B
+call NOTE_B
+call NOTE_A ; Halv not
+call NOTE_D
+call NOTE_D
+call NOTE_C
+call NOTE_C
+call NOTE_B
+call NOTE_B
+call NOTE_A ; Halv not
+call NOTE_G
+call NOTE_G
+call NOTE_D
+call NOTE_D
+call NOTE_E
+call NOTE_E
+call NOTE_D ; Halv not
+call NOTE_E
+call NOTE_E
+call NOTE_D
+call NOTE_C
+call NOTE_C
+call NOTE_B
+call NOTE_B
+call NOTE_A
+call NOTE_A
+call NOTE_G ; Halv not
 
 
-A:      ; 3520 Hz
+NOTE_A:      ; 3520 Hz
     ldi     r16,60
     sts     BEEP_PITCH_1,r16
     ldi     r16,1
     sts     BEEP_PITCH_2,r16
     call    BEEP
     ret
-B:      ; 3951 Hz
+NOTE_B:      ; 3951 Hz
     ldi     r16,50
     sts     BEEP_PITCH_1,r16
     ldi     r16,1
     sts     BEEP_PITCH_2,r16
     call    BEEP
     ret
-C:      ; 2093 HZ
+NOTE_C:      ; 2093 HZ
     ldi     r16,100
     sts     BEEP_PITCH_1,r16
     ldi     r16,1
     sts     BEEP_PITCH_2,r16
     call    BEEP
     ret
-D:      ; 2489 HZ
+NOTE_D:      ; 2489 HZ
     ldi     r16,90
     sts     BEEP_PITCH_1,r16
     ldi     r16,1
@@ -82,7 +86,7 @@ D:      ; 2489 HZ
     call    BEEP
     ret
 
-E:      ; 2637 HZ
+NOTE_E:      ; 2637 HZ
     ldi     r16,80
     sts     BEEP_PITCH_1,r16
     ldi     r16,1
@@ -90,7 +94,7 @@ E:      ; 2637 HZ
     call    BEEP
     ret
 
-G:      ; 3136 Hz
+NOTE_G:      ; 3136 Hz
     ldi     r16,200
     sts     BEEP_PITCH_1,r16
     ldi     r16,1
@@ -109,10 +113,10 @@ LOOP2:
 
 LOOP3:
 	lds     r16,BEEP_PITCH_1  ; Load period of square wave
-    sbi     PORTB,1         ; Rising edge
-    call    DELAY           ; Hold
-    cbi     PORTB,1         ; Falling edge
-    call    DELAY           ; Hold
+    sbi     PORTB,1           ; Rising edge
+    call    DELAY_SOUND       ; Hold
+    cbi     PORTB,1           ; Falling edge
+    call    DELAY_SOUND       ; Hold
 
     dec     r22
     brne    LOOP3
@@ -121,12 +125,12 @@ LOOP3:
 
     ret
 
-DELAY:
+DELAY_SOUND:
     ldi     r17,100
 
 DELAY_INNER:
     dec     r17
     brne    DELAY_INNER
     dec     r16
-    brne    DELAY
+    brne    DELAY_SOUND
     ret

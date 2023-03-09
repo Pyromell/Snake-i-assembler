@@ -19,3 +19,4 @@ Datum        | Ansvarig   | Aktivitetsbeskrivning
 2023-03-06   | joh        | Arbetade på funktionen för att svansen ska följa efter huvudet
 2023-03-07   | ker,chr    | Lyckades äntligen få joystick att fungera på rätt sätt. Även limits fungerar
 2023-03-08   | joh,chr    | Fick till random för frukt, Ormen kan vara längre än huvud, Träff funkar ish.
+2023-03-09   | Alla       | Skrivit på rapport, städat kod, Spelt fungerar helt okej och är roligt, lite småfix kvar

@@ -45,7 +45,7 @@ all_done:
 	or		r18,r17
 	andi	r18,$0f
 	
-	// Using Cord compare to check if not allowed change in direction
+	// Using dir compare to check if not allowed change in direction
 			
 	cpi		r18,$0f				// Check diagonal
 	breq	NOT_ALLOWED_DIR
@@ -60,8 +60,6 @@ all_done:
     mov     r16,r17   // Skip this is joystick not touched
 NOT_ALLOWED_DIR:
 	
-
-
     ret
 
 

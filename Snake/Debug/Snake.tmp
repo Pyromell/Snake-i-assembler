@@ -17,6 +17,7 @@
   <FILE>X:\projekt\Snake\mux.inc</FILE>
   <FILE>X:\projekt\Snake\joystick.inc</FILE>
   <FILE>X:\projekt\Snake\move.inc</FILE>
+  <FILE>X:\projekt\Snake\screen.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
   <FILE>X:\projekt\Snake\Debug\Snake.obj</FILE>
@@ -40,7 +41,7 @@
   <FRUIT><FILE>X:\projekt\Snake\main.asm</FILE><LINE>42</LINE></FRUIT>
   <SEED><FILE>X:\projekt\Snake\main.asm</FILE><LINE>43</LINE></SEED>
   <STATUS><FILE>X:\projekt\Snake\main.asm</FILE><LINE>45</LINE></STATUS>
-  <PROG_START><FILE>X:\projekt\Snake\main.asm</FILE><LINE>64</LINE></PROG_START>
+  <PROG_START><FILE>X:\projekt\Snake\main.asm</FILE><LINE>65</LINE></PROG_START>
   <MULTIPLEX><FILE>X:\projekt\Snake\mux.inc</FILE><LINE>1</LINE></MULTIPLEX>
   <SETUP><FILE>X:\projekt\Snake\help.inc</FILE><LINE>1</LINE></SETUP>
   <PLACE_FRUIT><FILE>X:\projekt\Snake\help.inc</FILE><LINE>123</LINE></PLACE_FRUIT>
@@ -109,10 +110,17 @@
   <fruit_done><FILE>X:\projekt\Snake\move.inc</FILE><LINE>157</LINE></fruit_done>
   <new_fruit><FILE>X:\projekt\Snake\move.inc</FILE><LINE>154</LINE></new_fruit>
   <check_hits_done><FILE>X:\projekt\Snake\move.inc</FILE><LINE>174</LINE></check_hits_done>
-  <PLAY><FILE>X:\projekt\Snake\main.asm</FILE><LINE>75</LINE></PLAY>
-  <GAME_OVER><FILE>X:\projekt\Snake\main.asm</FILE><LINE>89</LINE></GAME_OVER>
-  <tied_screen><FILE>X:\projekt\Snake\main.asm</FILE><LINE>102</LINE></tied_screen>
-  <p1_win_screen><FILE>X:\projekt\Snake\main.asm</FILE><LINE>103</LINE></p1_win_screen>
-  <p2_win_screen><FILE>X:\projekt\Snake\main.asm</FILE><LINE>104</LINE></p2_win_screen>
+  <UPDATE_WIN_VMEM><FILE>X:\projekt\Snake\screen.inc</FILE><LINE>5</LINE></UPDATE_WIN_VMEM>
+  <UPDATE_WIN_LOOP><FILE>X:\projekt\Snake\screen.inc</FILE><LINE>7</LINE></UPDATE_WIN_LOOP>
+  <END_OF_LIST><FILE>X:\projekt\Snake\screen.inc</FILE><LINE>22</LINE></END_OF_LIST>
+  <PLAY><FILE>X:\projekt\Snake\main.asm</FILE><LINE>76</LINE></PLAY>
+  <GAME_OVER><FILE>X:\projekt\Snake\main.asm</FILE><LINE>90</LINE></GAME_OVER>
+  <tied_screen><FILE>X:\projekt\Snake\main.asm</FILE><LINE>104</LINE></tied_screen>
+  <p1_win_screen><FILE>X:\projekt\Snake\main.asm</FILE><LINE>110</LINE></p1_win_screen>
+  <p2_win_screen><FILE>X:\projekt\Snake\main.asm</FILE><LINE>116</LINE></p2_win_screen>
+  <TIE_TAB><FILE>X:\projekt\Snake\main.asm</FILE><LINE>143</LINE></TIE_TAB>
+  <WIN_PREP_DONE><FILE>X:\projekt\Snake\main.asm</FILE><LINE>121</LINE></WIN_PREP_DONE>
+  <RED_WIN_TAB><FILE>X:\projekt\Snake\main.asm</FILE><LINE>133</LINE></RED_WIN_TAB>
+  <BLUE_WIN_TAB><FILE>X:\projekt\Snake\main.asm</FILE><LINE>138</LINE></BLUE_WIN_TAB>
  </LABELS>
 </ASSEMBLER_INFO>

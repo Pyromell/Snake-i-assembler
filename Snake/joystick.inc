@@ -47,14 +47,14 @@ all_done:
 	
 	// Using Cord compare to check if not allowed change in direction
 			
-	cpi		r18,$0f				
+	cpi		r18,$0f				// Check diagonal
 	breq	NOT_ALLOWED_DIR
 	
 	cpi		r18,$0A
-	breq	NOT_ALLOWED_DIR
+	breq	NOT_ALLOWED_DIR		// Check Y-axis
 	
 	cpi		r18,$05
-	breq	NOT_ALLOWED_DIR	
+	breq	NOT_ALLOWED_DIR		// Check X-axis
 
     cpse    r17,ZERO
     mov     r16,r17   // Skip this is joystick not touched

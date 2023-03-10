@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ljud.inc = ljud.inc
 		move.inc = move.inc
 		mux.inc = mux.inc
+		screen.inc = screen.inc
 		vmem.inc = vmem.inc
 	EndProjectSection
 EndProject

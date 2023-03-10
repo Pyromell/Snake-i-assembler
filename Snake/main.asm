@@ -59,6 +59,7 @@
 .include "mux.inc"
 .include "joystick.inc"
 .include "move.inc"
+.include "screen.inc"
 ;.include "ljud.inc"
 
 PROG_START:
@@ -92,6 +93,7 @@ GAME_OVER:
     call    DELAY
     call    DELAY
 
+    lds     r16,STATUS
     cpi     r16,TIED
     breq    tied_screen
     cpi     r16,P1_WINS
@@ -100,6 +102,46 @@ GAME_OVER:
     breq    p2_win_screen
 
 tied_screen:
+    call    ERASE_VMEM
+    ldi		ZH,HIGH(TIE_TAB*2)
+	ldi		ZL,LOW(TIE_TAB*2)
+    rjmp    WIN_PREP_DONE
+
 p1_win_screen:
+	call	ERASE_VMEM
+	ldi		ZH,HIGH(RED_WIN_TAB*2)
+	ldi		ZL,LOW(RED_WIN_TAB*2)
+    rjmp    WIN_PREP_DONE
+
 p2_win_screen:
+	call	ERASE_VMEM
+	ldi		ZH,HIGH(BLUE_WIN_TAB*2)
+	ldi		ZL,LOW(BLUE_WIN_TAB*2)
+
+WIN_PREP_DONE:
+	call	UPDATE_WIN_VMEM
+	call	DELAY
+	call	DELAY
+	call	DELAY
+	call	DELAY
+	call	DELAY
+	call	DELAY
+	call	DELAY
     jmp     PROG_START
+
+	
+RED_WIN_TAB: 
+	.db		$36, $37, $38, $39, $3A, $4A, $59, $58, $48, $47, $56, $56	//R 
+	.db		$76, $77, $78, $79, $7A, $8A, $88, $86, $9A, $98, $96, $96  //E
+	.db		$B6, $B7, $B8, $B9, $BA, $C6, $CA, $D7, $D8, $D9, $00, $00	//D
+	
+BLUE_WIN_TAB:
+	.db		$16, $17, $18, $19, $1A, $26, $28, $2A, $37, $39			//B
+	.db		$56, $57, $58, $59, $5A, $66, $76, $76						//L
+	.db		$96, $97, $98, $99, $9A, $A6, $B6, $B7, $B8, $B9, $BA, $BA	//U
+	.db     $D6, $D7, $D8, $D9, $DA, $E6, $E8, $EA, $F6, $F8, $FA, $00
+TIE_TAB:
+	.db     $3A, $46, $47, $48, $49, $4A, $5A, $5A                      //T
+    .db     $76, $77, $78, $79, $7A, $7A                                 //I
+    .db     $96, $97, $98, $99, $9A, $A6, $A8, $AA, $B6, $B8, $BA, $00   //E
+	

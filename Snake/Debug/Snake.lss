@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  X:\projekt\Snake\main.asm Fri Mar 10 11:40:40 2023
+AVRASM ver. 2.2.7  X:\projekt\Snake\main.asm Fri Mar 10 14:14:51 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
 X:\projekt\Snake\main.asm(56): Including file 'X:\projekt\Snake\help.inc'
@@ -8,6 +8,7 @@ X:\projekt\Snake\main.asm(58): Including file 'X:\projekt\Snake\vmem.inc'
 X:\projekt\Snake\main.asm(59): Including file 'X:\projekt\Snake\mux.inc'
 X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\joystick.inc'
 X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\move.inc'
+X:\projekt\Snake\main.asm(62): Including file 'X:\projekt\Snake\screen.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
 X:\projekt\Snake\main.asm(56): Including file 'X:\projekt\Snake\help.inc'
 X:\projekt\Snake\main.asm(57): Including file 'X:\projekt\Snake\init.inc'
@@ -15,6 +16,7 @@ X:\projekt\Snake\main.asm(58): Including file 'X:\projekt\Snake\vmem.inc'
 X:\projekt\Snake\main.asm(59): Including file 'X:\projekt\Snake\mux.inc'
 X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\joystick.inc'
 X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\move.inc'
+X:\projekt\Snake\main.asm(62): Including file 'X:\projekt\Snake\screen.inc'
                                  
                                  ; SPI pins
                                  
@@ -1045,7 +1047,7 @@ X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\move.inc'
                                  
                                  
                                  .org 0x0000
-000000 940c 0209                     jmp     PROG_START
+000000 940c 0213                     jmp     PROG_START
                                  .org OVF0ADDR
 000020 940c 00ee                     jmp     MULTIPLEX
                                  
@@ -1503,14 +1505,14 @@ X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\move.inc'
                                  	
                                  	// Using Cord compare to check if not allowed change in direction
                                  			
-00015d 302f                      	cpi		r18,$0f				
+00015d 302f                      	cpi		r18,$0f				// Check diagonal
 00015e f031                      	breq	NOT_ALLOWED_DIR
                                  	
 00015f 302a                      	cpi		r18,$0A
-000160 f021                      	breq	NOT_ALLOWED_DIR
+000160 f021                      	breq	NOT_ALLOWED_DIR		// Check Y-axis
                                  	
 000161 3025                      	cpi		r18,$05
-000162 f011                      	breq	NOT_ALLOWED_DIR	
+000162 f011                      	breq	NOT_ALLOWED_DIR		// Check X-axis
                                  
 000163 1112                          cpse    r17,ZERO
 000164 2f01                          mov     r16,r17   // Skip this is joystick not touched
@@ -1711,49 +1713,155 @@ X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\move.inc'
 000206 9300 0207                     sts     STATUS,r16
                                  
                                  check_hits_done:
-000208 9508                      ;.include "ljud.inc"
+                                 .include "screen.inc"
+000208 9508                      
+                                 
+                                 
+                                 
+                                 UPDATE_WIN_VMEM:
+                                     
+                                 UPDATE_WIN_LOOP:
+000209 9105                          lpm     r16,Z+
+00020a 3000                      	cpi		r16,0
+00020b f031                      	breq	END_OF_LIST
+                                     ; sets Y to correct line in VMEM
+                                     ; returns DAMatrix byte in r19
+00020c 940e 00d7                     call    POINT_AT_LINE
+                                     ; adds player color at coord to that byte
+00020e 810a                          ldd     r16,Y+R
+00020f 2b30                          or      r19,r16
+000210 833a                          std     Y+R,r19
+                                 	;std		Y+B,r19
+                                 	;std		Y+G,r19
+                                 	
+000211 cff7                          rjmp    UPDATE_WIN_LOOP
+                                 END_OF_LIST:
+000212 9508                      ;.include "ljud.inc"
                                  
                                  PROG_START:
-000209 e008                          ldi     r16,HIGH(RAMEND)
-00020a bf0e                          out     SPH,r16
-00020b ef0f                          ldi     r16,LOW(RAMEND)
-00020c bf0d                          out     SPL,r16
-00020d 2422                          clr     ZERO
+000213 e008                          ldi     r16,HIGH(RAMEND)
+000214 bf0e                          out     SPH,r16
+000215 ef0f                          ldi     r16,LOW(RAMEND)
+000216 bf0d                          out     SPL,r16
+000217 2422                          clr     ZERO
                                  
                                      ; sets hardware, flags, clears memory
-00020e 940e 0082                     call    INIT
+000218 940e 0082                     call    INIT
                                      ; sets start conditions, game mode
-000210 940e 0022                     call    SETUP
+00021a 940e 0022                     call    SETUP
                                  PLAY:
-000212 940e 00a3                     call    ERASE_VMEM
-000214 940e 00ae                     call    UPDATE_VMEM
-000216 940e 01c4                     call    CHECK_HITS
-000218 940e 0135                     call    JOYSTICK
-00021a 940e 0176                 	call    MOVE
-00021c 940e 0059                     call    DELAY
+00021c 940e 00a3                     call    ERASE_VMEM
+00021e 940e 00ae                     call    UPDATE_VMEM
+000220 940e 01c4                     call    CHECK_HITS
+000222 940e 0135                     call    JOYSTICK
+000224 940e 0176                 	call    MOVE
+000226 940e 0059                     call    DELAY
                                      ; game over?
-00021e 9100 0207                     lds     r16,STATUS
-000220 1502                          cp      r16,ZERO
-000221 f409                          brne    GAME_OVER
+000228 9100 0207                     lds     r16,STATUS
+00022a 1502                          cp      r16,ZERO
+00022b f409                          brne    GAME_OVER
                                      ; not over
-000222 cfef                          rjmp    PLAY
+00022c cfef                          rjmp    PLAY
                                  
                                  GAME_OVER:
-000223 940e 0059                     call    DELAY
-000225 940e 0059                     call    DELAY
-000227 940e 0059                     call    DELAY
-000229 940e 0059                     call    DELAY
+00022d 940e 0059                     call    DELAY
+00022f 940e 0059                     call    DELAY
+000231 940e 0059                     call    DELAY
+000233 940e 0059                     call    DELAY
                                  
-00022b 3003                          cpi     r16,TIED
-00022c f021                          breq    tied_screen
-00022d 3001                          cpi     r16,P1_WINS
-00022e f011                          breq    p1_win_screen
-00022f 3002                          cpi     r16,P2_WINS
-000230 f001                          breq    p2_win_screen
+000235 9100 0207                     lds     r16,STATUS
+000237 3003                          cpi     r16,TIED
+000238 f021                          breq    tied_screen
+000239 3001                          cpi     r16,P1_WINS
+00023a f039                          breq    p1_win_screen
+00023b 3002                          cpi     r16,P2_WINS
+00023c f051                          breq    p2_win_screen
                                  
                                  tied_screen:
+00023d 940e 00a3                     call    ERASE_VMEM
+00023f e0f5                          ldi		ZH,HIGH(TIE_TAB*2)
+000240 e0e8                      	ldi		ZL,LOW(TIE_TAB*2)
+000241 c009                          rjmp    WIN_PREP_DONE
+                                 
                                  p1_win_screen:
+000242 940e 00a3                 	call	ERASE_VMEM
+000244 e0f4                      	ldi		ZH,HIGH(RED_WIN_TAB*2)
+000245 ebea                      	ldi		ZL,LOW(RED_WIN_TAB*2)
+000246 c004                          rjmp    WIN_PREP_DONE
+                                 
                                  p2_win_screen:
+000247 940e 00a3                 	call	ERASE_VMEM
+000249 e0f4                      	ldi		ZH,HIGH(BLUE_WIN_TAB*2)
+00024a edee                      	ldi		ZL,LOW(BLUE_WIN_TAB*2)
+                                 
+                                 WIN_PREP_DONE:
+00024b 940e 0209                 	call	UPDATE_WIN_VMEM
+00024d 940e 0059                 	call	DELAY
+00024f 940e 0059                 	call	DELAY
+000251 940e 0059                 	call	DELAY
+000253 940e 0059                 	call	DELAY
+000255 940e 0059                 	call	DELAY
+000257 940e 0059                 	call	DELAY
+000259 940e 0059                 	call	DELAY
+00025b 940c 0213                     jmp     PROG_START
+                                 
+                                 	
+                                 RED_WIN_TAB: 
+00025d 3736
+00025e 3938
+00025f 4a3a
+000260 5859
+000261 4748
+000262 5656                      	.db		$36, $37, $38, $39, $3A, $4A, $59, $58, $48, $47, $56, $56	//R 
+000263 7776
+000264 7978
+000265 8a7a
+000266 8688
+000267 989a
+000268 9696                      	.db		$76, $77, $78, $79, $7A, $8A, $88, $86, $9A, $98, $96, $96  //E
+000269 b7b6
+00026a b9b8
+00026b c6ba
+00026c d7ca
+00026d d9d8
+00026e 0000                      	.db		$B6, $B7, $B8, $B9, $BA, $C6, $CA, $D7, $D8, $D9, $00, $00	//D
+                                 	
+                                 BLUE_WIN_TAB:
+00026f 1716
+000270 1918
+000271 261a
+000272 2a28
+000273 3937                      	.db		$16, $17, $18, $19, $1A, $26, $28, $2A, $37, $39			//B
+000274 5756
+000275 5958
+000276 665a
+000277 7676                      	.db		$56, $57, $58, $59, $5A, $66, $76, $76						//L
+000278 9796
+000279 9998
+00027a a69a
+00027b b7b6
+00027c b9b8
+00027d baba                      	.db		$96, $97, $98, $99, $9A, $A6, $B6, $B7, $B8, $B9, $BA, $BA	//U
+00027e d7d6
+00027f d9d8
+000280 e6da
+000281 eae8
+000282 f8f6
+000283 00fa                      	.db     $D6, $D7, $D8, $D9, $DA, $E6, $E8, $EA, $F6, $F8, $FA, $00
+                                 TIE_TAB:
+000284 463a
+000285 4847
+000286 4a49
+000287 5a5a                      	.db     $3A, $46, $47, $48, $49, $4A, $5A, $5A                      //T
+000288 7776
+000289 7978
+00028a 7a7a                          .db     $76, $77, $78, $79, $7A, $7A                                 //I
+00028b 9796
+00028c 9998
+00028d a69a
+00028e aaa8
+00028f b8b6
+000290 00ba                          .db     $96, $97, $98, $99, $9A, $A6, $A8, $AA, $B6, $B8, $BA, $00   //E
 
 
 RESOURCE USE INFORMATION
@@ -1771,39 +1879,39 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   6 z  :  23 r0 :   0 r1 :   0 r2 :  16 r3 :   0 r4 :   0 
+x  :   0 y  :   8 z  :  24 r0 :   0 r1 :   0 r2 :  16 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16: 156 r17:  52 r18:  37 r19:  19 r20:   4 
+r13:   0 r14:   0 r15:   0 r16: 161 r17:  52 r18:  37 r19:  21 r20:   4 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   6 
-r29:   6 r30:  31 r31:  31 
+r29:   6 r30:  34 r31:  34 
 Registers used: 12 out of 35 (34.3%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   6 add   :   6 adiw  :   0 and   :   0 
 andi  :   4 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :  18 brge  :   0 brhc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :  19 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
 brne  :  14 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  36 cbi   :   1 cbr   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  48 cbi   :   1 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   4 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   8 cpc   :   0 
-cpi   :  17 cpse  :   3 dec   :  16 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :  18 cpse  :   3 dec   :  16 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   7 jmp   :   3 
-ld    :   8 ldd   :   7 ldi   :  74 lds   :  31 lpm   :   0 lsl   :   4 
+ld    :   8 ldd   :   8 ldi   :  80 lds   :  32 lpm   :   1 lsl   :   4 
 lsr   :   1 mov   :   4 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   6 ori   :   1 out   :   9 pop   :  23 
-push  :  23 rcall :   0 ret   :  20 reti  :   1 rjmp  :  16 rol   :   0 
+neg   :   0 nop   :   0 or    :   7 ori   :   1 out   :   9 pop   :  23 
+push  :  23 rcall :   0 ret   :  21 reti  :   1 rjmp  :  19 rol   :   0 
 ror   :   0 sbc   :   1 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   6 sbrc  :   5 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   8 sts   :  23 
+sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   9 sts   :  23 
 sub   :   1 subi  :   2 swap  :   2 tst   :   0 wdr   :   0 
-Instructions used: 45 out of 113 (39.8%)
+Instructions used: 46 out of 113 (40.7%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000466   1066      0   1066   32768   3.3%
+[.cseg] 0x000000 0x000522   1150    104   1254   32768   3.8%
 [.dseg] 0x000100 0x000208      0    264    264    2048  12.9%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

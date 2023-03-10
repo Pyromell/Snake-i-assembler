@@ -40,9 +40,28 @@ not_up:
     sbr     r17,(1 << DOWN)
 all_done:
     pop     r16 ; restore dir
-    ; check dir ok here
+	
+	mov		r18,r16
+	or		r18,r17
+	andi	r18,$0f
+	
+	// Using Cord compare to check if not allowed change in direction
+			
+	cpi		r18,$0f				
+	breq	NOT_ALLOWED_DIR
+	
+	cpi		r18,$0A
+	breq	NOT_ALLOWED_DIR
+	
+	cpi		r18,$05
+	breq	NOT_ALLOWED_DIR	
+
     cpse    r17,ZERO
-    mov     r16,r17
+    mov     r16,r17   // Skip this is joystick not touched
+NOT_ALLOWED_DIR:
+	
+
+
     ret
 
 

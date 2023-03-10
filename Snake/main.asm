@@ -59,7 +59,7 @@
 .include "mux.inc"
 .include "joystick.inc"
 .include "move.inc"
-.include "ljud.inc"
+;.include "ljud.inc"
 
 PROG_START:
     ldi     r16,HIGH(RAMEND)

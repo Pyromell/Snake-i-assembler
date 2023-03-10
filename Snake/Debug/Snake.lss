@@ -1,22 +1,20 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Thu Mar 09 17:50:32 2023
+AVRASM ver. 2.2.7  X:\projekt\Snake\main.asm Fri Mar 10 11:40:40 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(56): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(57): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(58): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(59): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(60): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
-X:\tsiu51\projekt\Snake\main.asm(61): Including file 'X:\tsiu51\projekt\Snake\move.inc'
-X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\ljud.inc'
+X:\projekt\Snake\main.asm(56): Including file 'X:\projekt\Snake\help.inc'
+X:\projekt\Snake\main.asm(57): Including file 'X:\projekt\Snake\init.inc'
+X:\projekt\Snake\main.asm(58): Including file 'X:\projekt\Snake\vmem.inc'
+X:\projekt\Snake\main.asm(59): Including file 'X:\projekt\Snake\mux.inc'
+X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\joystick.inc'
+X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\move.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(56): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(57): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(58): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(59): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(60): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
-X:\tsiu51\projekt\Snake\main.asm(61): Including file 'X:\tsiu51\projekt\Snake\move.inc'
-X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\ljud.inc'
+X:\projekt\Snake\main.asm(56): Including file 'X:\projekt\Snake\help.inc'
+X:\projekt\Snake\main.asm(57): Including file 'X:\projekt\Snake\init.inc'
+X:\projekt\Snake\main.asm(58): Including file 'X:\projekt\Snake\vmem.inc'
+X:\projekt\Snake\main.asm(59): Including file 'X:\projekt\Snake\mux.inc'
+X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\joystick.inc'
+X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\move.inc'
                                  
                                  ; SPI pins
                                  
@@ -1047,7 +1045,7 @@ X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\lj
                                  
                                  
                                  .org 0x0000
-000000 940c 02aa                     jmp     PROG_START
+000000 940c 0209                     jmp     PROG_START
                                  .org OVF0ADDR
 000020 940c 00ee                     jmp     MULTIPLEX
                                  
@@ -1475,7 +1473,7 @@ X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\lj
 000144 930f                          push    r16 ; store dir
 000145 2711                          clr     r17 ; temporary direction
                                      ; x-direction
-000146 940e 015d                     call    READ_JOY ; returns ADCH in r19
+000146 940e 0166                     call    READ_JOY ; returns ADCH in r19
 000148 3c30                          cpi     r19,0b1100_0000 ; checks right
 000149 f010                          brlo    not_right
 00014a 6011                          sbr     r17,(1 << RIGHT)
@@ -1487,7 +1485,7 @@ X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\lj
                                  not_left:
                                      ; y-direction
 00014f 9523                          inc     r18 ; change to y-channel
-000150 940e 015d                     call    READ_JOY ; returns ADCH in r19
+000150 940e 0166                     call    READ_JOY ; returns ADCH in r19
 000152 3c30                          cpi     r19,0b1100_0000 ; checks up
 000153 f010                          brlo    not_up
 000154 6012                          sbr     r17,(1 << UP)
@@ -1498,378 +1496,260 @@ X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\lj
 000158 6018                          sbr     r17,(1 << DOWN)
                                  all_done:
 000159 910f                          pop     r16 ; restore dir
-                                     ; check dir ok here
-00015a 1112                          cpse    r17,ZERO
-00015b 2f01                          mov     r16,r17
-00015c 9508                          ret
+                                 	
+00015a 2f20                      	mov		r18,r16
+00015b 2b21                      	or		r18,r17
+00015c 702f                      	andi	r18,$0f
+                                 	
+                                 	// Using Cord compare to check if not allowed change in direction
+                                 			
+00015d 302f                      	cpi		r18,$0f				
+00015e f031                      	breq	NOT_ALLOWED_DIR
+                                 	
+00015f 302a                      	cpi		r18,$0A
+000160 f021                      	breq	NOT_ALLOWED_DIR
+                                 	
+000161 3025                      	cpi		r18,$05
+000162 f011                      	breq	NOT_ALLOWED_DIR	
+                                 
+000163 1112                          cpse    r17,ZERO
+000164 2f01                          mov     r16,r17   // Skip this is joystick not touched
+                                 NOT_ALLOWED_DIR:
+                                 	
+                                 
+                                 
+000165 9508                          ret
                                  
                                  
                                  READ_JOY:
                                  ; Reads from pin specified by MUX3..0 in r18
                                  ; Returns ADCH in r19    
-00015d e600                          ldi     r16,0b0110_0000 ; load default ADMUX
-00015e 2b02                          or      r16,r18 ; set MUXn = PCn from r18 = n
-00015f 9300 007c                     sts     ADMUX,r16
-000161 9100 007a                     lds     r16,ADCSRA
-000163 6400                          ori     r16,0b0100_0000 ; set ADSC
-000164 9300 007a                     sts     ADCSRA,r16
+000166 e600                          ldi     r16,0b0110_0000 ; load default ADMUX
+000167 2b02                          or      r16,r18 ; set MUXn = PCn from r18 = n
+000168 9300 007c                     sts     ADMUX,r16
+00016a 9100 007a                     lds     r16,ADCSRA
+00016c 6400                          ori     r16,0b0100_0000 ; set ADSC
+00016d 9300 007a                     sts     ADCSRA,r16
                                  adc_not_done: ; wait till conversion done
-000166 9100 007a                     lds     r16,ADCSRA
-000168 fd06                          sbrc    r16,ADSC
-000169 cffc                          rjmp    adc_not_done
+00016f 9100 007a                     lds     r16,ADCSRA
+000171 fd06                          sbrc    r16,ADSC
+000172 cffc                          rjmp    adc_not_done
                                  adc_done:
-00016a 9130 0079                     lds     r19,ADCH ; read 8 MSB
+000173 9130 0079                     lds     r19,ADCH ; read 8 MSB
                                  .include "move.inc"
-00016c 9508                      
-00016d 940e 018f                     call   MOVE_BODYS
-00016f 9100 0181                     lds    r16,P1
-000171 9120 01c2                     lds    r18,P1_DIR
-000173 940e 0180                     call   MOVE_HEAD
-000175 9300 0181                     sts    P1,r16
-000177 9100 01c3                     lds    r16,P2
-000179 9120 0204                     lds    r18,P2_DIR
-00017b 940e 0180                     call   MOVE_HEAD
-00017d 9300 01c3                     sts    P2,r16
-00017f 9508                          ret
+000175 9508                      
+000176 940e 0198                     call   MOVE_BODYS
+000178 9100 0181                     lds    r16,P1
+00017a 9120 01c2                     lds    r18,P1_DIR
+00017c 940e 0189                     call   MOVE_HEAD
+00017e 9300 0181                     sts    P1,r16
+000180 9100 01c3                     lds    r16,P2
+000182 9120 0204                     lds    r18,P2_DIR
+000184 940e 0189                     call   MOVE_HEAD
+000186 9300 01c3                     sts    P2,r16
+000188 9508                          ret
                                  
                                  
                                  MOVE_HEAD:
-000180 940e 0063                     call    SEP_XY ; r16 = x, r17 = y
-000182 fd20                          sbrc    r18,RIGHT
-000183 9503                          inc     r16
-000184 fd22                          sbrc    r18,LEFT
-000185 950a                          dec     r16
-000186 fd21                          sbrc    r18,UP
-000187 9513                          inc     r17
-000188 fd23                          sbrc    r18,DOWN
-000189 951a                          dec     r17
-00018a 940e 01a8                     call    LIMITS
-00018c 940e 0068                     call    JOIN_XY
-00018e 9508                          ret
+000189 940e 0063                     call    SEP_XY ; r16 = x, r17 = y
+00018b fd20                          sbrc    r18,RIGHT
+00018c 9503                          inc     r16
+00018d fd22                          sbrc    r18,LEFT
+00018e 950a                          dec     r16
+00018f fd21                          sbrc    r18,UP
+000190 9513                          inc     r17
+000191 fd23                          sbrc    r18,DOWN
+000192 951a                          dec     r17
+000193 940e 01b1                     call    LIMITS
+000195 940e 0068                     call    JOIN_XY
+000197 9508                          ret
                                  
                                  
                                  MOVE_BODYS:
-00018f 93ff                      	push	ZH
-000190 93ef                      	push	ZL
-000191 e0f1                      	ldi     ZH,HIGH(P1)
-000192 e8e1                          ldi     ZL,LOW(P1)
-000193 9100 01c1                     lds     r16,P1_LEN
-000195 940e 01a0                 	call	MOVE_BODY
-000197 e0f1                      	ldi     ZH,HIGH(P2)
-000198 ece3                          ldi     ZL,LOW(P2)
-000199 9100 0203                     lds     r16,P2_LEN
-00019b 940e 01a0                 	call	MOVE_BODY
-00019d 91ef                      	pop		ZL
-00019e 91ff                      	pop		ZH
-00019f 9508                      	ret
+000198 93ff                      	push	ZH
+000199 93ef                      	push	ZL
+00019a e0f1                      	ldi     ZH,HIGH(P1)
+00019b e8e1                          ldi     ZL,LOW(P1)
+00019c 9100 01c1                     lds     r16,P1_LEN
+00019e 940e 01a9                 	call	MOVE_BODY
+0001a0 e0f1                      	ldi     ZH,HIGH(P2)
+0001a1 ece3                          ldi     ZL,LOW(P2)
+0001a2 9100 0203                     lds     r16,P2_LEN
+0001a4 940e 01a9                 	call	MOVE_BODY
+0001a6 91ef                      	pop		ZL
+0001a7 91ff                      	pop		ZH
+0001a8 9508                      	ret
                                  MOVE_BODY:
                                      // Head location starts at 0 instead of 1
-0001a0 950a                          dec     r16 
+0001a9 950a                          dec     r16 
                                      // Start looking at the back of the snake 
-0001a1 0fe0                          add     ZL,r16
-0001a2 1df2                          adc     ZH,ZERO
+0001aa 0fe0                          add     ZL,r16
+0001ab 1df2                          adc     ZH,ZERO
                                  move_loop:
                                      // Example: if size = 3 then takes
                                      // from 2nd and put into 3rd
-0001a3 9112                          ld      r17,-Z
-0001a4 8311                          std     Z+1,r17
-0001a5 950a                          dec     r16
-0001a6 f7e1                          brne    move_loop
+0001ac 9112                          ld      r17,-Z
+0001ad 8311                          std     Z+1,r17
+0001ae 950a                          dec     r16
+0001af f7e1                          brne    move_loop
                                      // Now Head is the same value as
                                      // first part of tail
                                      // After this call we want to update
                                      // head with new cord from Joystick
-0001a7 9508                          ret
+0001b0 9508                          ret
                                  
                                  
                                  LIMITS:
                                  ; Takes x,y = r16,r17 and
                                  ; moves them to other side of
                                  ; screen if outside.
-0001a8 3f0f                          cpi     r16,255
-0001a9 f019                          breq    x_under
-0001aa 3100                          cpi     r16,16
-0001ab f019                          breq    x_over
-0001ac c004                          rjmp    xlim_done
+0001b1 3f0f                          cpi     r16,255
+0001b2 f019                          breq    x_under
+0001b3 3100                          cpi     r16,16
+0001b4 f019                          breq    x_over
+0001b5 c004                          rjmp    xlim_done
                                  x_under:
-0001ad e00f                          ldi     r16,15
-0001ae c002                          rjmp    xlim_done
+0001b6 e00f                          ldi     r16,15
+0001b7 c002                          rjmp    xlim_done
                                  x_over:
-0001af e000                          ldi     r16,0
-0001b0 c000                          rjmp    xlim_done
+0001b8 e000                          ldi     r16,0
+0001b9 c000                          rjmp    xlim_done
                                  xlim_done:
-0001b1 3f1f                          cpi     r17,255
-0001b2 f019                          breq    y_under
-0001b3 3110                          cpi     r17,16
-0001b4 f019                          breq    y_over
-0001b5 c004                          rjmp    ylim_done
+0001ba 3f1f                          cpi     r17,255
+0001bb f019                          breq    y_under
+0001bc 3110                          cpi     r17,16
+0001bd f019                          breq    y_over
+0001be c004                          rjmp    ylim_done
                                  y_under:
-0001b6 e01f                          ldi     r17,15
-0001b7 c002                          rjmp    ylim_done
+0001bf e01f                          ldi     r17,15
+0001c0 c002                          rjmp    ylim_done
                                  y_over:
-0001b8 e010                          ldi     r17,0
-0001b9 c000                          rjmp    ylim_done
+0001c1 e010                          ldi     r17,0
+0001c2 c000                          rjmp    ylim_done
                                  ylim_done:
-0001ba 9508                          ret
+0001c3 9508                          ret
                                  
                                  
                                  CHECK_HITS:
                                      ; head to head collision
-0001bb 9100 0181                     lds     r16,P1
-0001bd 9110 01c3                     lds     r17,P2
-0001bf 1701                          cp      r16,r17
-0001c0 f199                          breq    tie
+0001c4 9100 0181                     lds     r16,P1
+0001c6 9110 01c3                     lds     r17,P2
+0001c8 1701                          cp      r16,r17
+0001c9 f199                          breq    tie
                                      
                                      ; P1 head to P2 tail
-0001c1 e0f1                          ldi     ZH,HIGH(P2)
-0001c2 ece3                          ldi     ZL,LOW(P2)
-0001c3 9100 0181                     lds     r16,P1
-0001c5 9120 0203                     lds     r18,P2_LEN
+0001ca e0f1                          ldi     ZH,HIGH(P2)
+0001cb ece3                          ldi     ZL,LOW(P2)
+0001cc 9100 0181                     lds     r16,P1
+0001ce 9120 0203                     lds     r18,P2_LEN
                                  collide_p2_loop:
-0001c7 9111                          ld      r17,Z+
-0001c8 1701                          cp      r16,r17  
-0001c9 f191                          breq    p2_win
-0001ca 952a                          dec     r18
-0001cb f7d9                          brne    collide_p2_loop
+0001d0 9111                          ld      r17,Z+
+0001d1 1701                          cp      r16,r17  
+0001d2 f191                          breq    p2_win
+0001d3 952a                          dec     r18
+0001d4 f7d9                          brne    collide_p2_loop
                                  
                                      ; P2 head to P1 tail
-0001cc e0f1                          ldi     ZH,HIGH(P1)
-0001cd e8e1                          ldi     ZL,LOW(P1)
-0001ce 9100 01c3                     lds     r16,P2 ; head
-0001d0 9120 01c1                     lds     r18,P1_LEN
+0001d5 e0f1                          ldi     ZH,HIGH(P1)
+0001d6 e8e1                          ldi     ZL,LOW(P1)
+0001d7 9100 01c3                     lds     r16,P2 ; head
+0001d9 9120 01c1                     lds     r18,P1_LEN
                                  collide_p1_loop:
-0001d2 9111                          ld      r17,Z+
-0001d3 1701                          cp      r16,r17    
-0001d4 f119                          breq    p1_win
-0001d5 952a                          dec     r18
-0001d6 f7d9                          brne    collide_p1_loop
+0001db 9111                          ld      r17,Z+
+0001dc 1701                          cp      r16,r17    
+0001dd f119                          breq    p1_win
+0001de 952a                          dec     r18
+0001df f7d9                          brne    collide_p1_loop
                                  
-0001d7 9120 0205                     lds     r18,FRUIT
+0001e0 9120 0205                     lds     r18,FRUIT
                                      ; P1 and fruit
-0001d9 9100 0181                     lds     r16,P1
-0001db 1720                          cp      r18,r16
-0001dc f029                          breq    p1_eats
+0001e2 9100 0181                     lds     r16,P1
+0001e4 1720                          cp      r18,r16
+0001e5 f029                          breq    p1_eats
                                      ; P2 and fruit
-0001dd 9100 01c3                 	lds     r16,P2
-0001df 1720                          cp      r18,r16
-0001e0 f049                          breq    p2_eats
+0001e6 9100 01c3                 	lds     r16,P2
+0001e8 1720                          cp      r18,r16
+0001e9 f049                          breq    p2_eats
                                  
-0001e1 c011                          rjmp    fruit_done ; no new fruit
+0001ea c011                          rjmp    fruit_done ; no new fruit
                                  
                                  p1_eats:
                                      ; increase length if not max
-0001e2 9100 01c1                     lds     r16,P1_LEN
-0001e4 e410                      	ldi		r17,MAX_LEN
-0001e5 1301                      	cpse	r16,r17
-0001e6 9503                          inc     r16
-0001e7 9300 01c1                     sts     P1_LEN,r16
-0001e9 c007                          rjmp    new_fruit
+0001eb 9100 01c1                     lds     r16,P1_LEN
+0001ed e410                      	ldi		r17,MAX_LEN
+0001ee 1301                      	cpse	r16,r17
+0001ef 9503                          inc     r16
+0001f0 9300 01c1                     sts     P1_LEN,r16
+0001f2 c007                          rjmp    new_fruit
                                  
                                  p2_eats:
                                      ; increase length if not max
-0001ea 9100 0203                     lds     r16,P2_LEN
-0001ec e410                      	ldi		r17,MAX_LEN
-0001ed 1301                      	cpse	r16,r17
-0001ee 9503                          inc     r16
-0001ef 9300 0203                     sts     P2_LEN,r16
+0001f3 9100 0203                     lds     r16,P2_LEN
+0001f5 e410                      	ldi		r17,MAX_LEN
+0001f6 1301                      	cpse	r16,r17
+0001f7 9503                          inc     r16
+0001f8 9300 0203                     sts     P2_LEN,r16
                                  
                                  new_fruit:
-0001f1 940e 006b                     call    PLACE_FRUIT
+0001fa 940e 006b                     call    PLACE_FRUIT
                                  
                                  fruit_done:
-0001f3 c00b                          rjmp    check_hits_done
+0001fc c00b                          rjmp    check_hits_done
                                  
                                  tie:
-0001f4 e003                          ldi     r16,TIED
-0001f5 9300 0207                     sts     STATUS,r16
-0001f7 c007                          rjmp    check_hits_done
+0001fd e003                          ldi     r16,TIED
+0001fe 9300 0207                     sts     STATUS,r16
+000200 c007                          rjmp    check_hits_done
                                  
                                  p1_win:    
-0001f8 e001                          ldi     r16,P1_WINS
-0001f9 9300 0207                     sts     STATUS,r16
-0001fb c003                          rjmp    check_hits_done
+000201 e001                          ldi     r16,P1_WINS
+000202 9300 0207                     sts     STATUS,r16
+000204 c003                          rjmp    check_hits_done
                                  
                                  p2_win:
-0001fc e002                          ldi     r16,P2_WINS
-0001fd 9300 0207                     sts     STATUS,r16
+000205 e002                          ldi     r16,P2_WINS
+000206 9300 0207                     sts     STATUS,r16
                                  
                                  check_hits_done:
-                                 .include "ljud.inc"
-0001ff 9508                      
-000200 ef0f                      ldi     r16,$ff
-000201 b904                      out     DDRB,r16
-                                 
-                                 .dseg
-000208                             BEEP_PITCH_1:     .byte 1
-000209                             BEEP_PITCH_2:     .byte 1
-00020a                             BEEP_LENGTH:      .byte 1
-                                 .cseg
-                                 
-000202 e400                      ldi     r16,64
-000203 9300 020a                 sts     BEEP_LENGTH,r16
-000205 940e 028c                 call NOTE_G
-000207 940e 028c                 call NOTE_G
-000209 940e 027a                 call NOTE_D
-00020b 940e 027a                 call NOTE_D
-00020d 940e 0283                 call NOTE_E
-00020f 940e 0283                 call NOTE_E
-000211 940e 027a                 call NOTE_D ;  halv not
-000213 940e 0271                 call NOTE_C
-000215 940e 0271                 call NOTE_C
-000217 940e 0268                 call NOTE_B
-000219 940e 0268                 call NOTE_B
-00021b 940e 025f                 call NOTE_A
-00021d 940e 025f                 call NOTE_A
-00021f 940e 028c                 call NOTE_G ; Halv not
-000221 940e 027a                 call NOTE_D
-000223 940e 027a                 call NOTE_D
-000225 940e 0271                 call NOTE_C
-000227 940e 0271                 call NOTE_C
-000229 940e 0268                 call NOTE_B
-00022b 940e 0268                 call NOTE_B
-00022d 940e 025f                 call NOTE_A ; Halv not
-00022f 940e 027a                 call NOTE_D
-000231 940e 027a                 call NOTE_D
-000233 940e 0271                 call NOTE_C
-000235 940e 0271                 call NOTE_C
-000237 940e 0268                 call NOTE_B
-000239 940e 0268                 call NOTE_B
-00023b 940e 025f                 call NOTE_A ; Halv not
-00023d 940e 028c                 call NOTE_G
-00023f 940e 028c                 call NOTE_G
-000241 940e 027a                 call NOTE_D
-000243 940e 027a                 call NOTE_D
-000245 940e 0283                 call NOTE_E
-000247 940e 0283                 call NOTE_E
-000249 940e 027a                 call NOTE_D ; Halv not
-00024b 940e 0283                 call NOTE_E
-00024d 940e 0283                 call NOTE_E
-00024f 940e 027a                 call NOTE_D
-000251 940e 0271                 call NOTE_C
-000253 940e 0271                 call NOTE_C
-000255 940e 0268                 call NOTE_B
-000257 940e 0268                 call NOTE_B
-000259 940e 025f                 call NOTE_A
-00025b 940e 025f                 call NOTE_A
-00025d 940e 028c                 call NOTE_G ; Halv not
-                                 
-                                 
-                                 NOTE_A:      ; 3520 Hz
-00025f e30c                          ldi     r16,60
-000260 9300 0208                     sts     BEEP_PITCH_1,r16
-000262 e001                          ldi     r16,1
-000263 9300 0209                     sts     BEEP_PITCH_2,r16
-000265 940e 0295                     call    BEEP
-000267 9508                          ret
-                                 NOTE_B:      ; 3951 Hz
-000268 e302                          ldi     r16,50
-000269 9300 0208                     sts     BEEP_PITCH_1,r16
-00026b e001                          ldi     r16,1
-00026c 9300 0209                     sts     BEEP_PITCH_2,r16
-00026e 940e 0295                     call    BEEP
-000270 9508                          ret
-                                 NOTE_C:      ; 2093 HZ
-000271 e604                          ldi     r16,100
-000272 9300 0208                     sts     BEEP_PITCH_1,r16
-000274 e001                          ldi     r16,1
-000275 9300 0209                     sts     BEEP_PITCH_2,r16
-000277 940e 0295                     call    BEEP
-000279 9508                          ret
-                                 NOTE_D:      ; 2489 HZ
-00027a e50a                          ldi     r16,90
-00027b 9300 0208                     sts     BEEP_PITCH_1,r16
-00027d e001                          ldi     r16,1
-00027e 9300 0209                     sts     BEEP_PITCH_2,r16
-000280 940e 0295                     call    BEEP
-000282 9508                          ret
-                                 
-                                 NOTE_E:      ; 2637 HZ
-000283 e500                          ldi     r16,80
-000284 9300 0208                     sts     BEEP_PITCH_1,r16
-000286 e001                          ldi     r16,1
-000287 9300 0209                     sts     BEEP_PITCH_2,r16
-000289 940e 0295                     call    BEEP
-00028b 9508                          ret
-                                 
-                                 NOTE_G:      ; 3136 Hz
-00028c ec08                          ldi     r16,200
-00028d 9300 0208                     sts     BEEP_PITCH_1,r16
-00028f e001                          ldi     r16,1
-000290 9300 0209                     sts     BEEP_PITCH_2,r16
-000292 940e 0295                     call    BEEP
-000294 9508                          ret
-                                   
-                                 
-                                  
-                                     ; --- BEEP(r16) r16 halfcycles of BEEP-PITCH
-                                 BEEP:
-000295 9140 020a                     lds     r20,BEEP_LENGTH
-                                 
-                                 LOOP2:
-000297 e062                          ldi     r22,2
-                                 
-                                 LOOP3:
-                                 	;lds     r16,BEEP_PITCH_1  ; Load period of square wave
-000298 e001                          ldi     r16,1
-000299 9a29                          sbi     PORTB,1           ; Rising edge
-00029a 940e 02a4                     call    DELAY_SOUND       ; Hold
-00029c 9829                          cbi     PORTB,1           ; Falling edge
-00029d 940e 02a4                     call    DELAY_SOUND       ; Hold
-                                 
-00029f 956a                          dec     r22
-0002a0 f7b9                          brne    LOOP3
-0002a1 954a                      	dec     r20
-0002a2 f7a1                          brne    LOOP2
-                                 
-0002a3 9508                          ret
-                                 
-                                 DELAY_SOUND:
-0002a4 e11e                          ldi     r17,30
-                                 
-                                 DELAY_INNER:
-0002a5 951a                          dec     r17
-0002a6 f7f1                          brne    DELAY_INNER
-0002a7 950a                          dec     r16
-0002a8 f7d9                          brne    DELAY_SOUND
-0002a9 9508                          ret
+000208 9508                      ;.include "ljud.inc"
                                  
                                  PROG_START:
-0002aa e008                          ldi     r16,HIGH(RAMEND)
-0002ab bf0e                          out     SPH,r16
-0002ac ef0f                          ldi     r16,LOW(RAMEND)
-0002ad bf0d                          out     SPL,r16
-0002ae 2422                          clr     ZERO
+000209 e008                          ldi     r16,HIGH(RAMEND)
+00020a bf0e                          out     SPH,r16
+00020b ef0f                          ldi     r16,LOW(RAMEND)
+00020c bf0d                          out     SPL,r16
+00020d 2422                          clr     ZERO
                                  
                                      ; sets hardware, flags, clears memory
-0002af 940e 0082                     call    INIT
+00020e 940e 0082                     call    INIT
                                      ; sets start conditions, game mode
-0002b1 940e 0022                     call    SETUP
+000210 940e 0022                     call    SETUP
                                  PLAY:
-0002b3 940e 00a3                     call    ERASE_VMEM
-0002b5 940e 00ae                     call    UPDATE_VMEM
-0002b7 940e 01bb                     call    CHECK_HITS
-0002b9 940e 0135                     call    JOYSTICK
-0002bb 940e 016d                 	call    MOVE
-0002bd 940e 0059                     call    DELAY
+000212 940e 00a3                     call    ERASE_VMEM
+000214 940e 00ae                     call    UPDATE_VMEM
+000216 940e 01c4                     call    CHECK_HITS
+000218 940e 0135                     call    JOYSTICK
+00021a 940e 0176                 	call    MOVE
+00021c 940e 0059                     call    DELAY
                                      ; game over?
-0002bf 9100 0207                     lds     r16,STATUS
-0002c1 1502                          cp      r16,ZERO
-0002c2 f409                          brne    GAME_OVER
+00021e 9100 0207                     lds     r16,STATUS
+000220 1502                          cp      r16,ZERO
+000221 f409                          brne    GAME_OVER
                                      ; not over
-0002c3 cfef                          rjmp    PLAY
+000222 cfef                          rjmp    PLAY
                                  
                                  GAME_OVER:
-0002c4 940e 0059                     call    DELAY
-0002c6 940e 0059                     call    DELAY
-0002c8 940e 0059                     call    DELAY
-0002ca 940e 0059                     call    DELAY
+000223 940e 0059                     call    DELAY
+000225 940e 0059                     call    DELAY
+000227 940e 0059                     call    DELAY
+000229 940e 0059                     call    DELAY
                                  
-0002cc 3003                          cpi     r16,TIED
-0002cd f021                          breq    tied_screen
-0002ce 3001                          cpi     r16,P1_WINS
-0002cf f011                          breq    p1_win_screen
-0002d0 3002                          cpi     r16,P2_WINS
-0002d1 f001                          breq    p2_win_screen
+00022b 3003                          cpi     r16,TIED
+00022c f021                          breq    tied_screen
+00022d 3001                          cpi     r16,P1_WINS
+00022e f011                          breq    p1_win_screen
+00022f 3002                          cpi     r16,P2_WINS
+000230 f001                          breq    p2_win_screen
                                  
                                  tied_screen:
                                  p1_win_screen:
@@ -1893,38 +1773,38 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   6 z  :  23 r0 :   0 r1 :   0 r2 :  16 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16: 185 r17:  53 r18:  31 r19:  19 r20:   6 
-r21:   0 r22:   2 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   6 
+r13:   0 r14:   0 r15:   0 r16: 156 r17:  52 r18:  37 r19:  19 r20:   4 
+r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   6 
 r29:   6 r30:  31 r31:  31 
-Registers used: 13 out of 35 (37.1%)
+Registers used: 12 out of 35 (34.3%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   6 add   :   6 adiw  :   0 and   :   0 
-andi  :   3 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :  15 brge  :   0 brhc  :   0 
+andi  :   4 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :  18 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
-brne  :  18 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  89 cbi   :   2 cbr   :   0 
+brne  :  14 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :  36 cbi   :   1 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   4 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   8 cpc   :   0 
-cpi   :  14 cpse  :   3 dec   :  20 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :  17 cpse  :   3 dec   :  16 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   7 jmp   :   3 
-ld    :   8 ldd   :   7 ldi   :  91 lds   :  32 lpm   :   0 lsl   :   4 
-lsr   :   1 mov   :   3 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   5 ori   :   1 out   :  10 pop   :  23 
-push  :  23 rcall :   0 ret   :  28 reti  :   1 rjmp  :  16 rol   :   0 
-ror   :   0 sbc   :   1 sbci  :   0 sbi   :   2 sbic  :   0 sbis  :   0 
+ld    :   8 ldd   :   7 ldi   :  74 lds   :  31 lpm   :   0 lsl   :   4 
+lsr   :   1 mov   :   4 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+neg   :   0 nop   :   0 or    :   6 ori   :   1 out   :   9 pop   :  23 
+push  :  23 rcall :   0 ret   :  20 reti  :   1 rjmp  :  16 rol   :   0 
+ror   :   0 sbc   :   1 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   6 sbrc  :   5 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   8 sts   :  36 
+sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :   8 sts   :  23 
 sub   :   1 subi  :   2 swap  :   2 tst   :   0 wdr   :   0 
 Instructions used: 45 out of 113 (39.8%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0005a8   1388      0   1388   32768   4.2%
-[.dseg] 0x000100 0x00020b      0    267    267    2048  13.0%
+[.cseg] 0x000000 0x000466   1066      0   1066   32768   3.3%
+[.dseg] 0x000100 0x000208      0    264    264    2048  12.9%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
 Assembly complete, 0 errors, 0 warnings

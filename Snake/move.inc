@@ -27,36 +27,33 @@ MOVE_HEAD:
 
 
 MOVE_BODYS:
-	push	ZH
-	push	ZL
-	ldi     ZH,HIGH(P1)
+    push    ZH
+    push    ZL
+    ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
     lds     r16,P1_LEN
-	call	MOVE_BODY
-	ldi     ZH,HIGH(P2)
+    call    MOVE_BODY
+    ldi     ZH,HIGH(P2)
     ldi     ZL,LOW(P2)
     lds     r16,P2_LEN
-	call	MOVE_BODY
-	pop		ZL
-	pop		ZH
-	ret
+    call    MOVE_BODY
+    pop     ZL
+    pop     ZH
+    ret
+
+
 MOVE_BODY:
-    // Head location starts at 0 instead of 1
-    dec     r16 
-    // Start looking at the back of the snake 
-    add     ZL,r16
+; Makes body follow head.
+; Requires snake length in r16
+; and Z pointing at head.
+    dec     r16 ; exclude head
+    add     ZL,r16 ; point at tail
     adc     ZH,ZERO
-move_loop:
-    // Example: if size = 3 then takes
-    // from 2nd and put into 3rd
-    ld      r17,-Z
-    std     Z+1,r17
-    dec     r16
-    brne    move_loop
-    // Now Head is the same value as
-    // first part of tail
-    // After this call we want to update
-    // head with new cord from Joystick
+move_body_loop: ; starts at tail
+    ld      r17,-Z ; save next
+    std     Z+1,r17 ; store at curr
+    dec     r16 ; count down
+    brne    move_body_loop
     ret
 
 
@@ -74,7 +71,6 @@ x_under:
     rjmp    xlim_done
 x_over:
     ldi     r16,0
-    rjmp    xlim_done
 xlim_done:
     cpi     r17,255
     breq    y_under
@@ -86,90 +82,92 @@ y_under:
     rjmp    ylim_done
 y_over:
     ldi     r17,0
-    rjmp    ylim_done
 ylim_done:
     ret
 
 
 CHECK_HITS:
+    call CHECK_PLAYER_HITS
+    call CHECK_FRUIT_HITS
+    ret
+
+
+CHECK_PLAYER_HITS:
     ; head to head collision
     lds     r16,P1
     lds     r17,P2
     cp      r16,r17
     breq    tie
-    
-    ; P1 head to P2 tail
+
+   ; p1 head and p2 body 
     ldi     ZH,HIGH(P2)
     ldi     ZL,LOW(P2)
     lds     r16,P1
     lds     r18,P2_LEN
-collide_p2_loop:
-    ld      r17,Z+
-    cp      r16,r17  
+p2_win_loop:
+; Requires Z at body to loop 
+; through and its length in
+; r18 as well as the head to
+; check in r16.
+    ld      r17,Z+ ; move through body
+    cp      r16,r17 ; check if hit
     breq    p2_win
-    dec     r18
-    brne    collide_p2_loop
+    dec     r18 ; count down
+    brne    p2_win_loop
 
-    ; P2 head to P1 tail
+   ; p2 head and p1 body 
     ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
     lds     r16,P2 ; head
     lds     r18,P1_LEN
-collide_p1_loop:
+p2_on_p1:
     ld      r17,Z+
     cp      r16,r17    
     breq    p1_win
     dec     r18
-    brne    collide_p1_loop
+    brne    p2_on_p1
+tie:
+    ldi     r16,TIED
+    sts     STATUS,r16
+    rjmp    check_players_done
+p1_win:    
+    ldi     r16,P1_WINS
+    sts     STATUS,r16
+    rjmp    check_players_done
+p2_win:
+    ldi     r16,P2_WINS
+    sts     STATUS,r16
+check_players_done:
+    ret
 
+
+CHECK_FRUIT_HITS:
     lds     r18,FRUIT
     ; P1 and fruit
     lds     r16,P1
     cp      r18,r16
     breq    p1_eats
     ; P2 and fruit
-	lds     r16,P2
+    lds     r16,P2
     cp      r18,r16
     breq    p2_eats
-
-    rjmp    fruit_done ; no new fruit
-
+    rjmp    check_fruit_done
 p1_eats:
     ; increase length if not max
     lds     r16,P1_LEN
-	ldi		r17,MAX_LEN
-	cpse	r16,r17
+    ldi     r17,MAX_LEN
+    cpse    r16,r17
     inc     r16
     sts     P1_LEN,r16
     rjmp    new_fruit
-
 p2_eats:
     ; increase length if not max
     lds     r16,P2_LEN
-	ldi		r17,MAX_LEN
-	cpse	r16,r17
+    ldi     r17,MAX_LEN
+    cpse    r16,r17
     inc     r16
     sts     P2_LEN,r16
-
 new_fruit:
     call    PLACE_FRUIT
-
-fruit_done:
-    rjmp    check_hits_done
-
-tie:
-    ldi     r16,TIED
-    sts     STATUS,r16
-    rjmp    check_hits_done
-
-p1_win:    
-    ldi     r16,P1_WINS
-    sts     STATUS,r16
-    rjmp    check_hits_done
-
-p2_win:
-    ldi     r16,P2_WINS
-    sts     STATUS,r16
-
-check_hits_done:
+check_fruit_done:
     ret

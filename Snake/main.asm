@@ -60,6 +60,7 @@
 .include "joystick.inc"
 .include "move.inc"
 .include "screen.inc"
+.include "hits.inc"
 ;.include "ljud.inc"
 
 PROG_START:

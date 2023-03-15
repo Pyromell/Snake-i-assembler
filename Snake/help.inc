@@ -4,34 +4,42 @@ SETUP:
     ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
     ; head
-	ldi		r16,$28
+	ldi		r16,$48
 	st		Z,r16
     ; body
-	ldi		r16,$18
+	ldi		r16,$38
 	std		Z+1,r16
-	ldi		r16,$08
+	ldi		r16,$28
 	std		Z+2,r16
+    ldi		r16,$18
+	std		Z+3,r16
+    ldi		r16,$08
+	std		Z+4,r16
     ; length
-	ldi		r16,3
+	ldi		r16,5
 	sts		P1_LEN,r16
     ; direction
     clr     r16
     sbr     r16,(1 << RIGHT)
     sts     P1_DIR,r16
-    
+
     ; player 2
     ldi		ZL,LOW(P2)
 	ldi		ZH,HIGH(P2)
     ; head
-	ldi		r16,$d7
+	ldi		r16,$b7
 	st		Z,r16
-    ; body	
-	ldi		r16,$e7
+    ; body
+	ldi		r16,$c7
 	std		Z+1,r16
-	ldi		r16,$f7
+	ldi		r16,$d7
 	std		Z+2,r16
+	ldi		r16,$e7
+	std		Z+3,r16
+	ldi		r16,$f7
+	std		Z+4,r16
     ; length
-	ldi		r16,3
+	ldi		r16,5
 	sts		P2_LEN,r16
     ; direction
     clr     r16
@@ -87,9 +95,9 @@ spi_tx_wait:
 DELAY:
     ldi     r16,SPEED
 delay0:
-    ldi     r17,$ff
+    ldi     r17,32
 delay1:
-    ldi     r18,$ff
+    ldi     r18,32
 delay2:
     dec     r18
     brne    delay2
@@ -97,6 +105,14 @@ delay2:
     brne    delay1
     dec     r16
     brne    delay0
+    ret
+
+WAIT:
+    push    r16
+    call    DELAY
+    pop     r16
+    dec     r16
+    brne    WAIT
     ret
 
 

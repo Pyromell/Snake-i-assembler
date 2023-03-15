@@ -117,11 +117,25 @@ START:
 	
 
 
-MAIN:
-	
+PLAY:
+    call    UPDATE_POS
+    call    ERASE_VMEM
+    call    UPDATE_VMEM
+    call    DELAY
+    rjmp    PLAY
 
-again:
-    rjmp    again
+
+UPDATE_POS:
+    ldi     ZH,HIGH(P2)
+    ldi     ZL,LOW(P2)
+    ld      r16,Z   ; x
+    ldd     r17,Z+1 ; y
+    dec     r16
+    inc     r17
+    st      Z,r16
+    std     Z+1,r17
+    ret
+
     .include "twisend.inc"
 
 

@@ -18,24 +18,25 @@ UPDATE_DIR:
     clr     r17 ; temporary direction
     ; x-direction
     call    READ_JOY ; returns ADCH in r19
-    cpi     r19,0b1100_0000 ; checks right
+    cpi     r19,192 ; checks right
     brlo    not_right
     sbr     r17,(1 << RIGHT)
-    rjmp    not_left
+    rjmp    all_done ; not_left if diagonal
 not_right:
-    cpi     r19,0b0100_0000 ; checks left
+    cpi     r19,64 ; checks left
     brsh    not_left
     sbr     r17,(1 << LEFT)
+    rjmp    all_done ; not left if diagonal
 not_left:
     ; y-direction
     inc     r18 ; change to y-channel
     call    READ_JOY ; returns ADCH in r19
-    cpi     r19,0b1100_0000 ; checks up
+    cpi     r19,192 ; checks up
     brlo    not_up
     sbr     r17,(1 << UP)
     rjmp    all_done
 not_up:
-    cpi     r19,0b0100_0000 ; checks down
+    cpi     r19,64 ; checks down
     brsh    all_done
     sbr     r17,(1 << DOWN)
 all_done:
@@ -43,7 +44,7 @@ all_done:
 	
 	mov		r18,r16
 	or		r18,r17
-	andi	r18,$0f
+	andi	r18,$0f ; needed?
 	
 	// Using dir compare to check if not allowed change in direction
 			
@@ -59,7 +60,6 @@ all_done:
     cpse    r17,ZERO
     mov     r16,r17   // Skip this is joystick not touched
 NOT_ALLOWED_DIR:
-	
     ret
 
 

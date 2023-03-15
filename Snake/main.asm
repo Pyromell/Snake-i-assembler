@@ -8,7 +8,7 @@
 .equ    R = 2
 .equ    A = 3
 ; Game constants
-.equ    SPEED = 10 ; lower is faster
+.equ    SPEED = 100 ; lower is faster
 .equ    P1_COLOR = R
 .equ    P2_COLOR = B
 .equ    FRUIT_COLOR = G
@@ -77,22 +77,27 @@ PROG_START:
 PLAY:
     call    ERASE_VMEM
     call    UPDATE_VMEM
+
     call    CHECK_HITS
-    call    JOYSTICK
-    call    MOVE
+
     call    DELAY
-    ; game over?
+    call    JOYSTICK
+    call    DELAY    
+    call    JOYSTICK
+    call    DELAY
+    call    JOYSTICK
+    call    DELAY
+
+    call    MOVE
+
     lds     r16,STATUS
     cp      r16,ZERO
     brne    GAME_OVER
-    ; not over
     rjmp    PLAY
 
 GAME_OVER:
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    call    DELAY
+    ldi     r16,30
+    call    WAIT
     lds     r16,STATUS
     cpi     r16,TIED
     breq    tied_screen
@@ -116,11 +121,6 @@ p2_win_screen:
     ldi     ZL,LOW(BLUE_WIN_TAB*2)
 win_prep_done:
     call    UPDATE_WIN_VMEM
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    call    DELAY
-    call    DELAY
+    ldi     r16,100
+    call    WAIT
     jmp     PROG_START

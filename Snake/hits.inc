@@ -13,16 +13,20 @@ CHECK_PLAYER_HITS:
    ; p1 head and p1 body 
     ldi     ZH,HIGH(P1)
     ldi     ZL,LOW(P1)
+    adiw    Z,1 ; looks past head
     lds     r16,P1
     lds     r18,P1_LEN
+    dec     r18 ; compensates for head
     call    hit_loop
     cpse    r19,ZERO
     rjmp    p2_win
    ; p2 head and p2 body 
     ldi     ZH,HIGH(P2)
     ldi     ZL,LOW(P2)
+    adiw    Z,1 ; looks past head
     lds     r16,P2
     lds     r18,P2_LEN
+    dec     r18 ; compensates for head
     call    hit_loop
     cpse    r19,ZERO
     rjmp    p1_win
@@ -42,6 +46,9 @@ CHECK_PLAYER_HITS:
     call    hit_loop
     cpse    r19,ZERO
     rjmp    p1_win
+
+    ; no player hit
+    rjmp    check_players_done
 tie:
     ldi     r16,TIED
     sts     STATUS,r16

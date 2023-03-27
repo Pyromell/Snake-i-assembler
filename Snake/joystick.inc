@@ -21,12 +21,19 @@ UPDATE_DIR:
     cpi     r19,192 ; checks right
     brlo    not_right
     sbr     r17,(1 << RIGHT)
+
+	ldi		r16,GAME_MODE
+	cpi		r16,1
+	breq	not_left
     rjmp    all_done ; not_left if diagonal
 not_right:
     cpi     r19,64 ; checks left
     brsh    not_left
     sbr     r17,(1 << LEFT)
-    rjmp    all_done ; not left if diagonal
+
+	ldi		r16,GAME_MODE
+	cpi		r16,0
+    breq    all_done ; not left if diagonal
 not_left:
     ; y-direction
     inc     r18 ; change to y-channel

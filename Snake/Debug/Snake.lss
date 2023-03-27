@@ -1,24 +1,26 @@
 
-AVRASM ver. 2.2.7  X:\tsiu51\projekt\Snake\main.asm Wed Mar 15 16:11:13 2023
+AVRASM ver. 2.2.7  X:\projekt\Snake\main.asm Mon Mar 27 17:25:07 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(56): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(57): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(58): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(59): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(60): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
-X:\tsiu51\projekt\Snake\main.asm(61): Including file 'X:\tsiu51\projekt\Snake\move.inc'
-X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\screen.inc'
-X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hits.inc'
+X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\help.inc'
+X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\init.inc'
+X:\projekt\Snake\main.asm(62): Including file 'X:\projekt\Snake\vmem.inc'
+X:\projekt\Snake\main.asm(63): Including file 'X:\projekt\Snake\mux.inc'
+X:\projekt\Snake\main.asm(64): Including file 'X:\projekt\Snake\joystick.inc'
+X:\projekt\Snake\main.asm(65): Including file 'X:\projekt\Snake\move.inc'
+X:\projekt\Snake\main.asm(66): Including file 'X:\projekt\Snake\screen.inc'
+X:\projekt\Snake\main.asm(67): Including file 'X:\projekt\Snake\hits.inc'
+X:\projekt\Snake\main.asm(68): Including file 'X:\projekt\Snake\ljud.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\tsiu51\projekt\Snake\main.asm(56): Including file 'X:\tsiu51\projekt\Snake\help.inc'
-X:\tsiu51\projekt\Snake\main.asm(57): Including file 'X:\tsiu51\projekt\Snake\init.inc'
-X:\tsiu51\projekt\Snake\main.asm(58): Including file 'X:\tsiu51\projekt\Snake\vmem.inc'
-X:\tsiu51\projekt\Snake\main.asm(59): Including file 'X:\tsiu51\projekt\Snake\mux.inc'
-X:\tsiu51\projekt\Snake\main.asm(60): Including file 'X:\tsiu51\projekt\Snake\joystick.inc'
-X:\tsiu51\projekt\Snake\main.asm(61): Including file 'X:\tsiu51\projekt\Snake\move.inc'
-X:\tsiu51\projekt\Snake\main.asm(62): Including file 'X:\tsiu51\projekt\Snake\screen.inc'
-X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hits.inc'
+X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\help.inc'
+X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\init.inc'
+X:\projekt\Snake\main.asm(62): Including file 'X:\projekt\Snake\vmem.inc'
+X:\projekt\Snake\main.asm(63): Including file 'X:\projekt\Snake\mux.inc'
+X:\projekt\Snake\main.asm(64): Including file 'X:\projekt\Snake\joystick.inc'
+X:\projekt\Snake\main.asm(65): Including file 'X:\projekt\Snake\move.inc'
+X:\projekt\Snake\main.asm(66): Including file 'X:\projekt\Snake\screen.inc'
+X:\projekt\Snake\main.asm(67): Including file 'X:\projekt\Snake\hits.inc'
+X:\projekt\Snake\main.asm(68): Including file 'X:\projekt\Snake\ljud.inc'
                                  
                                  ; SPI pins
                                  
@@ -1001,6 +1003,7 @@ X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hi
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
+                                 
                                  .equ    MOSI = PB3
                                  .equ    SCK  = PB5
                                  .equ    SS   = PB2
@@ -1010,7 +1013,10 @@ X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hi
                                  .equ    R = 2
                                  .equ    A = 3
                                  ; Game constants
-                                 .equ    SPEED = 100 ; lower is faster
+                                 .equ    SPEED = 200 ; lower is faster
+                                 ; Game mode 0 = boring game, 1 = fun game
+                                 .equ	GAME_MODE = 0
+                                 
                                  .equ    P1_COLOR = R
                                  .equ    P2_COLOR = B
                                  .equ    FRUIT_COLOR = G
@@ -1049,9 +1055,9 @@ X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hi
                                  
                                  
                                  .org 0x0000
-000000 940c 028f                     jmp     PROG_START
+000000 940c 0343                     jmp     PROG_START
                                  .org OVF0ADDR
-000020 940c 0107                     jmp     MULTIPLEX
+000020 940c 010a                     jmp     MULTIPLEX
                                  
                                  
                                  ; Includes
@@ -1059,70 +1065,98 @@ X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hi
                                  
                                  ; Initiates player positions
                                      ; player 1
-000022 e8e1                          ldi		ZL,LOW(P1)
-000023 e0f1                      	ldi		ZH,HIGH(P1)
+000022 940e 004e                 	call	data_init
+000024 e8e1                          ldi		ZL,LOW(P1)
+000025 e0f1                      	ldi		ZH,HIGH(P1)
                                      ; head
-000024 e408                      	ldi		r16,$48
-000025 8300                      	st		Z,r16
+000026 e408                      	ldi		r16,$48
+000027 8300                      	st		Z,r16
                                      ; body
-000026 e308                      	ldi		r16,$38
-000027 8301                      	std		Z+1,r16
-000028 e208                      	ldi		r16,$28
-000029 8302                      	std		Z+2,r16
-00002a e108                          ldi		r16,$18
-00002b 8303                      	std		Z+3,r16
-00002c e008                          ldi		r16,$08
-00002d 8304                      	std		Z+4,r16
+000028 e308                      	ldi		r16,$38
+000029 8301                      	std		Z+1,r16
+00002a e208                      	ldi		r16,$28
+00002b 8302                      	std		Z+2,r16
+00002c e108                          ldi		r16,$18
+00002d 8303                      	std		Z+3,r16
+00002e e008                          ldi		r16,$08
+00002f 8304                      	std		Z+4,r16
                                      ; length
-00002e e005                      	ldi		r16,5
-00002f 9300 01c1                 	sts		P1_LEN,r16
+000030 e005                      	ldi		r16,5
+000031 9300 01c1                 	sts		P1_LEN,r16
                                      ; direction
-000031 2700                          clr     r16
-000032 6001                          sbr     r16,(1 << RIGHT)
-000033 9300 01c2                     sts     P1_DIR,r16
+000033 2700                          clr     r16
+000034 6001                          sbr     r16,(1 << RIGHT)
+000035 9300 01c2                     sts     P1_DIR,r16
                                  
                                      ; player 2
-000035 ece3                          ldi		ZL,LOW(P2)
-000036 e0f1                      	ldi		ZH,HIGH(P2)
+000037 ece3                          ldi		ZL,LOW(P2)
+000038 e0f1                      	ldi		ZH,HIGH(P2)
                                      ; head
-000037 eb07                      	ldi		r16,$b7
-000038 8300                      	st		Z,r16
+000039 eb07                      	ldi		r16,$b7
+00003a 8300                      	st		Z,r16
                                      ; body
-000039 ec07                      	ldi		r16,$c7
-00003a 8301                      	std		Z+1,r16
-00003b ed07                      	ldi		r16,$d7
-00003c 8302                      	std		Z+2,r16
-00003d ee07                      	ldi		r16,$e7
-00003e 8303                      	std		Z+3,r16
-00003f ef07                      	ldi		r16,$f7
-000040 8304                      	std		Z+4,r16
+00003b ec07                      	ldi		r16,$c7
+00003c 8301                      	std		Z+1,r16
+00003d ed07                      	ldi		r16,$d7
+00003e 8302                      	std		Z+2,r16
+00003f ee07                      	ldi		r16,$e7
+000040 8303                      	std		Z+3,r16
+000041 ef07                      	ldi		r16,$f7
+000042 8304                      	std		Z+4,r16
                                      ; length
-000041 e005                      	ldi		r16,5
-000042 9300 0203                 	sts		P2_LEN,r16
+000043 e005                      	ldi		r16,5
+000044 9300 0203                 	sts		P2_LEN,r16
                                      ; direction
-000044 2700                          clr     r16
-000045 6004                          sbr     r16,(1 << LEFT)
-000046 9300 0204                     sts     P2_DIR,r16
+000046 2700                          clr     r16
+000047 6004                          sbr     r16,(1 << LEFT)
+000048 9300 0204                     sts     P2_DIR,r16
                                  
                                      ; clear and place
-000048 9478                          sei     ; interrupt enabled
-000049 940e 007a                     call    PLACE_FRUIT
-00004b 9508                          ret
+00004a 9478                          sei     ; interrupt enabled
+00004b 940e 0094                     call    PLACE_FRUIT
+00004d 9508                          ret
+                                 
+                                 
+                                 data_init:
+00004e e8e1                          ldi     ZL,LOW(P1)
+00004f e0f1                          ldi     ZH,HIGH(P1)
+000050 e400                          ldi     r16,MAX_LEN
+                                 clear_p1_loop:
+000051 9221                          st      Z+,ZERO 
+000052 950a                          dec     r16
+000053 f7e9                          brne    clear_p1_loop
+000054 9220 01c1                     sts     P1_LEN,ZERO
                                      
+000056 ece3                          ldi     ZL,LOW(P2)
+000057 e0f1                          ldi     ZH,HIGH(P2)
+000058 e400                          ldi     r16,MAX_LEN
+                                 clear_p2_loop:
+000059 9221                          st      Z+,ZERO
+00005a 950a                          dec     r16
+00005b f7e9                          brne    clear_p2_loop
+00005c 9220 0203                     sts     P2_LEN,ZERO
+                                 
+00005e e0e5                          ldi     ZL,LOW(FRUIT)
+00005f e0f2                          ldi     ZH,HIGH(FRUIT)
+000060 8220                          st      Z,ZERO
+                                 
+000061 9220 0180                     sts     LINE,ZERO
+000063 9220 0207                     sts     STATUS,ZERO
+000065 9508                          ret
                                   
                                   COORD2BYTE:
                                  ; Converts coordinate in r16
                                  ; to byte for DAMatrix in r19
                                  
-00004c e830                          ldi     r19,0b1000_0000
-00004d 3000                          cpi     r16,0
-00004e f019                          breq    c2b_done
+000066 e830                          ldi     r19,0b1000_0000
+000067 3000                          cpi     r16,0
+000068 f019                          breq    c2b_done
                                  c2b_loop:    
-00004f 9536                          lsr     r19
-000050 950a                          dec     r16    
-000051 f7e9                          brne    c2b_loop
+000069 9536                          lsr     r19
+00006a 950a                          dec     r16    
+00006b f7e9                          brne    c2b_loop
                                  c2b_done:
-000052 9508                          ret
+00006c 9508                          ret
                                  
                                  
                                  SPI_TX:
@@ -1130,709 +1164,691 @@ X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hi
                                  ; waiting until send is complete
                                  ; by checking flag in SPSR
                                  
-000053 93ff                          push    ZH
-000054 93ef                          push    ZL
-000055 930f                          push    r16
+00006d 93ff                          push    ZH
+00006e 93ef                          push    ZL
+00006f 930f                          push    r16
                                  
-000056 b7fe                          in      ZH,SPH
-000057 b7ed                          in      ZL,SPL
-000058 8106                          ldd     r16,Z+6
-000059 bd0e                          out     SPDR,r16
+000070 b7fe                          in      ZH,SPH
+000071 b7ed                          in      ZL,SPL
+000072 8106                          ldd     r16,Z+6
+000073 bd0e                          out     SPDR,r16
                                  
                                  spi_tx_wait:
-00005a b50d                          in      r16,SPSR
-00005b ff07                          sbrs    r16,SPIF
-00005c cffd                          rjmp    spi_tx_wait
+000074 b50d                          in      r16,SPSR
+000075 ff07                          sbrs    r16,SPIF
+000076 cffd                          rjmp    spi_tx_wait
                                  
-00005d 910f                          pop     r16
-00005e 91ef                          pop     ZL
-00005f 91ff                          pop     ZH
-000060 9508                          ret
+000077 910f                          pop     r16
+000078 91ef                          pop     ZL
+000079 91ff                          pop     ZH
+00007a 9508                          ret
                                  
                                  
                                  DELAY:
-000061 e604                          ldi     r16,SPEED
+00007b ec08                          ldi     r16,SPEED
                                  delay0:
-000062 e210                          ldi     r17,32
+00007c e210                          ldi     r17,32
                                  delay1:
-000063 e220                          ldi     r18,32
+00007d e220                          ldi     r18,32
                                  delay2:
-000064 952a                          dec     r18
-000065 f7f1                          brne    delay2
-000066 951a                          dec     r17
-000067 f7d9                          brne    delay1
-000068 950a                          dec     r16
-000069 f7c1                          brne    delay0
-00006a 9508                          ret
+00007e 952a                          dec     r18
+00007f f7f1                          brne    delay2
+000080 951a                          dec     r17
+000081 f7d9                          brne    delay1
+000082 950a                          dec     r16
+000083 f7c1                          brne    delay0
+000084 9508                          ret
                                  
                                  WAIT:
-00006b 930f                          push    r16
-00006c 940e 0061                     call    DELAY
-00006e 910f                          pop     r16
-00006f 950a                          dec     r16
-000070 f7d1                          brne    WAIT
-000071 9508                          ret
+000085 930f                          push    r16
+000086 940e 007b                     call    DELAY
+000088 910f                          pop     r16
+000089 950a                          dec     r16
+00008a f7d1                          brne    WAIT
+00008b 9508                          ret
                                  
                                  
                                  SEP_XY:
                                  ; In:  r16 = 0bxxxx_yyyy.
                                  ; Out: r16 = 0b0000_xxxx,
                                  ;      r17 = 0b0000_yyyy.
-000072 2f10                          mov     r17,r16
-000073 9502                          swap    r16
-000074 700f                          andi    r16,0b0000_1111 ; x
-000075 701f                          andi    r17,0b0000_1111 ; y
-000076 9508                          ret
+00008c 2f10                          mov     r17,r16
+00008d 9502                          swap    r16
+00008e 700f                          andi    r16,0b0000_1111 ; x
+00008f 701f                          andi    r17,0b0000_1111 ; y
+000090 9508                          ret
                                  
                                  
                                  JOIN_XY:
                                  ; In:  r16 = 0b0000_xxxx.
                                  ;      r17 = 0b0000_yyyy,
                                  ; Out: r16 = 0bxxxx_yyyy.
-000077 9502                          swap    r16
-000078 2b01                          or      r16,r17
-000079 9508                          ret
+000091 9502                          swap    r16
+000092 2b01                          or      r16,r17
+000093 9508                          ret
                                  
                                  
                                  PLACE_FRUIT:
                                  RE_TRY:    
-00007a 9100 0206                     lds     r16,SEED
-00007c e0f1                          ldi     ZH,HIGH(P1)
-00007d e8e1                          ldi     ZL,LOW(P1)
-00007e 9110 01c1                     lds     r17,P1_LEN
+000094 9100 0206                     lds     r16,SEED
+000096 e0f1                          ldi     ZH,HIGH(P1)
+000097 e8e1                          ldi     ZL,LOW(P1)
+000098 9110 01c1                     lds     r17,P1_LEN
                                      
                                      RANDOM_LOOP1:
-000080 9121                          ld      r18,Z+
-000081 1720                          cp      r18,r16
-000082 f3b9                          breq    RE_TRY   
-000083 951a                          dec     r17
-000084 f7d9                          brne    RANDOM_LOOP1
+00009a 9121                          ld      r18,Z+
+00009b 1720                          cp      r18,r16
+00009c f3b9                          breq    RE_TRY   
+00009d 951a                          dec     r17
+00009e f7d9                          brne    RANDOM_LOOP1
                                  
-000085 e0f1                          ldi     ZH,HIGH(P2)
-000086 ece3                          ldi     ZL,LOW(P2)
-000087 9110 0203                     lds     r17,P2_LEN
+00009f e0f1                          ldi     ZH,HIGH(P2)
+0000a0 ece3                          ldi     ZL,LOW(P2)
+0000a1 9110 0203                     lds     r17,P2_LEN
                                  
                                      RANDOM_LOOP2:
-000089 9121                          ld      r18,Z+
-00008a 1720                          cp      r18,r16
-00008b f371                          breq    RE_TRY   
-00008c 951a                          dec     r17
-00008d f7d9                          brne    RANDOM_LOOP2
+0000a3 9121                          ld      r18,Z+
+0000a4 1720                          cp      r18,r16
+0000a5 f371                          breq    RE_TRY   
+0000a6 951a                          dec     r17
+0000a7 f7d9                          brne    RANDOM_LOOP2
                                  
-00008e 9300 0205                     sts     FRUIT,r16
+0000a8 9300 0205                     sts     FRUIT,r16
                                  .include "init.inc"
-000090 9508                      
+0000aa 9508                      
                                  ; Entry point for call from main
                                  spi_init:
                                      ; Set MOSI and SCK output, all others input
-000091 e20c                          ldi     r16,( 1 << MOSI | 1 << SCK | 1 << SS )
-000092 b904                          out     DDRB,r16
+0000ab e20c                          ldi     r16,( 1 << MOSI | 1 << SCK | 1 << SS )
+0000ac b904                          out     DDRB,r16
                                  
                                      ; Enable SPI, Master, set clock rate fck/16
                                      ldi     r16,( 1 << SPE  | 1 << MSTR |\
-000093 e500                                        0 << SPR0 | 0 << SPR1 )
-000094 bd0c                          out     SPCR,r16
+0000ad e500                                        0 << SPR0 | 0 << SPR1 )
+0000ae bd0c                          out     SPCR,r16
                                  
-000095 e010                          ldi     r17,( 0 << SPI2X )
-000096 bd1d                          out     SPSR,r17
+0000af e010                          ldi     r17,( 0 << SPI2X )
+0000b0 bd1d                          out     SPSR,r17
                                  
                                  adc_init:
                                      ; ADC Control and Status Register A:
                                      ; ADEN, ADSC, ADATE, ADIF, ADIE, ADPS2..0
                                      ; Prescaler 2..0: Set to 1/128 => 125 kHz
-000097 e807                          ldi     r16,0b1000_0111
-000098 9300 007a                     sts     ADCSRA,r16
+0000b1 e807                          ldi     r16,0b1000_0111
+0000b2 9300 007a                     sts     ADCSRA,r16
                                  
                                      ; ADC Multiplexer Selection Register:
                                      ; REFS1..0, ADLAR, --, MUX3..0
                                      ; Ref set to AVCC (01)
                                      ; Channel Selection 3..0: 0000 = ADC0
-00009a e600                          ldi     r16,0b0110_0000
-00009b 9300 007c                     sts     ADMUX,r16
+0000b4 e600                          ldi     r16,0b0110_0000
+0000b5 9300 007c                     sts     ADMUX,r16
                                  
                                  interrupt_init:
                                      ldi     r16,( 0 << COM0A1 | 0 << COM0A0 |\
-00009d e000                                        0 << WGM01  | 0 << WGM00  )
-00009e bd04                          out     TCCR0A,r16
+0000b7 e000                                        0 << WGM01  | 0 << WGM00  )
+0000b8 bd04                          out     TCCR0A,r16
                                  
                                      ldi     r16,( 0 << WGM02 | 0 << CS02 |\
-00009f e003                                        1 << CS01  | 1 << CS00 )
-0000a0 bd05                          out     TCCR0B,r16
+0000b9 e003                                        1 << CS01  | 1 << CS00 )
+0000ba bd05                          out     TCCR0B,r16
                                      
-0000a1 e001                          ldi     r16,( 1 << TOIE0 )
-0000a2 9300 006e                     sts     TIMSK0,r16
+0000bb e001                          ldi     r16,( 1 << TOIE0 )
+0000bc 9300 006e                     sts     TIMSK0,r16
                                  
-                                 data_init:
-0000a4 e8e1                          ldi     ZL,LOW(P1)
-0000a5 e0f1                          ldi     ZH,HIGH(P1)
-0000a6 e400                          ldi     r16,MAX_LEN
-                                 clear_p1_loop:
-0000a7 9221                          st      Z+,ZERO 
-0000a8 950a                          dec     r16
-0000a9 f7e9                          brne    clear_p1_loop
-0000aa 9220 01c1                     sts     P1_LEN,ZERO
-                                     
-0000ac ece3                          ldi     ZL,LOW(P2)
-0000ad e0f1                          ldi     ZH,HIGH(P2)
-0000ae e400                          ldi     r16,MAX_LEN
-                                 clear_p2_loop:
-0000af 9221                          st      Z+,ZERO
-0000b0 950a                          dec     r16
-0000b1 f7e9                          brne    clear_p2_loop
-0000b2 9220 0203                     sts     P2_LEN,ZERO
                                  
-0000b4 e0e5                          ldi     ZL,LOW(FRUIT)
-0000b5 e0f2                          ldi     ZH,HIGH(FRUIT)
-0000b6 8220                          st      Z,ZERO
-                                 
-0000b7 9220 0180                     sts     LINE,ZERO
-0000b9 9220 0207                     sts     STATUS,ZERO
-                                 
-0000bb 9508                      ret ; from INIT
+0000be 9508                      	ret ; from INIT
                                  .include "vmem.inc"
                                  
-0000bc 93ff                          push    ZH
-0000bd 93ef                          push    ZL
-0000be e0f1                          ldi     ZH,HIGH(VMEM)
-0000bf e0e0                          ldi     ZL,LOW(VMEM)
-0000c0 e800                          ldi     r16,128
+0000bf 93ff                          push    ZH
+0000c0 93ef                          push    ZL
+0000c1 e0f1                          ldi     ZH,HIGH(VMEM)
+0000c2 e0e0                          ldi     ZL,LOW(VMEM)
+0000c3 e800                          ldi     r16,128
                                  clear_byte:
-0000c1 9221                          st      Z+,ZERO
-0000c2 950a                          dec     r16
-0000c3 f7e9                          brne    clear_byte
-0000c4 91ef                          pop     ZL
-0000c5 91ff                          pop     ZH
-0000c6 9508                          ret
+0000c4 9221                          st      Z+,ZERO
+0000c5 950a                          dec     r16
+0000c6 f7e9                          brne    clear_byte
+0000c7 91ef                          pop     ZL
+0000c8 91ff                          pop     ZH
+0000c9 9508                          ret
                                  
                                  
                                  UPDATE_VMEM:
-0000c7 93ff                          push    ZH
-0000c8 93ef                          push    ZL
-0000c9 93df                          push    YH
-0000ca 93cf                          push    YL
+0000ca 93ff                          push    ZH
+0000cb 93ef                          push    ZL
+0000cc 93df                          push    YH
+0000cd 93cf                          push    YL
                                  update_p1:
-0000cb e0f1                          ldi     ZH,HIGH(P1)
-0000cc e8e1                          ldi     ZL,LOW(P1)
-0000cd 9140 01c1                     lds     r20,P1_LEN
+0000ce e0f1                          ldi     ZH,HIGH(P1)
+0000cf e8e1                          ldi     ZL,LOW(P1)
+0000d0 9140 01c1                     lds     r20,P1_LEN
                                  update_p1_loop:
-0000cf 9101                          ld      r16,Z+
+0000d2 9101                          ld      r16,Z+
                                      ; sets Y to correct line in VMEM
                                      ; returns DAMatrix byte in r19
-0000d0 940e 00f0                     call    POINT_AT_LINE
+0000d3 940e 00f3                     call    POINT_AT_LINE
                                      ; adds player color at coord to that byte
-0000d2 810a                          ldd     r16,Y+P1_COLOR
-0000d3 2b30                          or      r19,r16
-0000d4 833a                          std     Y+P1_COLOR,r19
-0000d5 954a                          dec     r20
-0000d6 f7c1                          brne    update_p1_loop
+0000d5 810a                          ldd     r16,Y+P1_COLOR
+0000d6 2b30                          or      r19,r16
+0000d7 833a                          std     Y+P1_COLOR,r19
+0000d8 954a                          dec     r20
+0000d9 f7c1                          brne    update_p1_loop
                                  
                                  
                                  update_p2:  ; same as p1
-0000d7 e0f1                          ldi     ZH,HIGH(P2)
-0000d8 ece3                          ldi     ZL,LOW(P2)
-0000d9 9140 0203                     lds     r20,P2_LEN
+0000da e0f1                          ldi     ZH,HIGH(P2)
+0000db ece3                          ldi     ZL,LOW(P2)
+0000dc 9140 0203                     lds     r20,P2_LEN
                                  update_p2_loop:
-0000db 9101                          ld      r16,Z+
-0000dc 940e 00f0                     call    POINT_AT_LINE
-0000de 8108                          ldd     r16,Y+P2_COLOR
-0000df 2b30                          or      r19,r16
-0000e0 8338                          std     Y+P2_COLOR,r19
-0000e1 954a                          dec     r20
-0000e2 f7c1                          brne    update_p2_loop
+0000de 9101                          ld      r16,Z+
+0000df 940e 00f3                     call    POINT_AT_LINE
+0000e1 8108                          ldd     r16,Y+P2_COLOR
+0000e2 2b30                          or      r19,r16
+0000e3 8338                          std     Y+P2_COLOR,r19
+0000e4 954a                          dec     r20
+0000e5 f7c1                          brne    update_p2_loop
                                  
                                  update_fruit:
-0000e3 e0f2                          ldi     ZH,HIGH(FRUIT)
-0000e4 e0e5                          ldi     ZL,LOW(FRUIT)
-0000e5 8100                          ld      r16,Z
-0000e6 940e 00f0                     call    POINT_AT_LINE
-0000e8 8109                          ldd     r16,Y+FRUIT_COLOR
-0000e9 2b30                          or      r19,r16
-0000ea 8339                          std     Y+FRUIT_COLOR,r19
+0000e6 e0f2                          ldi     ZH,HIGH(FRUIT)
+0000e7 e0e5                          ldi     ZL,LOW(FRUIT)
+0000e8 8100                          ld      r16,Z
+0000e9 940e 00f3                     call    POINT_AT_LINE
+0000eb 8109                          ldd     r16,Y+FRUIT_COLOR
+0000ec 2b30                          or      r19,r16
+0000ed 8339                          std     Y+FRUIT_COLOR,r19
                                  
                                  update_done:
-0000eb 91cf                          pop     YL
-0000ec 91df                          pop     YH
-0000ed 91ef                          pop     ZL
-0000ee 91ff                          pop     ZH
-0000ef 9508                          ret
+0000ee 91cf                          pop     YL
+0000ef 91df                          pop     YH
+0000f0 91ef                          pop     ZL
+0000f1 91ff                          pop     ZH
+0000f2 9508                          ret
                                  
                                  
                                  POINT_AT_LINE:
                                  ; Sets Y to line with r16=x,y in VMEM.
                                  ; Returns byte to write in r19
-0000f0 e0d1                          ldi     YH,HIGH(VMEM)
-0000f1 e0c0                          ldi     YL,LOW(VMEM)
-0000f2 940e 0072                     call    SEP_XY ; x,y = r16,r17
+0000f3 e0d1                          ldi     YH,HIGH(VMEM)
+0000f4 e0c0                          ldi     YL,LOW(VMEM)
+0000f5 940e 008c                     call    SEP_XY ; x,y = r16,r17
                                      ; determine if upper display
-0000f4 3018                          cpi     r17,8
-0000f5 f020                          brlo    upper_lower_chosen
+0000f7 3018                          cpi     r17,8
+0000f8 f020                          brlo    upper_lower_chosen
                                      ; move Y to upper display
-0000f6 5018                          subi    r17,8
-0000f7 e420                          ldi     r18,64
-0000f8 0fc2                          add     YL,r18
-0000f9 1dd2                          adc     YH,ZERO
+0000f9 5018                          subi    r17,8
+0000fa e420                          ldi     r18,64
+0000fb 0fc2                          add     YL,r18
+0000fc 1dd2                          adc     YH,ZERO
                                  upper_lower_chosen:
                                      ; Y += y * 4 to point at line
-0000fa 0f11                          lsl     r17
-0000fb 0f11                          lsl     r17
-0000fc 0fc1                          add     YL,r17
-0000fd 1dd2                          adc     YH,ZERO
+0000fd 0f11                          lsl     r17
+0000fe 0f11                          lsl     r17
+0000ff 0fc1                          add     YL,r17
+000100 1dd2                          adc     YH,ZERO
                                      ; determine if right display
-0000fe 3008                          cpi     r16,8
-0000ff f020                          brlo    left_right_chosen
+000101 3008                          cpi     r16,8
+000102 f020                          brlo    left_right_chosen
                                      ; move Y to right display
-000100 5008                          subi    r16,8
-000101 e220                          ldi     r18,32
-000102 0fc2                          add     YL,r18
-000103 1dd2                          adc     YH,ZERO
+000103 5008                          subi    r16,8
+000104 e220                          ldi     r18,32
+000105 0fc2                          add     YL,r18
+000106 1dd2                          adc     YH,ZERO
                                  left_right_chosen:
                                      ; convert x to byte for DAMatrix
-000104 940e 004c                     call    COORD2BYTE ; in r16, out r19
+000107 940e 0066                     call    COORD2BYTE ; in r16, out r19
                                  .include "mux.inc"
-000106 9508                      
+000109 9508                      
                                  ; Multiplexes DAMatrix.
                                  ; Draws LINE on each display 3..0.
-000107 93ff                          push    ZH
-000108 93ef                          push    ZL
-000109 930f                          push    r16
-00010a 931f                          push    r17
-00010b 932f                          push    r18
-00010c 933f                          push    r19
+00010a 93ff                          push    ZH
+00010b 93ef                          push    ZL
+00010c 930f                          push    r16
+00010d 931f                          push    r17
+00010e 932f                          push    r18
+00010f 933f                          push    r19
                                  
-00010d b70f                          in      r16,SREG
-00010e 930f                          push    r16 
+000110 b70f                          in      r16,SREG
+000111 930f                          push    r16 
                                  
-00010f e0e0                          ldi     ZL,LOW(VMEM)
-000110 e0f1                          ldi     ZH,HIGH(VMEM)
+000112 e0e0                          ldi     ZL,LOW(VMEM)
+000113 e0f1                          ldi     ZH,HIGH(VMEM)
                                  
                                      ; sets Z to start of display 3
-000111 e610                          ldi     r17,96
-000112 0fe1                          add     ZL,r17
-000113 1df2                          adc     ZH,ZERO
+000114 e610                          ldi     r17,96
+000115 0fe1                          add     ZL,r17
+000116 1df2                          adc     ZH,ZERO
                                  
                                      ; resets LINE to 0 if 8
-000114 9100 0180                     lds     r16,LINE
-000116 7007                          andi    r16,7
-000117 2f10                          mov     r17,r16
+000117 9100 0180                     lds     r16,LINE
+000119 7007                          andi    r16,7
+00011a 2f10                          mov     r17,r16
                                  
                                      ; LINE * 4 to get row in VMEM,
                                      ; sets Z to that row
-000118 0f11                          lsl     r17
-000119 0f11                          lsl     r17
-00011a 0fe1                          add     ZL,r17
-00011b 1df2                          adc     ZH,ZERO
+00011b 0f11                          lsl     r17
+00011c 0f11                          lsl     r17
+00011d 0fe1                          add     ZL,r17
+00011e 1df2                          adc     ZH,ZERO
                                  
-00011c 940e 004c                     call    COORD2BYTE ; in r16, out r19
+00011f 940e 0066                     call    COORD2BYTE ; in r16, out r19
                                  
-00011e 982a                          cbi     PORTB,SS ; pulls latch
+000121 982a                          cbi     PORTB,SS ; pulls latch
                                  
                                      ; loops through displays
-00011f e024                          ldi     r18,4
+000122 e024                          ldi     r18,4
                                  disp_loop:
                                      ; transmits blue
-000120 8100                          ldd     r16,Z+B 
-000121 930f                          push    r16
-000122 940e 0053                     call    SPI_TX
-000124 910f                          pop     r16
+000123 8100                          ldd     r16,Z+B 
+000124 930f                          push    r16
+000125 940e 006d                     call    SPI_TX
+000127 910f                          pop     r16
                                  
                                      ; transmits green
-000125 8101                          ldd     r16,Z+G
-000126 930f                          push    r16
-000127 940e 0053                     call    SPI_TX
-000129 910f                          pop     r16
+000128 8101                          ldd     r16,Z+G
+000129 930f                          push    r16
+00012a 940e 006d                     call    SPI_TX
+00012c 910f                          pop     r16
                                  
                                      ; transmits red
-00012a 8102                          ldd     r16,Z+R
-00012b 930f                          push    r16
-00012c 940e 0053                     call    SPI_TX
-00012e 910f                          pop     r16
+00012d 8102                          ldd     r16,Z+R
+00012e 930f                          push    r16
+00012f 940e 006d                     call    SPI_TX
+000131 910f                          pop     r16
                                      
                                      ; transmits anode
-00012f 9530                          com     r19 ; invert bytes for DAMatrix
-000130 933f                          push    r19
-000131 940e 0053                     call    SPI_TX
-000133 913f                          pop     r19
-000134 9530                          com     r19
+000132 9530                          com     r19 ; invert bytes for DAMatrix
+000133 933f                          push    r19
+000134 940e 006d                     call    SPI_TX
+000136 913f                          pop     r19
+000137 9530                          com     r19
                                  
                                      ; moves Z to next display
-000135 e210                          ldi     r17,32
-000136 1be1                          sub     ZL,r17
-000137 09f2                          sbc     ZH,ZERO
+000138 e210                          ldi     r17,32
+000139 1be1                          sub     ZL,r17
+00013a 09f2                          sbc     ZH,ZERO
                                  
-000138 952a                          dec     r18
-000139 f731                          brne    disp_loop
+00013b 952a                          dec     r18
+00013c f731                          brne    disp_loop
                                  
-00013a 9a2a                          sbi     PORTB,SS ; pulls latch
+00013d 9a2a                          sbi     PORTB,SS ; pulls latch
                                  
                                      ; incs LINE before next INT
-00013b 9100 0180                     lds     r16,LINE
-00013d 9503                          inc     r16
-00013e 9300 0180                     sts     LINE,r16
+00013e 9100 0180                     lds     r16,LINE
+000140 9503                          inc     r16
+000141 9300 0180                     sts     LINE,r16
                                  
                                      ; Upcount random
-000140 9100 0206                     lds     r16,SEED
-000142 9503                          inc     r16
-000143 9300 0206                     sts     SEED,r16
+000143 9100 0206                     lds     r16,SEED
+000145 9503                          inc     r16
+000146 9300 0206                     sts     SEED,r16
                                  
-000145 910f                          pop     r16
-000146 bf0f                          out     SREG,r16
+000148 910f                          pop     r16
+000149 bf0f                          out     SREG,r16
                                  
-000147 913f                          pop     r19
-000148 912f                          pop     r18
-000149 911f                          pop     r17
-00014a 910f                          pop     r16
-00014b 91ef                          pop     ZL
-00014c 91ff                          pop     ZH
+00014a 913f                          pop     r19
+00014b 912f                          pop     r18
+00014c 911f                          pop     r17
+00014d 910f                          pop     r16
+00014e 91ef                          pop     ZL
+00014f 91ff                          pop     ZH
                                  .include "joystick.inc"
-00014d 9518                      
-00014e e022                          ldi     r18,JOY_1
-00014f 9100 01c2                     lds     r16,P1_DIR
-000151 940e 015d                     call    UPDATE_DIR
-000153 9300 01c2                     sts     P1_DIR,r16
+000150 9518                      
+000151 e022                          ldi     r18,JOY_1
+000152 9100 01c2                     lds     r16,P1_DIR
+000154 940e 0160                     call    UPDATE_DIR
+000156 9300 01c2                     sts     P1_DIR,r16
                                      
-000155 e020                          ldi     r18,JOY_2
-000156 9100 0204                     lds     r16,P2_DIR
-000158 940e 015d                     call    UPDATE_DIR
-00015a 9300 0204                     sts     P2_DIR,r16
-00015c 9508                          ret
+000158 e020                          ldi     r18,JOY_2
+000159 9100 0204                     lds     r16,P2_DIR
+00015b 940e 0160                     call    UPDATE_DIR
+00015d 9300 0204                     sts     P2_DIR,r16
+00015f 9508                          ret
                                  
                                  
                                  UPDATE_DIR:
                                  ; Performs ADC conversion and
                                  ; updates direction in SRAM
-00015d 930f                          push    r16 ; store dir
-00015e 2711                          clr     r17 ; temporary direction
+000160 930f                          push    r16 ; store dir
+000161 2711                          clr     r17 ; temporary direction
                                      ; x-direction
-00015f 940e 0180                     call    READ_JOY ; returns ADCH in r19
-000161 3c30                          cpi     r19,192 ; checks right
-000162 f010                          brlo    not_right
-000163 6011                          sbr     r17,(1 << RIGHT)
-000164 c00e                          rjmp    all_done ; not_left if diagonal
+000162 940e 0188                     call    READ_JOY ; returns ADCH in r19
+000164 3c30                          cpi     r19,192 ; checks right
+000165 f028                          brlo    not_right
+000166 6011                          sbr     r17,(1 << RIGHT)
+                                 
+000167 e000                      	ldi		r16,GAME_MODE
+000168 3001                      	cpi		r16,1
+000169 f039                      	breq	not_left
+00016a c010                          rjmp    all_done ; not_left if diagonal
                                  not_right:
-000165 3430                          cpi     r19,64 ; checks left
-000166 f410                          brsh    not_left
-000167 6014                          sbr     r17,(1 << LEFT)
-000168 c00a                          rjmp    all_done ; not left if diagonal
+00016b 3430                          cpi     r19,64 ; checks left
+00016c f420                          brsh    not_left
+00016d 6014                          sbr     r17,(1 << LEFT)
+                                 
+00016e e000                      	ldi		r16,GAME_MODE
+00016f 3000                      	cpi		r16,0
+000170 f051                          breq    all_done ; not left if diagonal
                                  not_left:
                                      ; y-direction
-000169 9523                          inc     r18 ; change to y-channel
-00016a 940e 0180                     call    READ_JOY ; returns ADCH in r19
-00016c 3c30                          cpi     r19,192 ; checks up
-00016d f010                          brlo    not_up
-00016e 6012                          sbr     r17,(1 << UP)
-00016f c003                          rjmp    all_done
+000171 9523                          inc     r18 ; change to y-channel
+000172 940e 0188                     call    READ_JOY ; returns ADCH in r19
+000174 3c30                          cpi     r19,192 ; checks up
+000175 f010                          brlo    not_up
+000176 6012                          sbr     r17,(1 << UP)
+000177 c003                          rjmp    all_done
                                  not_up:
-000170 3430                          cpi     r19,64 ; checks down
-000171 f408                          brsh    all_done
-000172 6018                          sbr     r17,(1 << DOWN)
+000178 3430                          cpi     r19,64 ; checks down
+000179 f408                          brsh    all_done
+00017a 6018                          sbr     r17,(1 << DOWN)
                                  all_done:
-000173 910f                          pop     r16 ; restore dir
+00017b 910f                          pop     r16 ; restore dir
                                  	
-000174 2f20                      	mov		r18,r16
-000175 2b21                      	or		r18,r17
-000176 702f                      	andi	r18,$0f ; needed?
+00017c 2f20                      	mov		r18,r16
+00017d 2b21                      	or		r18,r17
+00017e 702f                      	andi	r18,$0f ; needed?
                                  	
                                  	// Using dir compare to check if not allowed change in direction
                                  			
-000177 302f                      	cpi		r18,$0f				// Check diagonal
-000178 f031                      	breq	NOT_ALLOWED_DIR
+00017f 302f                      	cpi		r18,$0f				// Check diagonal
+000180 f031                      	breq	NOT_ALLOWED_DIR
                                  	
-000179 302a                      	cpi		r18,$0A
-00017a f021                      	breq	NOT_ALLOWED_DIR		// Check Y-axis
+000181 302a                      	cpi		r18,$0A
+000182 f021                      	breq	NOT_ALLOWED_DIR		// Check Y-axis
                                  	
-00017b 3025                      	cpi		r18,$05
-00017c f011                      	breq	NOT_ALLOWED_DIR		// Check X-axis
+000183 3025                      	cpi		r18,$05
+000184 f011                      	breq	NOT_ALLOWED_DIR		// Check X-axis
                                  
-00017d 1112                          cpse    r17,ZERO
-00017e 2f01                          mov     r16,r17   // Skip this is joystick not touched
+000185 1112                          cpse    r17,ZERO
+000186 2f01                          mov     r16,r17   // Skip this is joystick not touched
                                  NOT_ALLOWED_DIR:
-00017f 9508                          ret
+000187 9508                          ret
                                  
                                  
                                  READ_JOY:
                                  ; Reads from pin specified by MUX3..0 in r18
                                  ; Returns ADCH in r19    
-000180 e600                          ldi     r16,0b0110_0000 ; load default ADMUX
-000181 2b02                          or      r16,r18 ; set MUXn = PCn from r18 = n
-000182 9300 007c                     sts     ADMUX,r16
-000184 9100 007a                     lds     r16,ADCSRA
-000186 6400                          ori     r16,0b0100_0000 ; set ADSC
-000187 9300 007a                     sts     ADCSRA,r16
+000188 e600                          ldi     r16,0b0110_0000 ; load default ADMUX
+000189 2b02                          or      r16,r18 ; set MUXn = PCn from r18 = n
+00018a 9300 007c                     sts     ADMUX,r16
+00018c 9100 007a                     lds     r16,ADCSRA
+00018e 6400                          ori     r16,0b0100_0000 ; set ADSC
+00018f 9300 007a                     sts     ADCSRA,r16
                                  adc_not_done: ; wait till conversion done
-000189 9100 007a                     lds     r16,ADCSRA
-00018b fd06                          sbrc    r16,ADSC
-00018c cffc                          rjmp    adc_not_done
+000191 9100 007a                     lds     r16,ADCSRA
+000193 fd06                          sbrc    r16,ADSC
+000194 cffc                          rjmp    adc_not_done
                                  adc_done:
-00018d 9130 0079                     lds     r19,ADCH ; read 8 MSB
+000195 9130 0079                     lds     r19,ADCH ; read 8 MSB
                                  .include "move.inc"
-00018f 9508                      
-000190 940e 01b2                     call   MOVE_BODYS
-000192 9100 0181                     lds    r16,P1
-000194 9120 01c2                     lds    r18,P1_DIR
-000196 940e 01a3                     call   MOVE_HEAD
-000198 9300 0181                     sts    P1,r16
-00019a 9100 01c3                     lds    r16,P2
-00019c 9120 0204                     lds    r18,P2_DIR
-00019e 940e 01a3                     call   MOVE_HEAD
-0001a0 9300 01c3                     sts    P2,r16
-0001a2 9508                          ret
+000197 9508                      
+000198 940e 01ba                     call   MOVE_BODYS
+00019a 9100 0181                     lds    r16,P1
+00019c 9120 01c2                     lds    r18,P1_DIR
+00019e 940e 01ab                     call   MOVE_HEAD
+0001a0 9300 0181                     sts    P1,r16
+0001a2 9100 01c3                     lds    r16,P2
+0001a4 9120 0204                     lds    r18,P2_DIR
+0001a6 940e 01ab                     call   MOVE_HEAD
+0001a8 9300 01c3                     sts    P2,r16
+0001aa 9508                          ret
                                  
                                  
                                  MOVE_HEAD:
-0001a3 940e 0072                     call    SEP_XY ; r16 = x, r17 = y
-0001a5 fd20                          sbrc    r18,RIGHT
-0001a6 9503                          inc     r16
-0001a7 fd22                          sbrc    r18,LEFT
-0001a8 950a                          dec     r16
-0001a9 fd21                          sbrc    r18,UP
-0001aa 9513                          inc     r17
-0001ab fd23                          sbrc    r18,DOWN
-0001ac 951a                          dec     r17
-0001ad 940e 01cb                     call    LIMITS
-0001af 940e 0077                     call    JOIN_XY
-0001b1 9508                          ret
+0001ab 940e 008c                     call    SEP_XY ; r16 = x, r17 = y
+0001ad fd20                          sbrc    r18,RIGHT
+0001ae 9503                          inc     r16
+0001af fd22                          sbrc    r18,LEFT
+0001b0 950a                          dec     r16
+0001b1 fd21                          sbrc    r18,UP
+0001b2 9513                          inc     r17
+0001b3 fd23                          sbrc    r18,DOWN
+0001b4 951a                          dec     r17
+0001b5 940e 01d3                     call    LIMITS
+0001b7 940e 0091                     call    JOIN_XY
+0001b9 9508                          ret
                                  
                                  
                                  MOVE_BODYS:
-0001b2 93ff                          push    ZH
-0001b3 93ef                          push    ZL
-0001b4 e0f1                          ldi     ZH,HIGH(P1)
-0001b5 e8e1                          ldi     ZL,LOW(P1)
-0001b6 9100 01c1                     lds     r16,P1_LEN
-0001b8 940e 01c3                     call    MOVE_BODY
-0001ba e0f1                          ldi     ZH,HIGH(P2)
-0001bb ece3                          ldi     ZL,LOW(P2)
-0001bc 9100 0203                     lds     r16,P2_LEN
-0001be 940e 01c3                     call    MOVE_BODY
-0001c0 91ef                          pop     ZL
-0001c1 91ff                          pop     ZH
-0001c2 9508                          ret
+0001ba 93ff                          push    ZH
+0001bb 93ef                          push    ZL
+0001bc e0f1                          ldi     ZH,HIGH(P1)
+0001bd e8e1                          ldi     ZL,LOW(P1)
+0001be 9100 01c1                     lds     r16,P1_LEN
+0001c0 940e 01cb                     call    MOVE_BODY
+0001c2 e0f1                          ldi     ZH,HIGH(P2)
+0001c3 ece3                          ldi     ZL,LOW(P2)
+0001c4 9100 0203                     lds     r16,P2_LEN
+0001c6 940e 01cb                     call    MOVE_BODY
+0001c8 91ef                          pop     ZL
+0001c9 91ff                          pop     ZH
+0001ca 9508                          ret
                                  
                                  
                                  MOVE_BODY:
                                  ; Makes body follow head.
                                  ; Requires snake length in r16
                                  ; and Z pointing at head.
-0001c3 950a                          dec     r16 ; exclude head
-0001c4 0fe0                          add     ZL,r16 ; point at tail
-0001c5 1df2                          adc     ZH,ZERO
+0001cb 950a                          dec     r16 ; exclude head
+0001cc 0fe0                          add     ZL,r16 ; point at tail
+0001cd 1df2                          adc     ZH,ZERO
                                  move_body_loop: ; starts at tail
-0001c6 9112                          ld      r17,-Z ; save next
-0001c7 8311                          std     Z+1,r17 ; store at curr
-0001c8 950a                          dec     r16 ; count down
-0001c9 f7e1                          brne    move_body_loop
-0001ca 9508                          ret
+0001ce 9112                          ld      r17,-Z ; save next
+0001cf 8311                          std     Z+1,r17 ; store at curr
+0001d0 950a                          dec     r16 ; count down
+0001d1 f7e1                          brne    move_body_loop
+0001d2 9508                          ret
                                  
                                  
                                  LIMITS:
                                  ; Takes x,y = r16,r17 and
                                  ; moves them to other side of
                                  ; screen if outside.
-0001cb 3f0f                          cpi     r16,255
-0001cc f019                          breq    x_under
-0001cd 3100                          cpi     r16,16
-0001ce f019                          breq    x_over
-0001cf c003                          rjmp    xlim_done
+0001d3 3f0f                          cpi     r16,255
+0001d4 f019                          breq    x_under
+0001d5 3100                          cpi     r16,16
+0001d6 f019                          breq    x_over
+0001d7 c003                          rjmp    xlim_done
                                  x_under:
-0001d0 e00f                          ldi     r16,15
-0001d1 c001                          rjmp    xlim_done
+0001d8 e00f                          ldi     r16,15
+0001d9 c001                          rjmp    xlim_done
                                  x_over:
-0001d2 e000                          ldi     r16,0
+0001da e000                          ldi     r16,0
                                  xlim_done:
-0001d3 3f1f                          cpi     r17,255
-0001d4 f019                          breq    y_under
-0001d5 3110                          cpi     r17,16
-0001d6 f019                          breq    y_over
-0001d7 c003                          rjmp    ylim_done
+0001db 3f1f                          cpi     r17,255
+0001dc f019                          breq    y_under
+0001dd 3110                          cpi     r17,16
+0001de f019                          breq    y_over
+0001df c003                          rjmp    ylim_done
                                  y_under:
-0001d8 e01f                          ldi     r17,15
-0001d9 c001                          rjmp    ylim_done
+0001e0 e01f                          ldi     r17,15
+0001e1 c001                          rjmp    ylim_done
                                  y_over:
-0001da e010                          ldi     r17,0
+0001e2 e010                          ldi     r17,0
                                  ylim_done:
-0001db 9508                          ret
+0001e3 9508                          ret
                                  .include "screen.inc"
                                  
                                  update_win_loop:
-0001dc 9105                          lpm     r16,Z+
-0001dd 3000                          cpi	    r16,0
-0001de f081                          breq    end_of_list
+0001e4 9105                          lpm     r16,Z+
+0001e5 3000                          cpi	    r16,0
+0001e6 f081                          breq    end_of_list
                                      ; sets Y to correct line in VMEM
                                      ; returns DAMatrix byte in r19
-0001df 940e 00f0                     call    POINT_AT_LINE
+0001e7 940e 00f3                     call    POINT_AT_LINE
                                      ; adds player color to byte
-0001e1 9110 0207                     lds     r17,STATUS
-0001e3 3012                          cpi     r17,P2_WINS
-0001e4 f031                          breq    first_jmp
-0001e5 810a                          ldd     r16,Y+R
-0001e6 2b30                          or      r19,r16
-0001e7 833a                          std     Y+R,r19
-0001e8 3013                          cpi     r17,TIED
-0001e9 f009                          breq    first_jmp
-0001ea c003                          rjmp    second_jmp
+0001e9 9110 0207                     lds     r17,STATUS
+0001eb 3012                          cpi     r17,P2_WINS
+0001ec f031                          breq    first_jmp
+0001ed 810a                          ldd     r16,Y+R
+0001ee 2b30                          or      r19,r16
+0001ef 833a                          std     Y+R,r19
+0001f0 3013                          cpi     r17,TIED
+0001f1 f009                          breq    first_jmp
+0001f2 c003                          rjmp    second_jmp
                                  first_jmp:
-0001eb 8108                          ldd     r16,Y+B
-0001ec 2b30                          or      r19,r16
-0001ed 8338                          std     Y+B,r19
+0001f3 8108                          ldd     r16,Y+B
+0001f4 2b30                          or      r19,r16
+0001f5 8338                          std     Y+B,r19
                                  SECOND_JMP:
-0001ee cfed                          rjmp    update_win_loop
+0001f6 cfed                          rjmp    update_win_loop
                                  end_of_list:
-0001ef 9508                      	ret
+0001f7 9508                      	ret
                                  
                                  
                                  RED_WIN_TAB: 
-0001f0 3736                          .db $36, $37, $38, $39,\
-0001f1 3938
-0001f2 4a3a                              $3A, $4A, $59, $58,\
-0001f3 5859
-0001f4 4748
-0001f5 5656                              $48, $47, $56, $56 ; R
-0001f6 7776                          .db $76, $77, $78, $79,\
-0001f7 7978
-0001f8 8a7a                              $7A, $8A, $88, $86,\
-0001f9 8688
-0001fa 989a
-0001fb 9696                              $9A, $98, $96, $96 ; E
-0001fc b7b6                          .db $B6, $B7, $B8, $B9,\
-0001fd b9b8
-0001fe c6ba                              $BA, $C6, $CA, $D7,\
-0001ff d7ca
-000200 d9d8
-000201 0000                              $D8, $D9, $00, $00 ; D
+0001f8 3736                          .db $36, $37, $38, $39,\
+0001f9 3938
+0001fa 4a3a                              $3A, $4A, $59, $58,\
+0001fb 5859
+0001fc 4748
+0001fd 5656                              $48, $47, $56, $56 ; R
+0001fe 7776                          .db $76, $77, $78, $79,\
+0001ff 7978
+000200 8a7a                              $7A, $8A, $88, $86,\
+000201 8688
+000202 989a
+000203 9696                              $9A, $98, $96, $96 ; E
+000204 b7b6                          .db $B6, $B7, $B8, $B9,\
+000205 b9b8
+000206 c6ba                              $BA, $C6, $CA, $D7,\
+000207 d7ca
+000208 d9d8
+000209 0000                              $D8, $D9, $00, $00 ; D
                                  BLUE_WIN_TAB:
-000202 1716                          .db $16, $17, $18, $19,\
-000203 1918
-000204 261a                              $1A, $26, $28, $2A,\
-000205 2a28
-000206 3937                              $37, $39           ; B
-000207 5756                          .db $56, $57, $58, $59,\
-000208 5958
-000209 665a
-00020a 7676                              $5A, $66, $76, $76 ; L
-00020b 9796                          .db $96, $97, $98, $99,\
-00020c 9998
-00020d a69a                              $9A, $A6, $B6, $B7,\
-00020e b7b6
-00020f b9b8
-000210 baba                              $B8, $B9, $BA, $BA ; U
-000211 d7d6                          .db $D6, $D7, $D8, $D9,\
-000212 d9d8
-000213 e6da                              $DA, $E6, $E8, $EA,\
-000214 eae8
-000215 f8f6
-000216 00fa                              $F6, $F8, $FA, $00 ; E
+00020a 1716                          .db $16, $17, $18, $19,\
+00020b 1918
+00020c 261a                              $1A, $26, $28, $2A,\
+00020d 2a28
+00020e 3937                              $37, $39           ; B
+00020f 5756                          .db $56, $57, $58, $59,\
+000210 5958
+000211 665a
+000212 7676                              $5A, $66, $76, $76 ; L
+000213 9796                          .db $96, $97, $98, $99,\
+000214 9998
+000215 a69a                              $9A, $A6, $B6, $B7,\
+000216 b7b6
+000217 b9b8
+000218 baba                              $B8, $B9, $BA, $BA ; U
+000219 d7d6                          .db $D6, $D7, $D8, $D9,\
+00021a d9d8
+00021b e6da                              $DA, $E6, $E8, $EA,\
+00021c eae8
+00021d f8f6
+00021e 00fa                              $F6, $F8, $FA, $00 ; E
                                  TIE_TAB:
-000217 463a                          .db $3A, $46, $47, $48,\
-000218 4847
-000219 4a49
-00021a 5a5a                              $49, $4A, $5A, $5A ; T
-00021b 7776                          .db $76, $77, $78, $79,\
-00021c 7978
-00021d 7a7a                              $7A, $7A           ; I
-00021e 9796                          .db $96, $97, $98, $99,\
-00021f 9998
-000220 a69a                              $9A, $A6, $A8, $AA,\
-000221 aaa8
-000222 b8b6
-000223 00ba                              $B6, $B8, $BA, $00 ; E
+00021f 463a                          .db $3A, $46, $47, $48,\
+000220 4847
+000221 4a49
+000222 5a5a                              $49, $4A, $5A, $5A ; T
+000223 7776                          .db $76, $77, $78, $79,\
+000224 7978
+000225 7a7a                              $7A, $7A           ; I
+000226 9796                          .db $96, $97, $98, $99,\
+000227 9998
+000228 a69a                              $9A, $A6, $A8, $AA,\
+000229 aaa8
+00022a b8b6
+00022b 00ba                              $B6, $B8, $BA, $00 ; E
                                      
                                  .include "hits.inc"
                                  
-000224 940e 0229                     call CHECK_PLAYER_HITS
-000226 940e 0268                     call CHECK_FRUIT_HITS
-000228 9508                          ret
+00022c 940e 0231                     call CHECK_PLAYER_HITS
+00022e 940e 0270                     call CHECK_FRUIT_HITS
+000230 9508                          ret
                                  
                                  
                                  CHECK_PLAYER_HITS:
                                      ; p1 head and p2 head
-000229 9100 0181                     lds     r16,P1
-00022b 9110 01c3                     lds     r17,P2
-00022d 1701                          cp      r16,r17
-00022e f169                          breq    tie
+000231 9100 0181                     lds     r16,P1
+000233 9110 01c3                     lds     r17,P2
+000235 1701                          cp      r16,r17
+000236 f169                          breq    tie
                                     ; p1 head and p1 body 
-00022f e0f1                          ldi     ZH,HIGH(P1)
-000230 e8e1                          ldi     ZL,LOW(P1)
-000231 9631                          adiw    Z,1 ; looks past head
-000232 9100 0181                     lds     r16,P1
-000234 9120 01c1                     lds     r18,P1_LEN
-000236 952a                          dec     r18 ; compensates for head
-000237 940e 0285                     call    hit_loop
-000239 1132                          cpse    r19,ZERO
-00023a c029                          rjmp    p2_win
+000237 e0f1                          ldi     ZH,HIGH(P1)
+000238 e8e1                          ldi     ZL,LOW(P1)
+000239 9631                          adiw    Z,1 ; looks past head
+00023a 9100 0181                     lds     r16,P1
+00023c 9120 01c1                     lds     r18,P1_LEN
+00023e 952a                          dec     r18 ; compensates for head
+00023f 940e 028d                     call    hit_loop
+000241 1132                          cpse    r19,ZERO
+000242 c029                          rjmp    p2_win
                                     ; p2 head and p2 body 
-00023b e0f1                          ldi     ZH,HIGH(P2)
-00023c ece3                          ldi     ZL,LOW(P2)
-00023d 9631                          adiw    Z,1 ; looks past head
-00023e 9100 01c3                     lds     r16,P2
-000240 9120 0203                     lds     r18,P2_LEN
-000242 952a                          dec     r18 ; compensates for head
-000243 940e 0285                     call    hit_loop
-000245 1132                          cpse    r19,ZERO
-000246 c019                          rjmp    p1_win
+000243 e0f1                          ldi     ZH,HIGH(P2)
+000244 ece3                          ldi     ZL,LOW(P2)
+000245 9631                          adiw    Z,1 ; looks past head
+000246 9100 01c3                     lds     r16,P2
+000248 9120 0203                     lds     r18,P2_LEN
+00024a 952a                          dec     r18 ; compensates for head
+00024b 940e 028d                     call    hit_loop
+00024d 1132                          cpse    r19,ZERO
+00024e c019                          rjmp    p1_win
                                     ; p1 head and p2 body 
-000247 e0f1                          ldi     ZH,HIGH(P2)
-000248 ece3                          ldi     ZL,LOW(P2)
-000249 9100 0181                     lds     r16,P1
-00024b 9120 0203                     lds     r18,P2_LEN
-00024d 940e 0285                     call    hit_loop
-00024f 1132                          cpse    r19,ZERO
-000250 c013                          rjmp    p2_win
+00024f e0f1                          ldi     ZH,HIGH(P2)
+000250 ece3                          ldi     ZL,LOW(P2)
+000251 9100 0181                     lds     r16,P1
+000253 9120 0203                     lds     r18,P2_LEN
+000255 940e 028d                     call    hit_loop
+000257 1132                          cpse    r19,ZERO
+000258 c013                          rjmp    p2_win
                                     ; p2 head and p1 body 
-000251 e0f1                          ldi     ZH,HIGH(P1)
-000252 e8e1                          ldi     ZL,LOW(P1)
-000253 9100 01c3                     lds     r16,P2
-000255 9120 01c1                     lds     r18,P1_LEN
-000257 940e 0285                     call    hit_loop
-000259 1132                          cpse    r19,ZERO
-00025a c005                          rjmp    p1_win
+000259 e0f1                          ldi     ZH,HIGH(P1)
+00025a e8e1                          ldi     ZL,LOW(P1)
+00025b 9100 01c3                     lds     r16,P2
+00025d 9120 01c1                     lds     r18,P1_LEN
+00025f 940e 028d                     call    hit_loop
+000261 1132                          cpse    r19,ZERO
+000262 c005                          rjmp    p1_win
                                  
                                      ; no player hit
-00025b c00b                          rjmp    check_players_done
+000263 c00b                          rjmp    check_players_done
                                  tie:
-00025c e003                          ldi     r16,TIED
-00025d 9300 0207                     sts     STATUS,r16
-00025f c007                          rjmp    check_players_done
-                                 p1_win:    
-000260 e001                          ldi     r16,P1_WINS
-000261 9300 0207                     sts     STATUS,r16
-000263 c003                          rjmp    check_players_done
-                                 p2_win:
-000264 e002                          ldi     r16,P2_WINS
+000264 e003                          ldi     r16,TIED
 000265 9300 0207                     sts     STATUS,r16
+000267 c007                          rjmp    check_players_done
+                                 p1_win:    
+000268 e001                          ldi     r16,P1_WINS
+000269 9300 0207                     sts     STATUS,r16
+00026b c003                          rjmp    check_players_done
+                                 p2_win:
+00026c e002                          ldi     r16,P2_WINS
+00026d 9300 0207                     sts     STATUS,r16
                                  check_players_done:
-000267 9508                          ret
+00026f 9508                          ret
                                  
                                  
                                  CHECK_FRUIT_HITS:
-000268 9120 0205                     lds     r18,FRUIT
+000270 9120 0205                     lds     r18,FRUIT
                                      ; P1 and fruit
-00026a 9100 0181                     lds     r16,P1
-00026c 1720                          cp      r18,r16
-00026d f029                          breq    p1_eats
+000272 9100 0181                     lds     r16,P1
+000274 1720                          cp      r18,r16
+000275 f029                          breq    p1_eats
                                      ; P2 and fruit
-00026e 9100 01c3                     lds     r16,P2
-000270 1720                          cp      r18,r16
-000271 f049                          breq    p2_eats
-000272 c011                          rjmp    check_fruit_done
+000276 9100 01c3                     lds     r16,P2
+000278 1720                          cp      r18,r16
+000279 f049                          breq    p2_eats
+00027a c011                          rjmp    check_fruit_done
                                  p1_eats:
                                      ; increase length if not max
-000273 9100 01c1                     lds     r16,P1_LEN
-000275 e410                          ldi     r17,MAX_LEN
-000276 1301                          cpse    r16,r17
-000277 9503                          inc     r16
-000278 9300 01c1                     sts     P1_LEN,r16
-00027a c007                          rjmp    new_fruit
-                                 p2_eats:
-                                     ; increase length if not max
-00027b 9100 0203                     lds     r16,P2_LEN
+00027b 9100 01c1                     lds     r16,P1_LEN
 00027d e410                          ldi     r17,MAX_LEN
 00027e 1301                          cpse    r16,r17
 00027f 9503                          inc     r16
-000280 9300 0203                     sts     P2_LEN,r16
+000280 9300 01c1                     sts     P1_LEN,r16
+000282 c007                          rjmp    new_fruit
+                                 p2_eats:
+                                     ; increase length if not max
+000283 9100 0203                     lds     r16,P2_LEN
+000285 e410                          ldi     r17,MAX_LEN
+000286 1301                          cpse    r16,r17
+000287 9503                          inc     r16
+000288 9300 0203                     sts     P2_LEN,r16
                                  new_fruit:
-000282 940e 007a                     call    PLACE_FRUIT
+00028a 940e 0094                     call    PLACE_FRUIT
                                  check_fruit_done:
-000284 9508                          ret
+00028c 9508                          ret
                                  
                                  
                                  hit_loop:
@@ -1840,82 +1856,223 @@ X:\tsiu51\projekt\Snake\main.asm(63): Including file 'X:\tsiu51\projekt\Snake\hi
                                  ; and its length in r18 as well as 
                                  ; the head to check in r16.
                                  ; Sets in r19 if hit, else 0;
-000285 9111                          ld      r17,Z+ ; move through body
-000286 1701                          cp      r16,r17 ; check if hit
-000287 f019                          breq    hit_found
-000288 952a                          dec     r18 ; count down
-000289 f7d9                          brne    hit_loop
-00028a c002                          rjmp    no_hit_found
+00028d 9111                          ld      r17,Z+ ; move through body
+00028e 1701                          cp      r16,r17 ; check if hit
+00028f f019                          breq    hit_found
+000290 952a                          dec     r18 ; count down
+000291 f7d9                          brne    hit_loop
+000292 c002                          rjmp    no_hit_found
                                  hit_found:
-00028b ef3f                          ser     r19
-00028c c001                          rjmp    hit_loop_done
+000293 ef3f                          ser     r19
+000294 c001                          rjmp    hit_loop_done
                                  no_hit_found:
-00028d 2733                          clr     r19
+000295 2733                          clr     r19
                                  hit_loop_done:
-00028e 9508                          ret
-                                 ;.include "ljud.inc"
+000296 9508                          ret
+                                 .include "ljud.inc"
+                                 
+000208                             BEEP_PITCH_1:     .byte 1
+000209                             BEEP_PITCH_2:     .byte 1
+00020a                             BEEP_LENGTH:      .byte 1
+                                 .cseg
+                                 
+                                 LJUD:
+000297 e001                      ldi     r16,1
+000298 b904                      out     DDRB,r16
+                                 
+000299 e302                      ldi     r16,50
+00029a 9300 020a                 sts     BEEP_LENGTH,r16
+00029c 940e 0324                 call NOTE_G
+00029e 940e 0324                 call NOTE_G
+0002a0 940e 0312                 call NOTE_D
+0002a2 940e 0312                 call NOTE_D
+0002a4 940e 031b                 call NOTE_E
+0002a6 940e 031b                 call NOTE_E
+0002a8 940e 0312                 call NOTE_D ;  halv not
+0002aa 940e 0309                 call NOTE_C
+0002ac 940e 0309                 call NOTE_C
+0002ae 940e 0300                 call NOTE_B
+0002b0 940e 0300                 call NOTE_B
+0002b2 940e 02f7                 call NOTE_A
+0002b4 940e 02f7                 call NOTE_A
+0002b6 940e 0324                 call NOTE_G ; Halv not
+0002b8 940e 0312                 call NOTE_D
+0002ba 940e 0312                 call NOTE_D
+0002bc 940e 0309                 call NOTE_C
+0002be 940e 0309                 call NOTE_C
+0002c0 940e 0300                 call NOTE_B
+0002c2 940e 0300                 call NOTE_B
+0002c4 940e 02f7                 call NOTE_A ; Halv not
+0002c6 940e 0312                 call NOTE_D
+0002c8 940e 0312                 call NOTE_D
+0002ca 940e 0309                 call NOTE_C
+0002cc 940e 0309                 call NOTE_C
+0002ce 940e 0300                 call NOTE_B
+0002d0 940e 0300                 call NOTE_B
+0002d2 940e 02f7                 call NOTE_A ; Halv not
+0002d4 940e 0324                 call NOTE_G
+0002d6 940e 0324                 call NOTE_G
+0002d8 940e 0312                 call NOTE_D
+0002da 940e 0312                 call NOTE_D
+0002dc 940e 031b                 call NOTE_E
+0002de 940e 031b                 call NOTE_E
+0002e0 940e 0312                 call NOTE_D ; Halv not
+0002e2 940e 031b                 call NOTE_E
+0002e4 940e 031b                 call NOTE_E
+0002e6 940e 0312                 call NOTE_D
+0002e8 940e 0309                 call NOTE_C
+0002ea 940e 0309                 call NOTE_C
+0002ec 940e 0300                 call NOTE_B
+0002ee 940e 0300                 call NOTE_B
+0002f0 940e 02f7                 call NOTE_A
+0002f2 940e 02f7                 call NOTE_A
+0002f4 940e 0324                 call NOTE_G ; Halv not
+0002f6 9508                      	ret
+                                 
+                                 
+                                 NOTE_A:      ; 3520 Hz
+0002f7 e30c                          ldi     r16,60
+0002f8 9300 0208                     sts     BEEP_PITCH_1,r16
+0002fa e001                          ldi     r16,1
+0002fb 9300 0209                     sts     BEEP_PITCH_2,r16
+0002fd 940e 032d                     call    BEEP
+0002ff 9508                          ret
+                                 NOTE_B:      ; 3951 Hz
+000300 e302                          ldi     r16,50
+000301 9300 0208                     sts     BEEP_PITCH_1,r16
+000303 e001                          ldi     r16,1
+000304 9300 0209                     sts     BEEP_PITCH_2,r16
+000306 940e 032d                     call    BEEP
+000308 9508                          ret
+                                 NOTE_C:      ; 2093 HZ
+000309 e604                          ldi     r16,100
+00030a 9300 0208                     sts     BEEP_PITCH_1,r16
+00030c e001                          ldi     r16,1
+00030d 9300 0209                     sts     BEEP_PITCH_2,r16
+00030f 940e 032d                     call    BEEP
+000311 9508                          ret
+                                 NOTE_D:      ; 2489 HZ
+000312 e50a                          ldi     r16,90
+000313 9300 0208                     sts     BEEP_PITCH_1,r16
+000315 e001                          ldi     r16,1
+000316 9300 0209                     sts     BEEP_PITCH_2,r16
+000318 940e 032d                     call    BEEP
+00031a 9508                          ret
+                                 
+                                 NOTE_E:      ; 2637 HZ
+00031b e500                          ldi     r16,80
+00031c 9300 0208                     sts     BEEP_PITCH_1,r16
+00031e e001                          ldi     r16,1
+00031f 9300 0209                     sts     BEEP_PITCH_2,r16
+000321 940e 032d                     call    BEEP
+000323 9508                          ret
+                                 
+                                 NOTE_G:      ; 3136 Hz
+000324 ec08                          ldi     r16,200
+000325 9300 0208                     sts     BEEP_PITCH_1,r16
+000327 e001                          ldi     r16,1
+000328 9300 0209                     sts     BEEP_PITCH_2,r16
+00032a 940e 032d                     call    BEEP
+00032c 9508                          ret
+                                   
+                                 
+                                  
+                                     ; --- BEEP(r16) r16 halfcycles of BEEP-PITCH
+                                 BEEP:
+00032d 9140 020a                     lds     r20,BEEP_LENGTH
+                                 
+                                 LOOP2:
+00032f e062                          ldi     r22,2
+                                 
+                                 LOOP3:
+000330 9100 0208                 	lds     r16,BEEP_PITCH_1  ; Load period of square wave
+000332 9a29                          sbi     PORTB,1           ; Rising edge
+000333 940e 033d                     call    DELAY_SOUND       ; Hold
+000335 9829                          cbi     PORTB,1           ; Falling edge
+000336 940e 033d                     call    DELAY_SOUND       ; Hold
+                                 
+000338 956a                          dec     r22
+000339 f7b1                          brne    LOOP3
+00033a 954a                      	dec     r20
+00033b f799                          brne    LOOP2
+                                 
+00033c 9508                          ret
+                                 
+                                 DELAY_SOUND:
+00033d e614                          ldi     r17,100
+                                 
+                                 DELAY_INNER:
+00033e 951a                          dec     r17
+00033f f7f1                          brne    DELAY_INNER
+000340 950a                          dec     r16
+000341 f7d9                          brne    DELAY_SOUND
+000342 9508                          ret
                                  
                                  PROG_START:
-00028f e008                          ldi     r16,HIGH(RAMEND)
-000290 bf0e                          out     SPH,r16
-000291 ef0f                          ldi     r16,LOW(RAMEND)
-000292 bf0d                          out     SPL,r16
-000293 2422                          clr     ZERO
+000343 e008                          ldi     r16,HIGH(RAMEND)
+000344 bf0e                          out     SPH,r16
+000345 ef0f                          ldi     r16,LOW(RAMEND)
+000346 bf0d                          out     SPL,r16
+000347 2422                          clr     ZERO
                                  
                                      ; sets hardware, flags, clears memory
-000294 940e 0091                     call    INIT
+000348 940e 00ab                     call    INIT
+                                 MAIN:
                                      ; sets start conditions, game mode
-000296 940e 0022                     call    SETUP
+00034a 940e 0022                     call    SETUP
+                                 
+00034c 940e 00bf                 	call    ERASE_VMEM
+00034e 940e 00ca                     call    UPDATE_VMEM
                                  PLAY:
-000298 940e 00bc                     call    ERASE_VMEM
-00029a 940e 00c7                     call    UPDATE_VMEM
+                                     
                                  
-00029c 940e 0224                     call    CHECK_HITS
+                                 	
+000350 940e 0151                     call    JOYSTICK
+000352 940e 0198                 	call    MOVE
+000354 940e 00bf                 	call    ERASE_VMEM
+000356 940e 00ca                     call    UPDATE_VMEM
                                  
-00029e 940e 0061                     call    DELAY
-0002a0 940e 014e                     call    JOYSTICK
-0002a2 940e 0061                     call    DELAY    
-0002a4 940e 014e                     call    JOYSTICK
-0002a6 940e 0061                     call    DELAY
-0002a8 940e 014e                     call    JOYSTICK
-0002aa 940e 0061                     call    DELAY
+000358 940e 007b                     call    DELAY    
+00035a 940e 007b                 	call	DELAY
                                  
-0002ac 940e 0190                     call    MOVE
                                  
-0002ae 9100 0207                     lds     r16,STATUS
-0002b0 1502                          cp      r16,ZERO
-0002b1 f409                          brne    GAME_OVER
-0002b2 cfe5                          rjmp    PLAY
+00035c 940e 022c                 	call    CHECK_HITS
+                                 
+00035e 9100 0207                     lds     r16,STATUS
+000360 1502                          cp      r16,ZERO
+000361 f409                          brne    GAME_OVER
+000362 cfed                          rjmp    PLAY
                                  
                                  GAME_OVER:
-0002b3 e10e                          ldi     r16,30
-0002b4 940e 006b                     call    WAIT
-0002b6 9100 0207                     lds     r16,STATUS
-0002b8 3003                          cpi     r16,TIED
-0002b9 f021                          breq    tied_screen
-0002ba 3001                          cpi     r16,P1_WINS
-0002bb f039                          breq    p1_win_screen
-0002bc 3002                          cpi     r16,P2_WINS
-0002bd f051                          breq    p2_win_screen
+000363 e10e                          ldi     r16,30
+000364 940e 0085                     call    WAIT
+000366 9100 0207                     lds     r16,STATUS
+000368 3003                          cpi     r16,TIED
+000369 f021                          breq    tied_screen
+00036a 3001                          cpi     r16,P1_WINS
+00036b f039                          breq    p1_win_screen
+00036c 3002                          cpi     r16,P2_WINS
+00036d f051                          breq    p2_win_screen
                                  tied_screen:
-0002be 940e 00bc                     call    ERASE_VMEM
-0002c0 e0f4                          ldi     ZH,HIGH(TIE_TAB*2)
-0002c1 e2ee                          ldi     ZL,LOW(TIE_TAB*2)
-0002c2 c009                          rjmp    win_prep_done
+00036e 940e 00bf                     call    ERASE_VMEM
+000370 e0f4                          ldi     ZH,HIGH(TIE_TAB*2)
+000371 e3ee                          ldi     ZL,LOW(TIE_TAB*2)
+000372 c009                          rjmp    win_prep_done
                                  p1_win_screen:
-0002c3 940e 00bc                     call    ERASE_VMEM
-0002c5 e0f3                          ldi     ZH,HIGH(RED_WIN_TAB*2)
-0002c6 eee0                          ldi     ZL,LOW(RED_WIN_TAB*2)
-0002c7 c004                          rjmp    win_prep_done
+000373 940e 00bf                     call    ERASE_VMEM
+000375 e0f3                          ldi     ZH,HIGH(RED_WIN_TAB*2)
+000376 efe0                          ldi     ZL,LOW(RED_WIN_TAB*2)
+000377 c004                          rjmp    win_prep_done
                                  p2_win_screen:
-0002c8 940e 00bc                     call    ERASE_VMEM
-0002ca e0f4                          ldi     ZH,HIGH(BLUE_WIN_TAB*2)
-0002cb e0e4                          ldi     ZL,LOW(BLUE_WIN_TAB*2)
+000378 940e 00bf                     call    ERASE_VMEM
+00037a e0f4                          ldi     ZH,HIGH(BLUE_WIN_TAB*2)
+00037b e1e4                          ldi     ZL,LOW(BLUE_WIN_TAB*2)
                                  win_prep_done:
-0002cc 940e 01dc                     call    UPDATE_WIN_VMEM
-0002ce e604                          ldi     r16,100
-0002cf 940e 006b                     call    WAIT
-0002d1 940c 028f                     jmp     PROG_START
+00037c 940e 01e4                     call    UPDATE_WIN_VMEM
+00037e e604                          ldi     r16,100
+00037f 940e 0085                     call    WAIT
+                                 
+000381 940c 034a                     jmp     MAIN
 
 
 RESOURCE USE INFORMATION
@@ -1935,38 +2092,38 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :  10 z  :  29 r0 :   0 r1 :   0 r2 :  22 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16: 181 r17:  53 r18:  40 r19:  29 r20:   4 
-r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   6 
+r13:   0 r14:   0 r15:   0 r16: 215 r17:  55 r18:  40 r19:  29 r20:   6 
+r21:   0 r22:   2 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   6 
 r29:   6 r30:  36 r31:  36 
-Registers used: 12 out of 35 (34.3%)
+Registers used: 13 out of 35 (37.1%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   6 add   :   6 adiw  :   2 and   :   0 
 andi  :   4 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :  20 brge  :   0 brhc  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :  22 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
-brne  :  16 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :  51 cbi   :   1 cbr   :   0 
+brne  :  20 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  : 103 cbi   :   2 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   5 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   7 cpc   :   0 
-cpi   :  20 cpse  :   7 dec   :  20 eor   :   0 fmul  :   0 fmuls :   0 
+cpi   :  22 cpse  :   7 dec   :  24 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   7 jmp   :   3 
-ld    :   7 ldd   :   9 ldi   :  92 lds   :  37 lpm   :   1 lsl   :   4 
+ld    :   7 ldd   :   9 ldi   : 110 lds   :  39 lpm   :   1 lsl   :   4 
 lsr   :   1 mov   :   4 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   8 ori   :   1 out   :   9 pop   :  24 
-push  :  24 rcall :   0 ret   :  25 reti  :   1 rjmp  :  25 rol   :   0 
-ror   :   0 sbc   :   1 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
+neg   :   0 nop   :   0 or    :   8 ori   :   1 out   :  10 pop   :  24 
+push  :  24 rcall :   0 ret   :  35 reti  :   1 rjmp  :  24 rol   :   0 
+ror   :   0 sbc   :   1 sbci  :   0 sbi   :   2 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   6 sbrc  :   5 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :  14 sts   :  25 
+sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :  14 sts   :  38 
 sub   :   1 subi  :   2 swap  :   2 tst   :   0 wdr   :   0 
 Instructions used: 48 out of 113 (42.5%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0005a6   1282    104   1386   32768   4.2%
-[.dseg] 0x000100 0x000208      0    264    264    2048  12.9%
+[.cseg] 0x000000 0x000706   1634    104   1738   32768   5.3%
+[.dseg] 0x000100 0x00020b      0    267    267    2048  13.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
 Assembly complete, 0 errors, 0 warnings

@@ -1,6 +1,7 @@
 SETUP:
 ; Initiates player positions
     ; player 1
+	call	data_init
     ldi		ZL,LOW(P1)
 	ldi		ZH,HIGH(P1)
     ; head
@@ -50,7 +51,34 @@ SETUP:
     sei     ; interrupt enabled
     call    PLACE_FRUIT
     ret
+
+
+data_init:
+    ldi     ZL,LOW(P1)
+    ldi     ZH,HIGH(P1)
+    ldi     r16,MAX_LEN
+clear_p1_loop:
+    st      Z+,ZERO 
+    dec     r16
+    brne    clear_p1_loop
+    sts     P1_LEN,ZERO
     
+    ldi     ZL,LOW(P2)
+    ldi     ZH,HIGH(P2)
+    ldi     r16,MAX_LEN
+clear_p2_loop:
+    st      Z+,ZERO
+    dec     r16
+    brne    clear_p2_loop
+    sts     P2_LEN,ZERO
+
+    ldi     ZL,LOW(FRUIT)
+    ldi     ZH,HIGH(FRUIT)
+    st      Z,ZERO
+
+    sts     LINE,ZERO
+    sts     STATUS,ZERO
+    ret
  
  COORD2BYTE:
 ; Converts coordinate in r16

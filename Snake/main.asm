@@ -1,4 +1,5 @@
 ; SPI pins
+
 .equ    MOSI = PB3
 .equ    SCK  = PB5
 .equ    SS   = PB2
@@ -8,7 +9,10 @@
 .equ    R = 2
 .equ    A = 3
 ; Game constants
-.equ    SPEED = 100 ; lower is faster
+.equ    SPEED = 200 ; lower is faster
+; Game mode 0 = boring game, 1 = fun game
+.equ	GAME_MODE = 0
+
 .equ    P1_COLOR = R
 .equ    P2_COLOR = B
 .equ    FRUIT_COLOR = G
@@ -61,7 +65,7 @@
 .include "move.inc"
 .include "screen.inc"
 .include "hits.inc"
-;.include "ljud.inc"
+.include "ljud.inc"
 
 PROG_START:
     ldi     r16,HIGH(RAMEND)
@@ -72,23 +76,26 @@ PROG_START:
 
     ; sets hardware, flags, clears memory
     call    INIT
+MAIN:
     ; sets start conditions, game mode
     call    SETUP
+
+	call    ERASE_VMEM
+    call    UPDATE_VMEM
 PLAY:
-    call    ERASE_VMEM
+    
+
+	
+    call    JOYSTICK
+	call    MOVE
+	call    ERASE_VMEM
     call    UPDATE_VMEM
 
-    call    CHECK_HITS
-
-    call    DELAY
-    call    JOYSTICK
     call    DELAY    
-    call    JOYSTICK
-    call    DELAY
-    call    JOYSTICK
-    call    DELAY
+	call	DELAY
 
-    call    MOVE
+
+	call    CHECK_HITS
 
     lds     r16,STATUS
     cp      r16,ZERO
@@ -123,4 +130,5 @@ win_prep_done:
     call    UPDATE_WIN_VMEM
     ldi     r16,100
     call    WAIT
-    jmp     PROG_START
+
+    jmp     MAIN

@@ -5,12 +5,15 @@
 .cseg
 
 LJUD:
+cli
 ldi     r16,1
 out     DDRB,r16
 
 ldi     r16,50
 sts     BEEP_LENGTH,r16
+
 call NOTE_G
+
 call NOTE_G
 call NOTE_D
 call NOTE_D
@@ -55,6 +58,8 @@ call NOTE_B
 call NOTE_A
 call NOTE_A
 call NOTE_G ; Halv not
+
+
 	ret
 
 
@@ -127,7 +132,7 @@ LOOP3:
     ret
 
 DELAY_SOUND:
-    ldi     r17,100
+    ldi     r17,10
 
 DELAY_INNER:
     dec     r17

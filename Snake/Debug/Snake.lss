@@ -1,26 +1,26 @@
 
-AVRASM ver. 2.2.7  X:\projekt\Snake\main.asm Mon Mar 27 17:25:07 2023
+AVRASM ver. 2.2.8  C:\Users\46704\projekt\Snake\main.asm Tue Apr 04 10:11:44 2023
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\help.inc'
-X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\init.inc'
-X:\projekt\Snake\main.asm(62): Including file 'X:\projekt\Snake\vmem.inc'
-X:\projekt\Snake\main.asm(63): Including file 'X:\projekt\Snake\mux.inc'
-X:\projekt\Snake\main.asm(64): Including file 'X:\projekt\Snake\joystick.inc'
-X:\projekt\Snake\main.asm(65): Including file 'X:\projekt\Snake\move.inc'
-X:\projekt\Snake\main.asm(66): Including file 'X:\projekt\Snake\screen.inc'
-X:\projekt\Snake\main.asm(67): Including file 'X:\projekt\Snake\hits.inc'
-X:\projekt\Snake\main.asm(68): Including file 'X:\projekt\Snake\ljud.inc'
+C:\Users\46704\projekt\Snake\main.asm(60): Including file 'C:\Users\46704\projekt\Snake\help.inc'
+C:\Users\46704\projekt\Snake\main.asm(61): Including file 'C:\Users\46704\projekt\Snake\init.inc'
+C:\Users\46704\projekt\Snake\main.asm(62): Including file 'C:\Users\46704\projekt\Snake\vmem.inc'
+C:\Users\46704\projekt\Snake\main.asm(63): Including file 'C:\Users\46704\projekt\Snake\mux.inc'
+C:\Users\46704\projekt\Snake\main.asm(64): Including file 'C:\Users\46704\projekt\Snake\joystick.inc'
+C:\Users\46704\projekt\Snake\main.asm(65): Including file 'C:\Users\46704\projekt\Snake\move.inc'
+C:\Users\46704\projekt\Snake\main.asm(66): Including file 'C:\Users\46704\projekt\Snake\screen.inc'
+C:\Users\46704\projekt\Snake\main.asm(67): Including file 'C:\Users\46704\projekt\Snake\hits.inc'
+C:\Users\46704\projekt\Snake\main.asm(68): Including file 'C:\Users\46704\projekt\Snake\ljud.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328Pdef.inc'
-X:\projekt\Snake\main.asm(60): Including file 'X:\projekt\Snake\help.inc'
-X:\projekt\Snake\main.asm(61): Including file 'X:\projekt\Snake\init.inc'
-X:\projekt\Snake\main.asm(62): Including file 'X:\projekt\Snake\vmem.inc'
-X:\projekt\Snake\main.asm(63): Including file 'X:\projekt\Snake\mux.inc'
-X:\projekt\Snake\main.asm(64): Including file 'X:\projekt\Snake\joystick.inc'
-X:\projekt\Snake\main.asm(65): Including file 'X:\projekt\Snake\move.inc'
-X:\projekt\Snake\main.asm(66): Including file 'X:\projekt\Snake\screen.inc'
-X:\projekt\Snake\main.asm(67): Including file 'X:\projekt\Snake\hits.inc'
-X:\projekt\Snake\main.asm(68): Including file 'X:\projekt\Snake\ljud.inc'
+C:\Users\46704\projekt\Snake\main.asm(60): Including file 'C:\Users\46704\projekt\Snake\help.inc'
+C:\Users\46704\projekt\Snake\main.asm(61): Including file 'C:\Users\46704\projekt\Snake\init.inc'
+C:\Users\46704\projekt\Snake\main.asm(62): Including file 'C:\Users\46704\projekt\Snake\vmem.inc'
+C:\Users\46704\projekt\Snake\main.asm(63): Including file 'C:\Users\46704\projekt\Snake\mux.inc'
+C:\Users\46704\projekt\Snake\main.asm(64): Including file 'C:\Users\46704\projekt\Snake\joystick.inc'
+C:\Users\46704\projekt\Snake\main.asm(65): Including file 'C:\Users\46704\projekt\Snake\move.inc'
+C:\Users\46704\projekt\Snake\main.asm(66): Including file 'C:\Users\46704\projekt\Snake\screen.inc'
+C:\Users\46704\projekt\Snake\main.asm(67): Including file 'C:\Users\46704\projekt\Snake\hits.inc'
+C:\Users\46704\projekt\Snake\main.asm(68): Including file 'C:\Users\46704\projekt\Snake\ljud.inc'
                                  
                                  ; SPI pins
                                  
@@ -1055,7 +1055,7 @@ X:\projekt\Snake\main.asm(68): Including file 'X:\projekt\Snake\ljud.inc'
                                  
                                  
                                  .org 0x0000
-000000 940c 0343                     jmp     PROG_START
+000000 940c 0344                     jmp     PROG_START
                                  .org OVF0ADDR
 000020 940c 010a                     jmp     MULTIPLEX
                                  
@@ -1877,202 +1877,208 @@ X:\projekt\Snake\main.asm(68): Including file 'X:\projekt\Snake\ljud.inc'
                                  .cseg
                                  
                                  LJUD:
-000297 e001                      ldi     r16,1
-000298 b904                      out     DDRB,r16
+000297 94f8                      cli
+000298 e001                      ldi     r16,1
+000299 b904                      out     DDRB,r16
                                  
-000299 e302                      ldi     r16,50
-00029a 9300 020a                 sts     BEEP_LENGTH,r16
-00029c 940e 0324                 call NOTE_G
-00029e 940e 0324                 call NOTE_G
-0002a0 940e 0312                 call NOTE_D
-0002a2 940e 0312                 call NOTE_D
-0002a4 940e 031b                 call NOTE_E
-0002a6 940e 031b                 call NOTE_E
-0002a8 940e 0312                 call NOTE_D ;  halv not
-0002aa 940e 0309                 call NOTE_C
-0002ac 940e 0309                 call NOTE_C
-0002ae 940e 0300                 call NOTE_B
-0002b0 940e 0300                 call NOTE_B
-0002b2 940e 02f7                 call NOTE_A
-0002b4 940e 02f7                 call NOTE_A
-0002b6 940e 0324                 call NOTE_G ; Halv not
-0002b8 940e 0312                 call NOTE_D
-0002ba 940e 0312                 call NOTE_D
-0002bc 940e 0309                 call NOTE_C
-0002be 940e 0309                 call NOTE_C
-0002c0 940e 0300                 call NOTE_B
-0002c2 940e 0300                 call NOTE_B
-0002c4 940e 02f7                 call NOTE_A ; Halv not
-0002c6 940e 0312                 call NOTE_D
-0002c8 940e 0312                 call NOTE_D
-0002ca 940e 0309                 call NOTE_C
-0002cc 940e 0309                 call NOTE_C
-0002ce 940e 0300                 call NOTE_B
-0002d0 940e 0300                 call NOTE_B
-0002d2 940e 02f7                 call NOTE_A ; Halv not
-0002d4 940e 0324                 call NOTE_G
-0002d6 940e 0324                 call NOTE_G
-0002d8 940e 0312                 call NOTE_D
-0002da 940e 0312                 call NOTE_D
-0002dc 940e 031b                 call NOTE_E
-0002de 940e 031b                 call NOTE_E
-0002e0 940e 0312                 call NOTE_D ; Halv not
-0002e2 940e 031b                 call NOTE_E
-0002e4 940e 031b                 call NOTE_E
-0002e6 940e 0312                 call NOTE_D
-0002e8 940e 0309                 call NOTE_C
-0002ea 940e 0309                 call NOTE_C
-0002ec 940e 0300                 call NOTE_B
-0002ee 940e 0300                 call NOTE_B
-0002f0 940e 02f7                 call NOTE_A
-0002f2 940e 02f7                 call NOTE_A
-0002f4 940e 0324                 call NOTE_G ; Halv not
-0002f6 9508                      	ret
+00029a e302                      ldi     r16,50
+00029b 9300 020a                 sts     BEEP_LENGTH,r16
+                                 
+00029d 940e 0325                 call NOTE_G
+                                 
+00029f 940e 0325                 call NOTE_G
+0002a1 940e 0313                 call NOTE_D
+0002a3 940e 0313                 call NOTE_D
+0002a5 940e 031c                 call NOTE_E
+0002a7 940e 031c                 call NOTE_E
+0002a9 940e 0313                 call NOTE_D ;  halv not
+0002ab 940e 030a                 call NOTE_C
+0002ad 940e 030a                 call NOTE_C
+0002af 940e 0301                 call NOTE_B
+0002b1 940e 0301                 call NOTE_B
+0002b3 940e 02f8                 call NOTE_A
+0002b5 940e 02f8                 call NOTE_A
+0002b7 940e 0325                 call NOTE_G ; Halv not
+0002b9 940e 0313                 call NOTE_D
+0002bb 940e 0313                 call NOTE_D
+0002bd 940e 030a                 call NOTE_C
+0002bf 940e 030a                 call NOTE_C
+0002c1 940e 0301                 call NOTE_B
+0002c3 940e 0301                 call NOTE_B
+0002c5 940e 02f8                 call NOTE_A ; Halv not
+0002c7 940e 0313                 call NOTE_D
+0002c9 940e 0313                 call NOTE_D
+0002cb 940e 030a                 call NOTE_C
+0002cd 940e 030a                 call NOTE_C
+0002cf 940e 0301                 call NOTE_B
+0002d1 940e 0301                 call NOTE_B
+0002d3 940e 02f8                 call NOTE_A ; Halv not
+0002d5 940e 0325                 call NOTE_G
+0002d7 940e 0325                 call NOTE_G
+0002d9 940e 0313                 call NOTE_D
+0002db 940e 0313                 call NOTE_D
+0002dd 940e 031c                 call NOTE_E
+0002df 940e 031c                 call NOTE_E
+0002e1 940e 0313                 call NOTE_D ; Halv not
+0002e3 940e 031c                 call NOTE_E
+0002e5 940e 031c                 call NOTE_E
+0002e7 940e 0313                 call NOTE_D
+0002e9 940e 030a                 call NOTE_C
+0002eb 940e 030a                 call NOTE_C
+0002ed 940e 0301                 call NOTE_B
+0002ef 940e 0301                 call NOTE_B
+0002f1 940e 02f8                 call NOTE_A
+0002f3 940e 02f8                 call NOTE_A
+0002f5 940e 0325                 call NOTE_G ; Halv not
+                                 
+                                 
+0002f7 9508                      	ret
                                  
                                  
                                  NOTE_A:      ; 3520 Hz
-0002f7 e30c                          ldi     r16,60
-0002f8 9300 0208                     sts     BEEP_PITCH_1,r16
-0002fa e001                          ldi     r16,1
-0002fb 9300 0209                     sts     BEEP_PITCH_2,r16
-0002fd 940e 032d                     call    BEEP
-0002ff 9508                          ret
+0002f8 e30c                          ldi     r16,60
+0002f9 9300 0208                     sts     BEEP_PITCH_1,r16
+0002fb e001                          ldi     r16,1
+0002fc 9300 0209                     sts     BEEP_PITCH_2,r16
+0002fe 940e 032e                     call    BEEP
+000300 9508                          ret
                                  NOTE_B:      ; 3951 Hz
-000300 e302                          ldi     r16,50
-000301 9300 0208                     sts     BEEP_PITCH_1,r16
-000303 e001                          ldi     r16,1
-000304 9300 0209                     sts     BEEP_PITCH_2,r16
-000306 940e 032d                     call    BEEP
-000308 9508                          ret
+000301 e302                          ldi     r16,50
+000302 9300 0208                     sts     BEEP_PITCH_1,r16
+000304 e001                          ldi     r16,1
+000305 9300 0209                     sts     BEEP_PITCH_2,r16
+000307 940e 032e                     call    BEEP
+000309 9508                          ret
                                  NOTE_C:      ; 2093 HZ
-000309 e604                          ldi     r16,100
-00030a 9300 0208                     sts     BEEP_PITCH_1,r16
-00030c e001                          ldi     r16,1
-00030d 9300 0209                     sts     BEEP_PITCH_2,r16
-00030f 940e 032d                     call    BEEP
-000311 9508                          ret
+00030a e604                          ldi     r16,100
+00030b 9300 0208                     sts     BEEP_PITCH_1,r16
+00030d e001                          ldi     r16,1
+00030e 9300 0209                     sts     BEEP_PITCH_2,r16
+000310 940e 032e                     call    BEEP
+000312 9508                          ret
                                  NOTE_D:      ; 2489 HZ
-000312 e50a                          ldi     r16,90
-000313 9300 0208                     sts     BEEP_PITCH_1,r16
-000315 e001                          ldi     r16,1
-000316 9300 0209                     sts     BEEP_PITCH_2,r16
-000318 940e 032d                     call    BEEP
-00031a 9508                          ret
+000313 e50a                          ldi     r16,90
+000314 9300 0208                     sts     BEEP_PITCH_1,r16
+000316 e001                          ldi     r16,1
+000317 9300 0209                     sts     BEEP_PITCH_2,r16
+000319 940e 032e                     call    BEEP
+00031b 9508                          ret
                                  
                                  NOTE_E:      ; 2637 HZ
-00031b e500                          ldi     r16,80
-00031c 9300 0208                     sts     BEEP_PITCH_1,r16
-00031e e001                          ldi     r16,1
-00031f 9300 0209                     sts     BEEP_PITCH_2,r16
-000321 940e 032d                     call    BEEP
-000323 9508                          ret
+00031c e500                          ldi     r16,80
+00031d 9300 0208                     sts     BEEP_PITCH_1,r16
+00031f e001                          ldi     r16,1
+000320 9300 0209                     sts     BEEP_PITCH_2,r16
+000322 940e 032e                     call    BEEP
+000324 9508                          ret
                                  
                                  NOTE_G:      ; 3136 Hz
-000324 ec08                          ldi     r16,200
-000325 9300 0208                     sts     BEEP_PITCH_1,r16
-000327 e001                          ldi     r16,1
-000328 9300 0209                     sts     BEEP_PITCH_2,r16
-00032a 940e 032d                     call    BEEP
-00032c 9508                          ret
+000325 ec08                          ldi     r16,200
+000326 9300 0208                     sts     BEEP_PITCH_1,r16
+000328 e001                          ldi     r16,1
+000329 9300 0209                     sts     BEEP_PITCH_2,r16
+00032b 940e 032e                     call    BEEP
+00032d 9508                          ret
                                    
                                  
                                   
                                      ; --- BEEP(r16) r16 halfcycles of BEEP-PITCH
                                  BEEP:
-00032d 9140 020a                     lds     r20,BEEP_LENGTH
+00032e 9140 020a                     lds     r20,BEEP_LENGTH
                                  
                                  LOOP2:
-00032f e062                          ldi     r22,2
+000330 e062                          ldi     r22,2
                                  
                                  LOOP3:
-000330 9100 0208                 	lds     r16,BEEP_PITCH_1  ; Load period of square wave
-000332 9a29                          sbi     PORTB,1           ; Rising edge
-000333 940e 033d                     call    DELAY_SOUND       ; Hold
-000335 9829                          cbi     PORTB,1           ; Falling edge
-000336 940e 033d                     call    DELAY_SOUND       ; Hold
+000331 9100 0208                 	lds     r16,BEEP_PITCH_1  ; Load period of square wave
+000333 9a29                          sbi     PORTB,1           ; Rising edge
+000334 940e 033e                     call    DELAY_SOUND       ; Hold
+000336 9829                          cbi     PORTB,1           ; Falling edge
+000337 940e 033e                     call    DELAY_SOUND       ; Hold
                                  
-000338 956a                          dec     r22
-000339 f7b1                          brne    LOOP3
-00033a 954a                      	dec     r20
-00033b f799                          brne    LOOP2
+000339 956a                          dec     r22
+00033a f7b1                          brne    LOOP3
+00033b 954a                      	dec     r20
+00033c f799                          brne    LOOP2
                                  
-00033c 9508                          ret
+00033d 9508                          ret
                                  
                                  DELAY_SOUND:
-00033d e614                          ldi     r17,100
+00033e e01a                          ldi     r17,10
                                  
                                  DELAY_INNER:
-00033e 951a                          dec     r17
-00033f f7f1                          brne    DELAY_INNER
-000340 950a                          dec     r16
-000341 f7d9                          brne    DELAY_SOUND
-000342 9508                          ret
+00033f 951a                          dec     r17
+000340 f7f1                          brne    DELAY_INNER
+000341 950a                          dec     r16
+000342 f7d9                          brne    DELAY_SOUND
+000343 9508                          ret
                                  
                                  PROG_START:
-000343 e008                          ldi     r16,HIGH(RAMEND)
-000344 bf0e                          out     SPH,r16
-000345 ef0f                          ldi     r16,LOW(RAMEND)
-000346 bf0d                          out     SPL,r16
-000347 2422                          clr     ZERO
+000344 e008                          ldi     r16,HIGH(RAMEND)
+000345 bf0e                          out     SPH,r16
+000346 ef0f                          ldi     r16,LOW(RAMEND)
+000347 bf0d                          out     SPL,r16
+000348 2422                          clr     ZERO
                                  
-                                     ; sets hardware, flags, clears memory
-000348 940e 00ab                     call    INIT
+                                 
                                  MAIN:
+                                 	; sets hardware, flags, clears memory
+000349 940e 00ab                     call    INIT
                                      ; sets start conditions, game mode
-00034a 940e 0022                     call    SETUP
+00034b 940e 0022                     call    SETUP
                                  
-00034c 940e 00bf                 	call    ERASE_VMEM
-00034e 940e 00ca                     call    UPDATE_VMEM
+00034d 940e 00bf                 	call    ERASE_VMEM
+00034f 940e 00ca                     call    UPDATE_VMEM
                                  PLAY:
                                      
                                  
                                  	
-000350 940e 0151                     call    JOYSTICK
-000352 940e 0198                 	call    MOVE
-000354 940e 00bf                 	call    ERASE_VMEM
-000356 940e 00ca                     call    UPDATE_VMEM
+000351 940e 0151                     call    JOYSTICK
+000353 940e 0198                 	call    MOVE
+000355 940e 00bf                 	call    ERASE_VMEM
+000357 940e 00ca                     call    UPDATE_VMEM
                                  
-000358 940e 007b                     call    DELAY    
-00035a 940e 007b                 	call	DELAY
+000359 940e 007b                     call    DELAY    
+00035b 940e 007b                 	call	DELAY
                                  
                                  
-00035c 940e 022c                 	call    CHECK_HITS
+00035d 940e 022c                 	call    CHECK_HITS
                                  
-00035e 9100 0207                     lds     r16,STATUS
-000360 1502                          cp      r16,ZERO
-000361 f409                          brne    GAME_OVER
-000362 cfed                          rjmp    PLAY
+00035f 9100 0207                     lds     r16,STATUS
+000361 1502                          cp      r16,ZERO
+000362 f409                          brne    GAME_OVER
+000363 cfed                          rjmp    PLAY
                                  
                                  GAME_OVER:
-000363 e10e                          ldi     r16,30
-000364 940e 0085                     call    WAIT
-000366 9100 0207                     lds     r16,STATUS
-000368 3003                          cpi     r16,TIED
-000369 f021                          breq    tied_screen
-00036a 3001                          cpi     r16,P1_WINS
-00036b f039                          breq    p1_win_screen
-00036c 3002                          cpi     r16,P2_WINS
-00036d f051                          breq    p2_win_screen
+000364 e10e                          ldi     r16,30
+000365 940e 0085                     call    WAIT
+000367 9100 0207                     lds     r16,STATUS
+000369 3003                          cpi     r16,TIED
+00036a f021                          breq    tied_screen
+00036b 3001                          cpi     r16,P1_WINS
+00036c f039                          breq    p1_win_screen
+00036d 3002                          cpi     r16,P2_WINS
+00036e f051                          breq    p2_win_screen
                                  tied_screen:
-00036e 940e 00bf                     call    ERASE_VMEM
-000370 e0f4                          ldi     ZH,HIGH(TIE_TAB*2)
-000371 e3ee                          ldi     ZL,LOW(TIE_TAB*2)
-000372 c009                          rjmp    win_prep_done
+00036f 940e 00bf                     call    ERASE_VMEM
+000371 e0f4                          ldi     ZH,HIGH(TIE_TAB*2)
+000372 e3ee                          ldi     ZL,LOW(TIE_TAB*2)
+000373 c009                          rjmp    win_prep_done
                                  p1_win_screen:
-000373 940e 00bf                     call    ERASE_VMEM
-000375 e0f3                          ldi     ZH,HIGH(RED_WIN_TAB*2)
-000376 efe0                          ldi     ZL,LOW(RED_WIN_TAB*2)
-000377 c004                          rjmp    win_prep_done
+000374 940e 00bf                     call    ERASE_VMEM
+000376 e0f3                          ldi     ZH,HIGH(RED_WIN_TAB*2)
+000377 efe0                          ldi     ZL,LOW(RED_WIN_TAB*2)
+000378 c004                          rjmp    win_prep_done
                                  p2_win_screen:
-000378 940e 00bf                     call    ERASE_VMEM
-00037a e0f4                          ldi     ZH,HIGH(BLUE_WIN_TAB*2)
-00037b e1e4                          ldi     ZL,LOW(BLUE_WIN_TAB*2)
+000379 940e 00bf                     call    ERASE_VMEM
+00037b e0f4                          ldi     ZH,HIGH(BLUE_WIN_TAB*2)
+00037c e1e4                          ldi     ZL,LOW(BLUE_WIN_TAB*2)
                                  win_prep_done:
-00037c 940e 01e4                     call    UPDATE_WIN_VMEM
-00037e e604                          ldi     r16,100
-00037f 940e 0085                     call    WAIT
-                                 
-000381 940c 034a                     jmp     MAIN
+00037d 940e 01e4                     call    UPDATE_WIN_VMEM
+00037f e604                          ldi     r16,100
+000380 940e 0085                     call    WAIT
+000382 940e 0297                 	call	LJUD
+000384 940c 0349                     jmp     MAIN
 
 
 RESOURCE USE INFORMATION
@@ -2103,8 +2109,8 @@ andi  :   4 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0
 brcc  :   0 brcs  :   0 break :   0 breq  :  22 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
 brne  :  20 brpl  :   0 brsh  :   2 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  : 103 cbi   :   2 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   5 cls   :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  : 104 cbi   :   2 cbr   :   0 
+clc   :   0 clh   :   0 cli   :   1 cln   :   0 clr   :   5 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   2 cp    :   7 cpc   :   0 
 cpi   :  22 cpse  :   7 dec   :  24 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   4 inc   :   7 jmp   :   3 
@@ -2117,12 +2123,12 @@ sbiw  :   0 sbr   :   6 sbrc  :   5 sbrs  :   1 sec   :   0 seh   :   0
 sei   :   1 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   6 std   :  14 sts   :  38 
 sub   :   1 subi  :   2 swap  :   2 tst   :   0 wdr   :   0 
-Instructions used: 48 out of 113 (42.5%)
+Instructions used: 49 out of 113 (43.4%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000706   1634    104   1738   32768   5.3%
+[.cseg] 0x000000 0x00070c   1640    104   1744   32768   5.3%
 [.dseg] 0x000100 0x00020b      0    267    267    2048  13.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

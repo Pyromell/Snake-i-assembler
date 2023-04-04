@@ -74,9 +74,10 @@ PROG_START:
     out     SPL,r16
     clr     ZERO
 
-    ; sets hardware, flags, clears memory
-    call    INIT
+
 MAIN:
+	; sets hardware, flags, clears memory
+    call    INIT
     ; sets start conditions, game mode
     call    SETUP
 
@@ -130,5 +131,5 @@ win_prep_done:
     call    UPDATE_WIN_VMEM
     ldi     r16,100
     call    WAIT
-
+	call	LJUD
     jmp     MAIN
